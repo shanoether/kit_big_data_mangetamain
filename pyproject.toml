@@ -1,0 +1,181 @@
+[project]
+name = "python-baseline"
+#start = "src.mypkg.httphello:httphello" #If want to call directly the package
+version = "0.1.0"
+description = "Baseline for python projects"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mypy>=1.18.1",
+    "requests>=2.32.5",
+]
+license = { text = "MIT" }
+authors = [{ name = "xzy+357r"}]
+
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "mypy>=1.18.1",
+    "pytest>=8.4.2",
+    "ruff>=0.13.0",
+]
+
+[project.scripts]
+httphello = "src.mypkg.httphello:httphello"
+
+[build-system]
+requires = ["hatchling>=1.15"]
+build-backend = "hatchling.build"
+
+# Tell hatchling where the package lives
+[tool.hatch.build.targets.wheel]
+packages = ["src/mypkg"]
+include = ["src/**/*"]
+
+[tool.hatch.envs.default.scripts]
+# start-api = "uvicorn todo_app.api:app --host 0.0.0.0 --port 8000 --reload"
+# start-web = "streamlit run todo_app/webapp.py --server.port 8501 --server.headless true"
+
+# Configuration pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=todo_app",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=85",
+    "--cov-branch",
+    "-v"
+]
+
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+# Configuration coverage
+[tool.coverage.run]
+source = ["todo_app"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+    "*/venv/*",
+    "*/env/*",
+    "*/config.py",
+    "*/logger.py",
+    "*/webapp.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# Configuration ruff
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+    "ARG001", # unused-function-args
+    "SIM", # flake8-simplify
+    #"TCH", # flake8-type-checking
+    "PIE", # flake8-pie
+    "PT", # flake8-pytest-style
+    "Q", # flake8-quotes
+    "RUF", # Ruff-specific rules
+    "W191", # indentation contains tabs
+    "W291", # trailing whitespace at end of line
+]
+
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+    "B904", # Allow `raise` without `from` inside `except`
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/**/*" = ["ARG", "S101", "PLR2004", "SLF001"]
+
+[tool.ruff.isort]
+known-first-party = ["todo_app"]
+
+# Configuration black
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# Configuration isort
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+#known_first_party = ["todo_app"]
+#known_third_party = ["fastapi", "uvicorn", "streamlit", "pydantic", "loguru"]
+
+# Configuration mypy
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+
+# [project.urls] # to publish in pypi
+# Homepage = "https://github.com/you/python_baseline"
+# Issues = "https://github.com/you/python_baseline/issues"
