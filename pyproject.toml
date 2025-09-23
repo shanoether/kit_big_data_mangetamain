@@ -1,19 +1,27 @@
 [project]
-name = "python-baseline"
-#start = "src.mypkg.httphello:httphello" #If want to call directly the package
+name = "kit-big-data"
 version = "0.1.0"
-description = "Baseline for python projects"
+description = "Kit big dataa mangetamain project"
 readme = "README.md"
 requires-python = ">=3.12"
+license = { text = "MIT" }
+keywords = []
+authors = [
+    { name = "Le Hoang", email = "lehoangnguyen510@gmail.com" },
+    
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
 dependencies = [
-    "mypy>=1.18.1",
     "requests>=2.32.5",
 ]
-license = { text = "MIT" }
-authors = [{ name = "xzy+357r"}]
 
-
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "black>=25.1.0",
     "mypy>=1.18.1",
@@ -21,21 +29,19 @@ dev = [
     "ruff>=0.13.0",
 ]
 
-[project.scripts]
-httphello = "src.mypkg.httphello:httphello"
-
 [build-system]
 requires = ["hatchling>=1.15"]
 build-backend = "hatchling.build"
 
-# Tell hatchling where the package lives
+[tool.hatch.env]
+installer = "uv"  
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/mypkg"]
+packages = ["src"]
 include = ["src/**/*"]
 
 [tool.hatch.envs.default.scripts]
-# start-api = "uvicorn todo_app.api:app --host 0.0.0.0 --port 8000 --reload"
-# start-web = "streamlit run todo_app/webapp.py --server.port 8501 --server.headless true"
+httphello = "src.mypkg.httphello:httphello"
 
 # Configuration pytest
 [tool.pytest.ini_options]
@@ -63,7 +69,7 @@ markers = [
 
 # Configuration coverage
 [tool.coverage.run]
-source = ["todo_app"]
+source = ["src"]
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -71,9 +77,6 @@ omit = [
     "*/migrations/*",
     "*/venv/*",
     "*/env/*",
-    "*/config.py",
-    "*/logger.py",
-    "*/webapp.py",
 ]
 
 [tool.coverage.report]
@@ -125,7 +128,7 @@ ignore = [
 "tests/**/*" = ["ARG", "S101", "PLR2004", "SLF001"]
 
 [tool.ruff.isort]
-known-first-party = ["todo_app"]
+known-first-party = ["src"]
 
 # Configuration black
 [tool.black]
@@ -151,8 +154,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-#known_first_party = ["todo_app"]
-#known_third_party = ["fastapi", "uvicorn", "streamlit", "pydantic", "loguru"]
+known_first_party = ["src"]
 
 # Configuration mypy
 [tool.mypy]
@@ -174,8 +176,3 @@ show_error_codes = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-
-
-# [project.urls] # to publish in pypi
-# Homepage = "https://github.com/you/python_baseline"
-# Issues = "https://github.com/you/python_baseline/issues"
