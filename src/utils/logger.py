@@ -75,6 +75,7 @@ class BaseLogger:
             self.logger.addHandler(console_handler)
     
     def _setup_handler(self, input_name: Path|str = None) -> tuple[Path, logging.FileHandler]:
+        os.makedirs(self.base_folder, exist_ok=True)
         log_path = self.base_folder / f"{(input_name or "app")}.log"
         file_handler = logging.FileHandler(log_path, encoding="utf-8")
         return log_path, file_handler

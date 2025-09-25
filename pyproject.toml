@@ -8,7 +8,8 @@ license = { text = "MIT" }
 keywords = []
 authors = [
     { name = "Le Hoang", email = "lehoangnguyen510@gmail.com" },
-    
+    { name = "longhorncow", email = "crux.pride2579@eagereverest.com" },
+
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
