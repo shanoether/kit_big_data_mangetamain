@@ -1,5 +1,5 @@
-from src.utils.logger import RotLogger
-from src.mypkg.logger_example_helper import run_from_another_file
+from mangetamain.utils.logger import RotLogger
+from mangetamain.example.logger_example_helper import run_from_another_file
 
 def run():
     logger = RotLogger()

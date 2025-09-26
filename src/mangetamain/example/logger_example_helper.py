@@ -1,4 +1,4 @@
-from src.utils.logger import RotLogger
+from mangetamain.utils.logger import RotLogger
 
 def run_from_another_file():
     logger = RotLogger()

@@ -1,7 +1,11 @@
+[build-system]
+requires = ["hatchling>=1.15"]
+build-backend = "hatchling.build"
+
 [project]
 name = "kit-big-data"
 version = "0.1.0"
-description = "Kit big dataa mangetamain project"
+description = "Kit big data mangetamain project"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -30,19 +34,16 @@ dev = [
     "ruff>=0.13.0",
 ]
 
-[build-system]
-requires = ["hatchling>=1.15"]
-build-backend = "hatchling.build"
-
 [tool.hatch.env]
 installer = "uv"  
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
-include = ["src/**/*"]
+packages = ["src/mangetamain"]
+include = ["src/mangetamain/**/*"]
 
 [tool.hatch.envs.default.scripts]
-httphello = "src.mypkg.httphello:httphello"
+httphello = "mypkg.httphello:httphello"
+ex_logger = "mangetamain.example.logger_example"
 
 # Configuration pytest
 [tool.pytest.ini_options]
@@ -70,7 +71,7 @@ markers = [
 
 # Configuration coverage
 [tool.coverage.run]
-source = ["src"]
+source = ["src/mangetamain"]
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -129,7 +130,7 @@ ignore = [
 "tests/**/*" = ["ARG", "S101", "PLR2004", "SLF001"]
 
 [tool.ruff.isort]
-known-first-party = ["src"]
+known-first-party = ["mangetamain"]
 
 # Configuration black
 [tool.black]
@@ -155,7 +156,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["src"]
+known_first_party = ["mangetamain"]
 
 # Configuration mypy
 [tool.mypy]
