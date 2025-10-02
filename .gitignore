@@ -1,8 +1,6 @@
 # Data
 
-data/raw/
-RAW_recipes.csv.zip
-RAW_interactions.csv.zip
+data/
 *.zip
 
 # Byte-compiled / optimized / DLL files
