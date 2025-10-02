@@ -41,8 +41,8 @@ build-backend = "hatchling.build"
 installer = "uv"  
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
-include = ["src/**/*"]
+packages = ["src/mangetamain"]
+include = ["src/mangetamain/**/*"]
 
 [tool.hatch.envs.default.scripts]
 httphello = "src.mypkg.httphello:httphello"
