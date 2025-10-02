@@ -12,8 +12,7 @@ st.set_page_config(
 st.title("Rating")
 
 if 'data_loaded' in st.session_state and st.session_state.data_loaded:
-    data_processor = st.session_state.data_processor
-    df = data_processor.get_data()
+    df = st.session_state.df
         
     st.subheader("📊 Data Preview")
     
