@@ -1,58 +1,40 @@
-# Personnalize
-.ipynb_checkpoints/
-.mypy_cache/
-.ruff_cache/
-bin/
-config/
-data/
-dist/
-docs/
-examples/
-ISSUE_TEMPLATE/
-logs/
-notebooks/
-
-# Python cache
+# Ignore Python cache & build files
 __pycache__/
 *.pyc
-
-
-# Virtual environments
-.venv/
-venv/
-
-# Editor files
-.vscode/
-.idea/
-*.sublime-workspace
-
-# macOS
-.DS_Store
-
-# Build and distribution
+*.pyo
+*.pyd
+*.whl
+*.egg-info
+*.egg
 build/
 dist/
-*.egg-info
 
-# Logs
-logs/
-*.log
+# Ignore virtual environments
+.venv/
+env/
+venv/
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Local data - should be mounted, not copied into image
+# Ignore data & notebooks (large, not needed in container)
 data/
-processed/
+notebook/
 
-# Secrets / env
-.env
-.env.*
+# Ignore logs
+logs/
 
-# Docker files
-.dockerignore
-Dockerfile
+# Ignore version control & docs
+.git/
+.gitignore
+docs/
+LICENSE
 
-# Node / package manager artifacts (if any)
-node_modules/
-npm-debug.log
+# Ignore editor/OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore Docker and script files not needed in container
+docker-compose.yaml
+scripts/
+docs/
+ISSUE_TEMPLATE
