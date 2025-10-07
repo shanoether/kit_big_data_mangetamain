@@ -1,0 +1,12 @@
+services:
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data     # map local data folder
+      # - ./logs:/app/logs     # map logs folder
+    environment:
+      - PORT=8501
