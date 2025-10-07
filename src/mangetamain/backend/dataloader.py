@@ -11,7 +11,7 @@ from pathlib import Path
 import polars as pl
 import streamlit as st
 
-from src.mangetamain.utils.logger import RotLogger
+from mangetamain.utils.logger import RotLogger
 
 
 class DataLoader:
