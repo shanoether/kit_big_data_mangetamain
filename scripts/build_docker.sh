@@ -16,3 +16,6 @@ DOCKER_BUILDKIT=1 docker buildx build --platform linux/amd64 -t mangetamain-proc
 #docker run --rm -it --entrypoint /bin/bash -v "$(pwd)/data:/app/data" mangetamain-processor:latest
 # then inside container:
 #python -c "import sys; print(sys.path); import mangetamain; print('OK')"
+
+# Build docker-compose
+DOCKER_BUILDKIT=1 docker-compose up --build
