@@ -36,3 +36,5 @@ Thumbs.db
 # Ignore Docker and script files not needed in container
 docker-compose.yaml
 scripts/
+docs/
+ISSUE_TEMPLATE
