@@ -18,9 +18,8 @@ st.write("Use the sidebar to navigate to different sections of the app.")
 st.write("Below is the information about the project")
 
 if 'data_loaded' in st.session_state and st.session_state.data_loaded:
-    df = st.session_state.df
-    load_time = st.session_state.load_time
-    
-    st.success(f"✅ Successfully loaded {len(df):,} interactions in {load_time:.2f} seconds")
+    df_interactions = st.session_state.df_interactions
+    df_recipes = st.session_state.df_recipes
+    st.success(f"✅ Successfully loaded {len(df_interactions):,} interactions")
 else:
     st.error("❌ Data not loaded properly. Please refresh the page.")

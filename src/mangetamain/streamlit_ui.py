@@ -1,5 +1,6 @@
 import streamlit as st
 
+from mangetamain.backend.helper import load_parquet_with_progress
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
@@ -8,7 +9,9 @@ def main():
 
     if 'data_loaded' not in st.session_state:
         with st.spinner("🔄 Loading application data..."):
-            # st.session_state.df, st.session_state.load_time = load_csv_with_progress("data/RAW_interactions.csv")
+            logger.info("Application started, loading data.")
+            st.session_state.df_interactions = load_parquet_with_progress("data/processed/processed_interactions.parquet")
+            st.session_state.df_recipes = load_parquet_with_progress("data/processed/processed_recipes.parquet")
             st.session_state.data_loaded = True
 
     home_page = st.Page("frontend/pages/dashboard.py", title="Home", default=True)
