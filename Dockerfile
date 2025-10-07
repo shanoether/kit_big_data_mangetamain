@@ -13,21 +13,22 @@ WORKDIR /app
 # for any package, you'll need to add build-essential and headers.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       ca-certificates \
-       libfreetype6 \
-       libpng16-16 \
+       curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy runtime requirements (a small subset of pyproject) and install
 COPY requirements-runtime.txt /app/requirements-runtime.txt
 #RUN python -m pip install --extra-index-url https://pypi.fury.io/arrow-nightlies/ \
 #        --prefer-binary --pre pyarrow
-RUN python -m pip install --upgrade pip setuptools wheel && \
-    pip install --prefer-binary --no-cache-dir -r /app/requirements-runtime.txt
+RUN pip install uv
+
+COPY pyproject.toml uv.lock README.md ./
+
+RUN uv sync --frozen --no-dev
 
 # Copy source (only what's needed). Place package root under /app so
 # `PYTHONPATH=/app` makes `import mangetamain` work without installing.
-COPY src/ /app/
+COPY . . 
 
 # Create mountpoint for processed data
 RUN mkdir -p /app/data
