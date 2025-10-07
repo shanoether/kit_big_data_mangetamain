@@ -1,0 +1,58 @@
+# Personnalize
+.ipynb_checkpoints/
+.mypy_cache/
+.ruff_cache/
+bin/
+config/
+data/
+dist/
+docs/
+examples/
+ISSUE_TEMPLATE/
+logs/
+notebooks/
+
+# Python cache
+__pycache__/
+*.pyc
+
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# macOS
+.DS_Store
+
+# Build and distribution
+build/
+dist/
+*.egg-info
+
+# Logs
+logs/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local data - should be mounted, not copied into image
+data/
+processed/
+
+# Secrets / env
+.env
+.env.*
+
+# Docker files
+.dockerignore
+Dockerfile
+
+# Node / package manager artifacts (if any)
+node_modules/
+npm-debug.log
