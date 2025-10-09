@@ -1,5 +1,6 @@
 services:
   preprocess:
+    # image: myapp:latest
     build: .
     command: ["uv", "run", "python", "src/mangetamain/backend/data_processor.py"]
     volumes:
@@ -7,8 +8,8 @@ services:
       # - ./logs:/app/logs     # map logs folder
 
   streamlit:
+    # image: myapp:latest
     build: .
-    image: production
     command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py", "--server.address=0.0.0.0", "--server.port=8501"]
 
     ports:
