@@ -1,7 +1,7 @@
 [project]
 name = "kit-big-data"
 version = "0.1.0"
-description = "Kit big dataa mangetamain project"
+description = "Kit big data mangetamain project"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -20,7 +20,8 @@ classifiers = [
 ]
 dependencies = [
     "matplotlib>=3.10.6",
-    "pandas",
+    "pandas>=2.3.3",
+    "requests>=2.32.5",
     "seaborn>=0.13.2",
     "streamlit>=1.50.0",
 ]
