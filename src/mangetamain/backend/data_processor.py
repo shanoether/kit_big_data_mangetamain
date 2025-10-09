@@ -28,48 +28,70 @@ class DataProcessor:
             recipes: Recipe data
         """
         logger.info("Starting to load data.")
-        self.path_interactions = path_interactions
-        self.path_recipes = path_recipes
-        self.interactions, self.recipes = self.load_data_from_zip()
+        self.load_data_from_zip(path_interactions, path_recipes)
     
-    def load_data_from_zip(self):
+    def load_data_from_zip(self, path_interactions: Path, path_recipes: Path) -> None:
         """Load data from zip files into Polars DataFrames.
 
-        Returns:
-            Tuple of interactions and recipes dataframes
+        Args:
+            path_interactions: Path to the interactions zip file
+            path_recipes: Path to the recipes zip file
         """
         with (
-            zipfile.ZipFile(self.path_interactions) as zf,
+            zipfile.ZipFile(path_interactions) as zf,
             zf.open(zf.namelist()[0]) as f,
         ):  # assuming only one file inside
-            df_interactions = pl.read_csv(f, schema_overrides={"date": pl.Datetime})
+            self.df_interactions = pl.read_csv(f, schema_overrides={"date": pl.Datetime})
         logger.info(
-            f"Interactions loaded successfully | Data shape: {df_interactions.shape}.",
+            f"Interactions loaded successfully | Data shape: {self.df_interactions.shape}.",
         )
         with (
-            zipfile.ZipFile(self.path_recipes) as zf,
+            zipfile.ZipFile(path_recipes) as zf,
             zf.open(zf.namelist()[0]) as f,
         ):  # assuming only one file inside
-            df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
+            self.df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
         logger.info(
-            f"Recipes loaded successfully | Data shape: {df_recipes.shape}.",
+            f"Recipes loaded successfully | Data shape: {self.df_recipes.shape}.",
         )
 
-        return df_interactions, df_recipes
+    def drop_na(self) -> None:
+        self.df_interactions = self.df_interactions.filter(~self.df_interactions["review"].is_null())
+        logger.info(f"Interactions after dropping NA | Data shape: {self.df_interactions.shape}.")
+        self.df_recipes = self.df_recipes.filter((self.df_recipes["minutes"] < 60*24*365) & (self.df_recipes["minutes"] == 0))
+        logger.info(f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}.")
+        self.df_recipes = self.df_recipes.filter(self.df_recipes["n_steps"] > 0)
+        logger.info(f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}.")
 
-    def add_year_column(self) -> tuple[pl.DataFrame, pl.DataFrame]:
-        """Extract year from date columns for both dataframes.
-
-        Returns:
-            Tuple of updated interactions and recipes dataframes
-        """
-        logger.info("Adding year column to interactions and recipes dataframes.")
-        self.interactions = self.interactions.with_columns(
-            year=pl.col("date").dt.year(),
+    def split_minutes(self) -> None:
+        """Split recipes into short, medium, and long based on preparation time."""
+        self.df_recipes_short = self.df_recipes.filter(self.df_recipes["minutes"] <= 100)
+        self.df_recipes_medium = self.df_recipes.filter((self.df_recipes["minutes"] > 100) & (self.df_recipes["minutes"] <= 60 * 48))
+        self.df_recipes_long = self.df_recipes.filter(self.df_recipes["minutes"] > 60 * 48)
+        logger.info(
+            f"Recipes split into short ({self.df_recipes_short.shape}), "
+            f"medium ({self.df_recipes_medium.shape}), "
+            f"and long ({self.df_recipes_long.shape}).",
         )
-        self.recipes = self.recipes.with_columns(year=pl.col("submitted").dt.year())
-        logger.info("Year column added to interactions and recipes dataframes.")
-        return self.interactions, self.recipes
+    
+    def merge_data(self) -> None:
+        """Merge interactions with recipes on recipe_id."""
+        self.df_recipes = self.df_recipes.rename({"id": "recipe_id"})
+        self.total = self.df_interactions.join(
+            self.df_recipes, left_on="recipe_id", right_on="recipe_id", how="inner"
+        )
+        self.total_short = self.df_interactions.join(
+            self.df_recipes_short, left_on="recipe_id", right_on="recipe_id", how="inner"
+        )
+        self.total_medium = self.df_interactions.join(
+            self.df_recipes_medium, left_on="recipe_id", right_on="recipe_id", how="inner"
+        )
+        self.total_long = self.df_interactions.join(
+            self.df_recipes_long, left_on="recipe_id", right_on="recipe_id", how="inner"
+        )
+        logger.info(f"Merged data shape: {self.total.shape}.")
+        logger.info(f"Merged short recipes data shape: {self.total_short.shape}.")
+        logger.info(f"Merged medium recipes data shape: {self.total_medium.shape}.")
+        logger.info(f"Merged long recipes data shape: {self.total_long.shape}.")
 
     def save_data(self) -> None:
         """
@@ -83,6 +105,8 @@ class DataProcessor:
 
 if __name__ == "__main__":
     processor = DataProcessor()
-    processor.add_year_column()
+    processor.drop_na()
+    processor.split_minutes()
+    processor.merge_data()
     processor.save_data()
     logger.info("Data processing completed.")
