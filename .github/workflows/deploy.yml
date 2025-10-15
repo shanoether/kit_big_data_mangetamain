@@ -41,7 +41,7 @@ jobs:
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
-          key: ${{ vars.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           envs: GHCR_PAT,GH_ACTOR,IMAGE,SHORT_SHA
           script: |
             set -euo pipefail
