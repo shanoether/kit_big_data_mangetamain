@@ -72,7 +72,8 @@ jobs:
 
 
             # Pin the deployment to the new immutable tag
-            echo "IMAGE_TAG=sha-${SHORT_SHA}" > .env
+            export IMAGE_TAG="sha-${SHORT_SHA}"
+            echo "IMAGE_TAG=${IMAGE_TAG}" > .env
 
             # Pull & restart
             echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
