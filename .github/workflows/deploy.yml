@@ -13,6 +13,12 @@ jobs:
     environment: vm-kit-big-data-1        # <- if you use GitHub Environments
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,6 +75,7 @@ jobs:
             echo "IMAGE_TAG=sha-${SHORT_SHA}" > .env
 
             # Pull & restart
+            echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
             docker compose pull
             docker compose up -d --remove-orphans
 
