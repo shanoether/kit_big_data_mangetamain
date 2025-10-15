@@ -17,7 +17,7 @@ services:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
     command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py", "--server.address=0.0.0.0", "--server.port=8501"]
     depends_on:
-      - preprocess:
+      preprocess:
           condition: service_healthy
     restart: unless-stopped
     healthcheck:

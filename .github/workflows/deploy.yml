@@ -72,6 +72,8 @@ jobs:
 
 
             # Pin the deployment to the new immutable tag
+            PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
+
             export IMAGE_TAG="sha-${SHORT_SHA}"
             echo "IMAGE_TAG=${IMAGE_TAG}" > .env
 
@@ -79,6 +81,32 @@ jobs:
             echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
             docker compose pull
             docker compose up -d --remove-orphans
+
+            # probe health check
+            # probe health (retry ~90s)
+
+            sleep 10  # wait a bit for the healthcheck to start
+            ok=0
+            for i in $(seq 1 18); do
+            if docker inspect --format='{{.State.Health.Status}}' "$(docker ps -q -f name=app-streamlit-1)" 2>/dev/null | grep -q healthy; then
+                ok=1; break
+            fi
+            sleep 5
+            done
+
+            if [ "$ok" -ne 1 ]; then
+            echo "❌ New version unhealthy, rolling back to ${PREV_TAG:-<none>}"
+            if [ -n "${PREV_TAG:-}" ]; then
+                echo "IMAGE_TAG=${PREV_TAG}" > .env
+                docker compose pull
+                docker compose up -d --remove-orphans
+            else
+                echo "No previous tag to roll back to."
+                exit 1
+            fi
+            else
+            echo "✅ New version healthy: ${NEW_TAG}"
+            fi
 
             docker logout ghcr.io || true
 
