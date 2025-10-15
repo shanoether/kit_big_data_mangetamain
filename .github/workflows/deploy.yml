@@ -49,13 +49,21 @@ jobs:
             export GHCR_PAT="${{ secrets.GHCR_PAT }}"
             export IMAGE="${{ steps.meta.outputs.IMAGE }}"
             export SHORT_SHA="${{ steps.meta.outputs.SHORT_SHA }}"
+            export GH_USER="${{ github.repository_owner }}"
+            export REPO="${{ github.event.repository.name }}"
             export APP_DIR="/opt/app"
 
             cd "$APP_DIR"
             git pull
 
             # Ephemeral login to GHCR
+            TMP_DOCKER_CONFIG="$(mktemp -d)"
+            export DOCKER_CONFIG="$TMP_DOCKER_CONFIG"
+
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+            docker compose pull
+            docker compose up -d --remove-orphans
+
 
             # Pin the deployment to the new immutable tag
             echo "IMAGE_TAG=sha-${SHORT_SHA}" > .env
@@ -64,5 +72,7 @@ jobs:
             docker compose pull
             docker compose up -d --remove-orphans
 
-            docker logout ghcr.io
+            docker logout ghcr.io || true
 
+            rm -rf "$TMP_DOCKER_CONFIG"
+            unset DOCKER_CONFIG
