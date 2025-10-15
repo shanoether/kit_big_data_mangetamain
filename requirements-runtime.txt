@@ -1,4 +1,0 @@
-polars==1.33.1
-pandas==2.3.3
-python-dateutil==2.8.2
-pyarrow

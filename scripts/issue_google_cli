@@ -1,7 +1,0 @@
-  166  sudo dpkg --remove --force-remove-reinstreq google-cloud-cli
-  167  ps -p 283985 -o pid,ppid,stat,etime,cmd
-  168  sudo lsof /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock 2>/dev/null
-  169  sudo kill -9 283985 283984
-  170  sudo dpkg --remove --force-remove-reinstreq google-cloud-cli
-
-  if error 137: killed because too much memory

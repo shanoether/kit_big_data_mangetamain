@@ -1,0 +1,64 @@
+name: Build & Deploy to VM
+
+on:
+  push:
+    branches: [ co/feature/docker ]
+
+jobs:
+  build-deploy:
+    environment: vm-kit-big-data-1        # <- if you use GitHub Environments
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute tags
+        id: meta
+        run: |
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "IMAGE=ghcr.io/${{ github.actor }}/${{ github.event.repository.name }}-app" >> $GITHUB_OUTPUT
+
+      - name: Login to GHCR (push)
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build image
+        run: |
+          docker build -t ${{ steps.meta.outputs.IMAGE }}:latest \
+                       -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
+
+      - name: Push image
+        run: |
+          docker push ${{ steps.meta.outputs.IMAGE }}:latest
+          docker push ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }}
+
+      - name: Deploy on VM
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: GHCR_PAT,GH_ACTOR,IMAGE,SHORT_SHA
+          script: |
+            set -euo pipefail
+            export GH_ACTOR="${{ github.actor }}"
+            export GHCR_PAT="${{ secrets.GHCR_PAT }}"
+            export IMAGE="${{ steps.meta.outputs.IMAGE }}"
+            export SHORT_SHA="${{ steps.meta.outputs.SHORT_SHA }}"
+            export APP_DIR="/opt/app"
+
+            cd "$APP_DIR"
+            git pull
+
+            # Ephemeral login to GHCR
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+
+            # Pin the deployment to the new immutable tag
+            echo "IMAGE_TAG=sha-${SHORT_SHA}" > .env
+
+            # Pull & restart
+            docker compose pull
+            docker compose up -d --remove-orphans
+
+            docker logout ghcr.io
+
