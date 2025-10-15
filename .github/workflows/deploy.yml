@@ -39,9 +39,9 @@ jobs:
       - name: Deploy on VM
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ vars.SSH_KEY }}
           envs: GHCR_PAT,GH_ACTOR,IMAGE,SHORT_SHA
           script: |
             set -euo pipefail
