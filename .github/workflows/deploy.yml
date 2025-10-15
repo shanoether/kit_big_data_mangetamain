@@ -34,7 +34,7 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ${{ steps.meta.outputs.IMAGE }}:latest \
+          docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
                        -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
 
       - name: Push image
@@ -87,25 +87,31 @@ jobs:
 
             sleep 10  # wait a bit for the healthcheck to start
             ok=0
-            for i in $(seq 1 18); do
-            if docker inspect --format='{{.State.Health.Status}}' "$(docker ps -q -f name=app-streamlit-1)" 2>/dev/null | grep -q healthy; then
-                ok=1; break
+            STREAMLIT_CID="$(docker compose ps -q streamlit || true)"
+            if [ -z "$STREAMLIT_CID" ]; then
+                echo "streamlit container not found"
+                exit 1
             fi
-            sleep 5
+
+            for i in $(seq 1 18); do
+                if docker inspect --format='{{.State.Health.Status}}' "$STREAMLIT_CID" 2>/dev/null | grep -q healthy; then
+                    ok=1; break
+                fi
+                sleep 5
             done
 
             if [ "$ok" -ne 1 ]; then
-            echo "❌ New version unhealthy, rolling back to ${PREV_TAG:-<none>}"
-            if [ -n "${PREV_TAG:-}" ]; then
-                echo "IMAGE_TAG=${PREV_TAG}" > .env
-                docker compose pull
-                docker compose up -d --remove-orphans
+                echo "❌ New version unhealthy, rolling back to ${PREV_TAG:-<none>}"
+                if [ -n "${PREV_TAG:-}" ]; then
+                    echo "IMAGE_TAG=${PREV_TAG}" > .env
+                    docker compose pull
+                    docker compose up -d --remove-orphans
+                else
+                    echo "No previous tag to roll back to."
+                    exit 1
+                fi
             else
-                echo "No previous tag to roll back to."
-                exit 1
-            fi
-            else
-            echo "✅ New version healthy: ${NEW_TAG}"
+                echo "✅ New version healthy: ${IMAGE_TAG}"
             fi
 
             docker logout ghcr.io || true
