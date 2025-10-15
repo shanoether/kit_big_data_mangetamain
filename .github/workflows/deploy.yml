@@ -1,5 +1,9 @@
 name: Build & Deploy to VM
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches: [ co/feature/docker ]
@@ -17,7 +21,7 @@ jobs:
         id: meta
         run: |
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          echo "IMAGE=ghcr.io/${{ github.actor }}/${{ github.event.repository.name }}-app" >> $GITHUB_OUTPUT
+          echo "IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-app" >> $GITHUB_OUTPUT
 
       - name: Login to GHCR (push)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
