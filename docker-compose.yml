@@ -1,23 +1,35 @@
 services:
   preprocess:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
-    # build: .
     command: ["uv", "run", "python", "src/mangetamain/backend/data_processor.py"]
+    healthcheck:
+      test: ["CMD-SHELL","pgrep -f data_processor.py >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 10s
+    restart: unless-stopped
     volumes:
       - /opt/app/data:/app/data     # map local data folder
       #- /opt/app/logs:/app/logs     # map logs folder
 
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
-    # build: .
     command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py", "--server.address=0.0.0.0", "--server.port=8501"]
-
+    depends_on:
+      - preprocess:
+          condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+          test: ["CMD","curl","-fsS","http://localhost:8501/health"]
+          interval: 15s
+          timeout: 5s
+          retries: 8
+          start_period: 15s
     ports:
       - "8501:8501"
     volumes:
       - /opt/app/data:/app/data     # map local data folder
       #- /opt/app/logs:/app/logs     # map logs folder
-    depends_on:
-      - preprocess
     environment:
       - PORT=8501
