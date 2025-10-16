@@ -109,7 +109,8 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     ax1.set_xlabel("Preparation Time (minutes)")
     ax1.set_ylabel("Count by rating")
     ax2.set_ylim((0,1))
-    ax2.plot(proportion_m.rolling(window=rolling_range_time).mean())
+    #ax2.plot(proportion_m.rolling(window=rolling_range_time).mean())# pandas
+    ax2.plot(proportion_m.rolling_mean(rolling_range_time)) # polars
     ax2.set_title("Proportion of 5-star Ratings vs Preparation Time")
     ax2.set_xlabel("Preparation Time (minutes)")
     ax2.set_ylabel("Proportion of 5-star Ratings")
@@ -140,7 +141,8 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     ax3.set_xlabel("Number of Steps")
     ax3.set_ylabel("Count by rating")
     ax4.set_ylim((0,1))
-    ax4.plot(proportion_s.rolling(window=rolling_range_steps).mean())
+    # ax4.plot(proportion_s.rolling(window=rolling_range_steps).mean())# pandas
+    ax4.plot(proportion_s.rolling_mean(rolling_range_steps)) # polars
     ax4.set_title("Proportion of 5-star Ratings vs Number of Steps")
     ax4.set_xlabel("Number of Steps")
     ax4.set_ylabel("Proportion of 5-star Ratings")
