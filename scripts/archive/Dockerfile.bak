@@ -73,7 +73,7 @@ RUN uv sync --frozen --no-dev
 
 # Copy source (only what's needed). Place package root under /app so
 # `PYTHONPATH=/app` makes `import mangetamain` work without installing.
-COPY . . 
+COPY . .
 
 # Create mountpoint for processed data
 RUN mkdir -p /app/data

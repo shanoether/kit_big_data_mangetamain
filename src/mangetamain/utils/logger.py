@@ -100,7 +100,8 @@ class BaseLogger:
             self.logger.addHandler(console_handler)
 
     def _setup_handler(
-        self, input_name: Path | str | None = None
+        self,
+        input_name: Path | str | None = None,
     ) -> tuple[Path, logging.FileHandler]:
         """Create and return a file handler for application logs.
 
@@ -183,7 +184,8 @@ class TimeLogger(BaseLogger):
     """
 
     def _setup_handler(
-        self, input_name: Path | str | None = None
+        self,
+        input_name: Path | str | None = None,
     ) -> tuple[Path, logging.FileHandler]:
         """Create a timestamped file handler for a single run.
 
@@ -212,7 +214,8 @@ class RotLogger(BaseLogger):
     """
 
     def _setup_handler(
-        self, input_name: Path | str | None = None
+        self,
+        input_name: Path | str | None = None,
     ) -> tuple[Path, logging.FileHandler]:
         """Create a rotating file handler for application logs.
 

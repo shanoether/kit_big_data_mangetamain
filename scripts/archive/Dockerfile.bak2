@@ -9,7 +9,7 @@ FROM ${BASE_IMAGE} AS mangetamain
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 
-# Minimal runtime system dependencies 
+# Minimal runtime system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        curl \
@@ -21,7 +21,7 @@ COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev
 
 # Copy source code
-COPY . . 
+COPY . .
 
 # Create mountpoint for processed data
 RUN mkdir -p /app/data

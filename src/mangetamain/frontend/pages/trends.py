@@ -20,13 +20,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interaction = df_interactions.with_columns(
         [
             pl.col("date").alias("date_parsed"),
-        ]
+        ],
     )
     df_interaction = df_interaction.with_columns(
         [
             pl.col("date_parsed").dt.year().alias("year"),
             pl.col("date_parsed").dt.month().alias("month"),
-        ]
+        ],
     )
 
     # Évolution des notes moyennes
@@ -38,7 +38,11 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     fig, ax = plt.subplots()
     sns.lineplot(
-        data=mean_by_year.to_pandas(), x="year", y="mean_rating", marker="o", ax=ax
+        data=mean_by_year.to_pandas(),
+        x="year",
+        y="mean_rating",
+        marker="o",
+        ax=ax,
     )
     st.pyplot(fig)
 
@@ -46,7 +50,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.subheader("Nombre de reviews par mois et année")
     monthly_counts = (
         df_interaction.group_by(["year", "month"])
-        .agg(pl.count().alias("nb_reviews"))
+        .agg(pl.len().alias("nb_reviews"))
         .sort(["year", "month"])
     )
     fig, ax = plt.subplots()

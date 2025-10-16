@@ -33,7 +33,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     top_recipes = (
         df_interactions.group_by("recipe_id")
-        .agg(pl.count().alias("nb_reviews"))
+        .agg(pl.len().alias("nb_reviews"))
         .sort("nb_reviews", descending=True)
         .head(nb_recettes)
         .join(
@@ -44,10 +44,19 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         )
     )
 
+    top_recipes_df = top_recipes.to_pandas()
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=top_recipes.to_pandas(), x="nb_reviews", y="name", palette="viridis", ax=ax
+        data=top_recipes_df,
+        x="nb_reviews",
+        y="name",
+        palette="viridis",
+        hue="name",
+        dodge=False,
+        ax=ax,
     )
+    if ax.get_legend() is not None:
+        ax.get_legend().remove()
     st.pyplot(fig)
 
     # Moyenne des notes
@@ -58,8 +67,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         .agg(
             [
                 pl.col("rating").mean().alias("mean_rating"),
-                pl.count().alias("nb_reviews"),
-            ]
+                pl.len().alias("nb_reviews"),
+            ],
         )
         .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)
         .join(
@@ -72,8 +81,17 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         .head(nb_recettes)
     )
 
+    filtered_df = filtered.to_pandas()
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=filtered.to_pandas(), x="mean_rating", y="name", ax=ax, palette="crest"
+        data=filtered_df,
+        x="mean_rating",
+        y="name",
+        ax=ax,
+        palette="crest",
+        hue="name",
+        dodge=False,
     )
+    if ax.get_legend() is not None:
+        ax.get_legend().remove()
     st.pyplot(fig)

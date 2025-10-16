@@ -26,22 +26,22 @@ def load_data_from_parquet() -> None:
     This is deliberately small and fails early if files are missing.
     """
     st.session_state.df_interactions = load_parquet_with_progress(
-        "data/processed/processed_interactions.parquet"
+        "data/processed/processed_interactions.parquet",
     )
     st.session_state.df_recipes = load_parquet_with_progress(
-        "data/processed/processed_recipes.parquet"
+        "data/processed/processed_recipes.parquet",
     )
     st.session_state.df_total = load_parquet_with_progress(
-        "data/processed/total.parquet"
+        "data/processed/total.parquet",
     )
     st.session_state.df_total_court = load_parquet_with_progress(
-        "data/processed/short.parquet"
+        "data/processed/short.parquet",
     )
     st.session_state.proportion_m = load_parquet_with_progress(
-        "data/processed/proportion_m.parquet"
+        "data/processed/proportion_m.parquet",
     )["proportion_m"]
     st.session_state.proportion_s = load_parquet_with_progress(
-        "data/processed/proportion_s.parquet"
+        "data/processed/proportion_s.parquet",
     )["proportion_s"]
     st.session_state.data_loaded = True
     logger.info("Data loaded into session state.")
@@ -64,10 +64,12 @@ def main() -> None:
     # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
     overview_page = st.Page("frontend/pages/overview.py", title="Overview")
     recipes_analysis_page = st.Page(
-        "frontend/pages/recipes_analysis.py", title="Recipes Analysis"
+        "frontend/pages/recipes_analysis.py",
+        title="Recipes Analysis",
     )
     users_analysis_page = st.Page(
-        "frontend/pages/users_analysis.py", title="Users Analysis"
+        "frontend/pages/users_analysis.py",
+        title="Users Analysis",
     )
     trends_page = st.Page("frontend/pages/trends.py", title="Trends")
 

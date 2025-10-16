@@ -78,10 +78,10 @@ class DataProcessor:
 
             if not path_interaction_zip.exists() or not path_recipes_zip.exists():
                 logger.error(
-                    f"CSV and ZIP files not found: {path_interaction_zip} and {path_recipes_zip} not found."
+                    f"CSV and ZIP files not found: {path_interaction_zip} and {path_recipes_zip} not found.",
                 )
                 raise FileNotFoundError(
-                    "Neither CSV nor ZIP files found for interactions or recipes."
+                    "Neither CSV nor ZIP files found for interactions or recipes.",
                 )
             else:
                 logger.info("Extracting data from ZIP files.")
@@ -96,13 +96,13 @@ class DataProcessor:
             with open(self.path_interactions, "rb") as f:
                 df_interactions = pl.read_csv(f, schema_overrides={"date": pl.Datetime})
                 logger.info(
-                    f"Interactions loaded successfully | Data shape: {df_interactions.shape}."
+                    f"Interactions loaded successfully | Data shape: {df_interactions.shape}.",
                 )
             with open(self.path_recipes, "rb") as f:
                 df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
                 df_recipes = df_recipes.rename({"id": "recipe_id"})
                 logger.info(
-                    f"Recipes loaded successfully | Data shape: {df_recipes.shape}."
+                    f"Recipes loaded successfully | Data shape: {df_recipes.shape}.",
                 )
         except Exception as e:
             logger.error(f"Error loading CSV files: {e}")
@@ -118,21 +118,21 @@ class DataProcessor:
         updates the instance attributes used by downstream processing.
         """
         self.df_interactions = self.df_interactions.filter(
-            ~self.df_interactions["review"].is_null()
+            ~self.df_interactions["review"].is_null(),
         )
         logger.info(
-            f"Interactions after dropping NA | Data shape: {self.df_interactions.shape}."
+            f"Interactions after dropping NA | Data shape: {self.df_interactions.shape}.",
         )
         self.df_recipes_nna = self.df_recipes.filter(
             (self.df_recipes["minutes"] < 60 * 24 * 365)
-            & (self.df_recipes["minutes"] == 0)
+            & (self.df_recipes["minutes"] == 0),
         )
         logger.info(
-            f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}."
+            f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}.",
         )
         self.df_recipes_nna = self.df_recipes.filter(self.df_recipes["n_steps"] > 0)
         logger.info(
-            f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}."
+            f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}.",
         )
 
     def split_minutes(self) -> None:
@@ -144,14 +144,14 @@ class DataProcessor:
         ``df_recipes_nna_long``.
         """
         self.df_recipes_nna_short = self.df_recipes_nna.filter(
-            self.df_recipes_nna["minutes"] <= MEDIUM_LIM
+            self.df_recipes_nna["minutes"] <= MEDIUM_LIM,
         )
         self.df_recipes_nna_medium = self.df_recipes_nna.filter(
             (self.df_recipes_nna["minutes"] > MEDIUM_LIM)
-            & (self.df_recipes_nna["minutes"] <= LONG_LIM)
+            & (self.df_recipes_nna["minutes"] <= LONG_LIM),
         )
         self.df_recipes_nna_long = self.df_recipes_nna.filter(
-            self.df_recipes_nna["minutes"] > LONG_LIM
+            self.df_recipes_nna["minutes"] > LONG_LIM,
         )
         logger.info(
             f"Recipes split into short ({self.df_recipes_nna_short.shape}), "
@@ -227,8 +227,8 @@ class DataProcessor:
                 .select(pl.col("n_steps"))
                 .unique()
                 .to_series()
-                .to_list()
-            )
+                .to_list(),
+            ),
         )
         proportion_s = [0 for m in steps]
         for m in range(len(steps)):
@@ -241,17 +241,21 @@ class DataProcessor:
             proportion_s[m] = (
                 comptes.filter(pl.col("rating") == RATING_MAX) / comptes.sum()
             )[
-                0, 1
+                0,
+                1,
             ]  # Sometimes missing ratings so fetching index 5 is out of bound
         # proportion_s = pl.Series(np.array(proportion_s))
         proportion_s = np.array(proportion_s)
 
         logger.info("Proportions computed. Loading internally")
         self.df_proportion_m = pl.DataFrame(
-            {"minutes": minutes.astype(int), "proportion_m": proportion_m.astype(float)}
+            {
+                "minutes": minutes.astype(int),
+                "proportion_m": proportion_m.astype(float),
+            },
         )  # type conversion needed for parquet
         self.df_proportion_s = pl.DataFrame(
-            {"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)}
+            {"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)},
         )
 
     def save_data(self) -> None:
@@ -269,7 +273,7 @@ class DataProcessor:
         save_folder.mkdir(parents=True, exist_ok=True)
         logger.info("Saving df_interactions")
         self.df_interactions.write_parquet(
-            "data/processed/processed_interactions.parquet"
+            "data/processed/processed_interactions.parquet",
         )
         logger.info("Done \n Saving df_recipes")
         self.df_recipes.write_parquet("data/processed/processed_recipes.parquet")

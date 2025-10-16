@@ -19,7 +19,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # Distribution du nombre de reviews par utilisateur
     st.subheader("Distribution du nombre de reviews par utilisateur")
     reviews_per_user = df_interactions.group_by("user_id").agg(
-        pl.count().alias("nb_reviews")
+        pl.len().alias("nb_reviews"),
     )
 
     fig, ax = plt.subplots()
@@ -61,7 +61,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     fig, ax = plt.subplots()
     sns.barplot(
-        x=user_categories.index, y=user_categories.values, ax=ax, palette="Blues_r"
+        x=user_categories.index,
+        y=user_categories.values,
+        ax=ax,
+        palette="Blues_r",
     )
     plt.xticks(rotation=25)
     st.pyplot(fig)
@@ -70,12 +73,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.subheader("Moyenne des notes par utilisateur")
     df_user_stats = df_interactions.group_by("user_id").agg(
         [
-            pl.count().alias("nb_reviews"),
+            pl.len().alias("nb_reviews"),
             pl.col("rating").mean().alias("mean_rating"),
-        ]
+        ],
     )
     fig, ax = plt.subplots()
     sns.scatterplot(
-        data=df_user_stats.to_pandas(), x="nb_reviews", y="mean_rating", ax=ax
+        data=df_user_stats.to_pandas(),
+        x="nb_reviews",
+        y="mean_rating",
+        ax=ax,
     )
     st.pyplot(fig)
