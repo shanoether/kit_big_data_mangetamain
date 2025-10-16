@@ -5,9 +5,10 @@ rating data. It includes operations like extracting year information from
 dates and preparing data for visualization.
 """
 
-from pathlib import Path
 import zipfile
 import polars as pl
+import numpy as np
+from pathlib import Path
 
 from mangetamain.utils.logger import get_logger
 
@@ -35,8 +36,9 @@ class DataProcessor:
     def load_data(self):
         """Load data from csv or zip files into Polars DataFrames.
 
-        Returns:
-            Tuple of interactions and recipes dataframes
+        Args:
+            path_interactions: Path to the interactions zip file
+            path_recipes: Path to the recipes zip file
         """
         
         # Check if CSV files exist, otherwise look for ZIP files
@@ -63,72 +65,77 @@ class DataProcessor:
                 logger.info(f"Interactions loaded successfully | Data shape: {df_interactions.shape}.")
             with open(self.path_recipes, 'rb') as f:
                 df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
+                df_recipes = df_recipes.rename({"id": "recipe_id"})
                 logger.info(f"Recipes loaded successfully | Data shape: {df_recipes.shape}.")
         except Exception as e:
             logger.error(f"Error loading CSV files: {e}")
             raise   
         
         return df_interactions, df_recipes
-
-
-    def add_year_column(self) -> tuple[pl.DataFrame, pl.DataFrame]:
-        """Extract year from date columns for both dataframes.
-
-        Returns:
-            Tuple of updated interactions and recipes dataframes
-        """
-        logger.info("Adding year column to interactions and recipes dataframes.")
-        self.interactions = self.interactions.with_columns(
-            year=pl.col("date").dt.year(),
-        )
-        self.recipes = self.recipes.with_columns(year=pl.col("submitted").dt.year())
-        logger.info("Year column added to interactions and recipes dataframes.")
-        return self.interactions, self.recipes
     
     
     def drop_na(self) -> None:
         self.df_interactions = self.df_interactions.filter(~self.df_interactions["review"].is_null())
         logger.info(f"Interactions after dropping NA | Data shape: {self.df_interactions.shape}.")
-        self.df_recipes = self.df_recipes.filter((self.df_recipes["minutes"] < 60*24*365) & (self.df_recipes["minutes"] == 0))
+        self.df_recipes_nna = self.df_recipes.filter((self.df_recipes["minutes"] < 60*24*365) & (self.df_recipes["minutes"] == 0))
         logger.info(f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}.")
-        self.df_recipes = self.df_recipes.filter(self.df_recipes["n_steps"] > 0)
+        self.df_recipes_nna = self.df_recipes.filter(self.df_recipes["n_steps"] > 0)
         logger.info(f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}.")
 
     def split_minutes(self) -> None:
         """Split recipes into short, medium, and long based on preparation time."""
-        self.df_recipes_short = self.df_recipes.filter(self.df_recipes["minutes"] <= 100)
-        self.df_recipes_medium = self.df_recipes.filter((self.df_recipes["minutes"] > 100) & (self.df_recipes["minutes"] <= 60 * 48))
-        self.df_recipes_long = self.df_recipes.filter(self.df_recipes["minutes"] > 60 * 48)
+        self.df_recipes_nna_short = self.df_recipes_nna.filter(self.df_recipes_nna["minutes"] <= 100)
+        self.df_recipes_nna_medium = self.df_recipes_nna.filter((self.df_recipes_nna["minutes"] > 100) & (self.df_recipes_nna["minutes"] <= 60 * 48))
+        self.df_recipes_nna_long = self.df_recipes_nna.filter(self.df_recipes_nna["minutes"] > 60 * 48)
         logger.info(
-            f"Recipes split into short ({self.df_recipes_short.shape}), "
-            f"medium ({self.df_recipes_medium.shape}), "
-            f"and long ({self.df_recipes_long.shape}).",
+            f"Recipes split into short ({self.df_recipes_nna_short.shape}), "
+            f"medium ({self.df_recipes_nna_medium.shape}), "
+            f"and long ({self.df_recipes_nna_long.shape}).",
         )
     
     def merge_data(self) -> None:
         """Merge interactions with recipes on recipe_id."""
-        self.df_recipes = self.df_recipes.rename({"id": "recipe_id"})
-        self.df_recipes_short = self.df_recipes_short.rename({"id": "recipe_id"})
-        self.df_recipes_medium = self.df_recipes_medium.rename({"id": "recipe_id"})
-        self.df_recipes_long = self.df_recipes_long.rename({"id": "recipe_id"})
-
         self.total = self.df_interactions.join(
-            self.df_recipes, left_on="recipe_id", right_on="recipe_id", how="inner"
+            self.df_recipes_nna, left_on="recipe_id", right_on="recipe_id", how="inner"
         )
         self.total_short = self.df_interactions.join(
-            self.df_recipes_short, left_on="recipe_id", right_on="recipe_id", how="inner"
+            self.df_recipes_nna_short, left_on="recipe_id", right_on="recipe_id", how="inner"
         )
         self.total_medium = self.df_interactions.join(
-            self.df_recipes_medium, left_on="recipe_id", right_on="recipe_id", how="inner"
+            self.df_recipes_nna_medium, left_on="recipe_id", right_on="recipe_id", how="inner"
         )
         self.total_long = self.df_interactions.join(
-            self.df_recipes_long, left_on="recipe_id", right_on="recipe_id", how="inner"
+            self.df_recipes_nna_long, left_on="recipe_id", right_on="recipe_id", how="inner"
         )
         logger.info(f"Merged data shape: {self.total.shape}.")
         logger.info(f"Merged short recipes data shape: {self.total_short.shape}.")
         logger.info(f"Merged medium recipes data shape: {self.total_medium.shape}.")
         logger.info(f"Merged long recipes data shape: {self.total_long.shape}.")
-        
+
+    def compute_proportions(self) -> None:
+        #minutes = np.array(sorted(self.df_recipes_nna_court["minutes"].unique()))
+        minutes = np.array(sorted(self.df_recipes_nna_short["minutes"].unique()))
+        proportion_m = [0 for m in minutes]
+        for m in range(len(minutes)):
+            #comptes = self.df_total_court.filter(pl.col("minutes") == minutes[m])["rating"].value_counts().sort("rating")
+            comptes = self.total_short.filter(pl.col("minutes") == minutes[m])["rating"].value_counts().sort("rating")
+            proportion_m[m] = (comptes.filter(pl.col("rating") == 5) / comptes.sum())[0,1]
+        #proportion_m = pl.Series(np.array(proportion_m))
+        proportion_m = np.array(proportion_m)
+
+        #steps = np.array(sorted(self.df_recipes_nna[self.df_recipes_nna["n_steps"] <= 40].n_steps.unique()))
+        steps = np.array(sorted(self.df_recipes_nna.filter(pl.col("n_steps") <= 40).select(pl.col("n_steps")).unique().to_series().to_list()))
+        proportion_s = [0 for m in steps]
+        for m in range(len(steps)):
+            comptes = self.total.filter(pl.col("n_steps") == steps[m])["rating"].value_counts().sort("rating")
+            #proportion_s[m] = (comptes[5] / comptes.sum())[0,1]
+            proportion_s[m] = (comptes.filter(pl.col("rating") == 5) / comptes.sum())[0,1] # Sometimes missing ratings so fetching index 5 is out of bound
+        #proportion_s = pl.Series(np.array(proportion_s))
+        proportion_s = np.array(proportion_s)
+
+
+        self.df_proportion_m = pl.DataFrame({"minutes": minutes.astype(int), "proportion_m": proportion_m.astype(float)}) # type conversion needed for parquet
+        self.df_proportion_s = pl.DataFrame({"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)})
 
 
     def save_data(self) -> None:
@@ -139,6 +146,12 @@ class DataProcessor:
         save_folder.mkdir(parents=True, exist_ok=True)
         self.df_interactions.write_parquet("data/processed/processed_interactions.parquet")
         self.df_recipes.write_parquet("data/processed/processed_recipes.parquet")
+        self.total.write_parquet("data/processed/total.parquet")
+        self.total_short.write_parquet("data/processed/short.parquet")
+        #self.df_recipes_nna_medium.write_parquet("data/processed/medium.parquet")
+        #self.df_recipes_nna_long.write_parquet("data/processed/long.parquet")
+        self.df_proportion_m.write_parquet("data/processed/proportion_m.parquet")
+        self.df_proportion_s.write_parquet("data/processed/proportion_s.parquet")
         logger.info("Processed data saved to parquet files.")
 
 if __name__ == "__main__":
@@ -146,5 +159,6 @@ if __name__ == "__main__":
     processor.drop_na()
     processor.split_minutes()
     processor.merge_data()
+    processor.compute_proportions()
     processor.save_data()
     logger.info("Data processing completed.")
