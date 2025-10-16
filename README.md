@@ -1,5 +1,5 @@
 # Kit Big Data: Mangetamain
-``
+
 ## How to run this project
 
 1. Set up the environment (I recommend to use UV and that's what I did)

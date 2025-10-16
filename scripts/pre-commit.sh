@@ -5,7 +5,7 @@ uv sync --group dev
 
 
 
-# Run pyment once (if no file added)
+# Run pyment once (if no file added) or ask copilot to add docstring to modified files
 # Pyment write direclty into your files -> commit before running
 uv run pyment -w -o google src/
 

@@ -1,27 +1,27 @@
-import streamlit as st
-import pandas as pd
-import polars as pl
-import numpy as np
+"""Rating analysis page of the Streamlit app."""
+
 import matplotlib.pyplot as plt
+import polars as pl
 import seaborn as sns
+import streamlit as st
 
 st.set_page_config(
     page_title="Rating Analysis",
     page_icon="🍳",
-    layout="centered",    
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
 st.title("Rating")
 
-if 'data_loaded' in st.session_state and st.session_state.data_loaded:
+if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions
     df_total = st.session_state.df_total
     df_total_court = st.session_state.df_total_court
     proportion_m = st.session_state.proportion_m
     proportion_s = st.session_state.proportion_s
-        
+
     st.subheader("📊 Data Preview")
-    
+
     # show first 10 rows of dataframe
     st.write("**Data from session_state:**")
     st.dataframe(df_interactions.head(10))
@@ -29,24 +29,27 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
 
     # draw histogram of ratings
     st.subheader("📈 Rating Distribution")
-    st.bar_chart(df_interactions['rating'].value_counts())
+    st.bar_chart(df_interactions["rating"].value_counts())
 
     # draw boxplot of ratings
     st.subheader("📊 Rating Boxplot")
 
     fig, ax = plt.subplots()
-    ax.boxplot(df_interactions['rating'].drop_nans(), vert=True)
+    ax.boxplot(df_interactions["rating"].drop_nans(), vert=True)
     ax.set_title("Boxplot of Ratings")
     ax.set_ylabel("Values")
-
 
     # Show in Streamlit
     st.pyplot(fig)
 
     # Visualisation distribution des recettes par review
-    reviews_per_recipe = reviews_per_recipe = (df_interactions.group_by("recipe_id").agg(pl.count().alias("review_count")))
+    reviews_per_recipe = df_interactions.group_by("recipe_id").agg(
+        pl.count().alias("review_count")
+    )
     fig, ax = plt.subplots()
-    sns.histplot(reviews_per_recipe, bins=30, log_scale=(False, True), ax=ax)  # échelle log pour mieux visualiser
+    sns.histplot(
+        reviews_per_recipe, bins=30, log_scale=(False, True), ax=ax
+    )  # échelle log pour mieux visualiser
     ax.set_title("Distribution du nombre de reviews par recette")
     ax.set_xlabel("Nombre de reviews")
     ax.set_ylabel("Nombre de recettes (échelle log)")
@@ -74,12 +77,18 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
 
     # Filter DataFrame based on slider
     filtered_interactions = df_interactions.filter(
-        (pl.col("date").dt.year() >= year_range[0]) & (pl.col("date").dt.year() <= year_range[1]),
+        (pl.col("date").dt.year() >= year_range[0])
+        & (pl.col("date").dt.year() <= year_range[1]),
     )
 
     # Time evolution of ratings (filtered)
     fig_year, ax_year = plt.subplots()
-    sns.histplot(x=filtered_interactions["date"].dt.year(), hue=filtered_interactions["rating"], discrete=True, shrink=0.8)
+    sns.histplot(
+        x=filtered_interactions["date"].dt.year(),
+        hue=filtered_interactions["rating"],
+        discrete=True,
+        shrink=0.8,
+    )
     sns.despine()
     ax_year.set_title("Time evolution of ratings")
     ax_year.set_xlabel("Year")
@@ -108,9 +117,9 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     ax1.set_title("Ratings by Preparation Time")
     ax1.set_xlabel("Preparation Time (minutes)")
     ax1.set_ylabel("Count by rating")
-    ax2.set_ylim((0,1))
-    #ax2.plot(proportion_m.rolling(window=rolling_range_time).mean())# pandas
-    ax2.plot(proportion_m.rolling_mean(rolling_range_time)) # polars
+    ax2.set_ylim((0, 1))
+    # ax2.plot(proportion_m.rolling(window=rolling_range_time).mean())# pandas
+    ax2.plot(proportion_m.rolling_mean(rolling_range_time))  # polars
     ax2.set_title("Proportion of 5-star Ratings vs Preparation Time")
     ax2.set_xlabel("Preparation Time (minutes)")
     ax2.set_ylabel("Proportion of 5-star Ratings")
@@ -136,20 +145,26 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     )
 
     fig_steps, (ax3, ax4) = plt.subplots(1, 2, figsize=(14, 5))
-    sns.histplot(df_total.filter(pl.col("n_steps") <= 40), x="n_steps", hue="rating", bins=20, ax=ax3)
+    NB_STEPS_MAX = 40
+    sns.histplot(
+        df_total.filter(pl.col("n_steps") <= NB_STEPS_MAX),
+        x="n_steps",
+        hue="rating",
+        bins=20,
+        ax=ax3,
+    )
     ax3.set_title("Ratings by Number of Steps")
     ax3.set_xlabel("Number of Steps")
     ax3.set_ylabel("Count by rating")
-    ax4.set_ylim((0,1))
+    ax4.set_ylim((0, 1))
     # ax4.plot(proportion_s.rolling(window=rolling_range_steps).mean())# pandas
-    ax4.plot(proportion_s.rolling_mean(rolling_range_steps)) # polars
+    ax4.plot(proportion_s.rolling_mean(rolling_range_steps))  # polars
     ax4.set_title("Proportion of 5-star Ratings vs Number of Steps")
     ax4.set_xlabel("Number of Steps")
     ax4.set_ylabel("Proportion of 5-star Ratings")
     ax4.grid()
     sns.despine()
     st.pyplot(fig_steps)
-            
+
 else:
     st.error("❌ Data not loaded properly. Please refresh the page.")
-

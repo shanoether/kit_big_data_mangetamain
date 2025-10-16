@@ -1,9 +1,9 @@
-
 """Generate the code reference pages and navigation."""
 
 from pathlib import Path
 
 import mkdocs_gen_files
+from numpy import mod
 
 nav = mkdocs_gen_files.Nav()
 
@@ -25,6 +25,11 @@ for path in sorted(src.rglob("*.py")):
     # Skip empty parts (happens with top-level __init__.py)
     if not parts:
         continue
+    
+    # Skip pages folder
+    if "pages" in str(full_doc_path):
+        continue
+
 
     nav[parts] = doc_path.as_posix()
 
