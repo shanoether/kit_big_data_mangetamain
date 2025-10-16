@@ -51,6 +51,7 @@ class DataProcessor:
             zf.open(zf.namelist()[0]) as f,
         ):  # assuming only one file inside
             self.df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
+        self.df_recipes = self.df_recipes.rename({"id": "recipe_id"})
         logger.info(
             f"Recipes loaded successfully | Data shape: {self.df_recipes.shape}.",
         )
@@ -76,7 +77,6 @@ class DataProcessor:
     
     def merge_data(self) -> None:
         """Merge interactions with recipes on recipe_id."""
-        self.df_recipes = self.df_recipes.rename({"id": "recipe_id"})
         self.total = self.df_interactions.join(
             self.df_recipes, left_on="recipe_id", right_on="recipe_id", how="inner"
         )
