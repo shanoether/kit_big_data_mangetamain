@@ -1,0 +1,40 @@
+# Ignore Python cache & build files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.whl
+*.egg-info
+*.egg
+build/
+dist/
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore data & notebooks (large, not needed in container)
+data/
+notebook/
+
+# Ignore logs
+logs/
+
+# Ignore version control & docs
+.git/
+.gitignore
+docs/
+LICENSE
+
+# Ignore editor/OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore Docker and script files not needed in container
+docker-compose.yaml
+scripts/
+docs/
+ISSUE_TEMPLATE

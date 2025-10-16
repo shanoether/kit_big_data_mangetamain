@@ -129,3 +129,7 @@ class RotLogger(BaseLogger):
 
         return log_path, file_handler
     
+
+logger = RotLogger("app")
+def get_logger() -> RotLogger:
+    return logger

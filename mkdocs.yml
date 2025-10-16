@@ -1,0 +1,32 @@
+site_name: Mangetamain - Kit Big data
+site_url: http://localhost:8501
+repo_url: https://github.com/shanoether/kit_big_data_mangetamain
+theme:
+  name: material
+nav:
+  - Code Reference: reference/
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - scripts/gen_ref_pages.py
+  - section-index
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["src"]
+          options:
+            docstring_style: google
+            show_source: true
+            separate_signature: true
+  - literate-nav:
+      nav_file: SUMMARY.md
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences        # <- needed for ::: blocks
+  - pymdownx.highlight
+watch:
+  - src

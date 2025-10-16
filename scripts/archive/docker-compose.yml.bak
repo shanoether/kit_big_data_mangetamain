@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mangetamain:latest
+    volumes:
+      - ./data:/app/data
+    command: ["uv", "run" ,"src/mangetamain/backend/data_processor.py"]
+    restart: "no"
+
+  frontend:
+    image: mangetamain:latest
+    depends_on:
+      - backend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    command: ["uv", "run","streamlit", "run", "src/mangetamain/streamlit_ui.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false

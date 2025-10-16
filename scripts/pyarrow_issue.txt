@@ -1,0 +1,8 @@
+modify pyproject.py
+[tool.uv]
+python = "3.12.*"
+
+uv venv --recreate
+export UV_PIP_ONLY_BINARY=":all:"   # or PIP_ONLY_BINARY
+uv add "pyarrow>=16,<18" --no-sync  # if you need it
+uv sync
