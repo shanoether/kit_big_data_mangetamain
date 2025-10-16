@@ -1,0 +1,32 @@
+# Common base image variables
+ARG PYTHON_VERSION=3.12
+ARG BASE_IMAGE=python:${PYTHON_VERSION}-slim
+
+# -------------------------
+# Generic
+# -------------------------
+FROM ${BASE_IMAGE} AS mangetamain
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+
+# Minimal runtime system dependencies 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependencies
+RUN pip install uv
+COPY pyproject.toml uv.lock README.md ./
+RUN uv sync --frozen --no-dev
+
+# Copy source code
+COPY . . 
+
+# Create mountpoint for processed data
+RUN mkdir -p /app/data
+ENV PYTHONPATH=/app
+
+# Default entrypoint runs the data processor module
+#ENTRYPOINT ["python", "-u", "-m", "mangetamain.backend.data_processor"]
+#CMD ["uv", "run" ,"src/mangetamain/backend/data_processor.py"]

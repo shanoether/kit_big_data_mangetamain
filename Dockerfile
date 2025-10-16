@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
-RUN pip install uv
+RUN pip install --no-cache-dir uv
 
 # Set work directory
 WORKDIR /app
@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
-RUN pip install uv
+RUN pip install --no-cache-dir uv
 
 # Set work directory
 WORKDIR /app
@@ -59,7 +59,7 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application code
 COPY --from=builder /app/src /app/src
 
-RUN uv sync
+#RUN uv sync
 
 # Expose port
 EXPOSE 8501
