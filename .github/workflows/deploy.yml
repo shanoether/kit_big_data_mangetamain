@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [ co/feature/docker ]
+    branches: [ main ]
 
 jobs:
   build-deploy:
