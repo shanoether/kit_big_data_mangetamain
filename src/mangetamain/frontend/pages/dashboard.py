@@ -11,7 +11,7 @@ st.set_page_config(
 )
 st.sidebar.success("Select a page to navigate.")
 
-st.title("Mangetamain 🏠 v1.4")
+st.title("Mangetamain 🏠 v1.5")
 
 st.write("Welcome to the main page!")
 st.write("Use the sidebar to navigate to different sections of the app.")

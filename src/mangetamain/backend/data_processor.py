@@ -114,6 +114,7 @@ class DataProcessor:
 
     def compute_proportions(self) -> None:
         #minutes = np.array(sorted(self.df_recipes_nna_court["minutes"].unique()))
+        logger.info("Computing proportions of 5-star ratings by minutes")
         minutes = np.array(sorted(self.df_recipes_nna_short["minutes"].unique()))
         proportion_m = [0 for m in minutes]
         for m in range(len(minutes)):
@@ -124,6 +125,7 @@ class DataProcessor:
         proportion_m = np.array(proportion_m)
 
         #steps = np.array(sorted(self.df_recipes_nna[self.df_recipes_nna["n_steps"] <= 40].n_steps.unique()))
+        logger.info("Computing proportions of 5-star ratings by steps")
         steps = np.array(sorted(self.df_recipes_nna.filter(pl.col("n_steps") <= 40).select(pl.col("n_steps")).unique().to_series().to_list()))
         proportion_s = [0 for m in steps]
         for m in range(len(steps)):
@@ -133,7 +135,7 @@ class DataProcessor:
         #proportion_s = pl.Series(np.array(proportion_s))
         proportion_s = np.array(proportion_s)
 
-
+        logger.info("Proportions computed. Loading internally")
         self.df_proportion_m = pl.DataFrame({"minutes": minutes.astype(int), "proportion_m": proportion_m.astype(float)}) # type conversion needed for parquet
         self.df_proportion_s = pl.DataFrame({"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)})
 
@@ -142,17 +144,23 @@ class DataProcessor:
         """
         Save processed dataframes to parquet files.
         """
+        logger.info("Starting to save the data in parquet")
         save_folder = Path("data/processed")
         save_folder.mkdir(parents=True, exist_ok=True)
+        logger.info("Saving df_interactions")
         self.df_interactions.write_parquet("data/processed/processed_interactions.parquet")
+        logger.info("Done \n Saving df_recipes")
         self.df_recipes.write_parquet("data/processed/processed_recipes.parquet")
+        logger.info("Done \n Saving total data")
         self.total.write_parquet("data/processed/total.parquet")
+        logger.info("Done \n Saving total short data")
         self.total_short.write_parquet("data/processed/short.parquet")
         #self.df_recipes_nna_medium.write_parquet("data/processed/medium.parquet")
         #self.df_recipes_nna_long.write_parquet("data/processed/long.parquet")
+        logger.info("Done \n Saving proportions data")
         self.df_proportion_m.write_parquet("data/processed/proportion_m.parquet")
         self.df_proportion_s.write_parquet("data/processed/proportion_s.parquet")
-        logger.info("Processed data saved to parquet files.")
+        logger.info("All processed data saved to parquet files.")
 
 if __name__ == "__main__":
     processor = DataProcessor()
