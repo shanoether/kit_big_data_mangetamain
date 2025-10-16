@@ -5,7 +5,7 @@ uv sync --group dev
 
 
 
-# Run pyment once (if no file added)
+# Run pyment once (if no file added) or ask copilot to add docstring to modified files
 # Pyment write direclty into your files -> commit before running
 uv run pyment -w -o google src/
 
@@ -41,3 +41,10 @@ uv add mkdocs-material
 uv add mkdocs-literate-nav
 
 uv run hatch run docs:serve
+
+# Then install the precommituv install pre-commit
+ uv add pre-commit
+ pre-commit install
+ pre-commit run --all-files
+ # avoid precommit with
+ git commit -nm 'my message'

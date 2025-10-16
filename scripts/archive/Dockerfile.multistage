@@ -35,6 +35,3 @@ RUN mkdir -p /data/processed
 VOLUME ["/data/processed"]
 
 ENTRYPOINT ["python", "-u", "-m", "mangetamain.backend.data_processor"]
-
-
-

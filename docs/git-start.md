@@ -1,4 +1,4 @@
-# Git start 
+# Git start
 
 
 ## SSH configuration
@@ -14,4 +14,4 @@
 - Copy the github address from the repo page
 - Move to your folder: `cd ~/my/porject/folder`
 - Clone: `git clone git@github.com:shanoether/nlp_word_evolution.git`
-- 
+-

@@ -1,11 +1,13 @@
 site_name: Mangetamain - Kit Big data
-site_url: http://localhost:8501
+site_url: http://34.1.14.43:8501/
 repo_url: https://github.com/shanoether/kit_big_data_mangetamain
 theme:
   name: material
 nav:
+  - Home: index.md
   - Code Reference: reference/
 plugins:
+  - include-markdown
   - search
   - gen-files:
       scripts:
