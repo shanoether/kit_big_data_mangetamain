@@ -34,7 +34,8 @@ FROM python:3.12-slim AS production
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PATH=".venv/bin:$PATH"
+    PATH=".venv/bin:$PATH" \
+    PYTHONPATH=/app/src
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
