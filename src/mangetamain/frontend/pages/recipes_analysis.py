@@ -44,19 +44,14 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         )
     )
 
-    top_recipes_df = top_recipes.to_pandas()
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=top_recipes_df,
+        data=top_recipes.to_pandas(),
         x="nb_reviews",
         y="name",
         palette="viridis",
-        hue="name",
-        dodge=False,
         ax=ax,
     )
-    if ax.get_legend() is not None:
-        ax.get_legend().remove()
     st.pyplot(fig)
 
     # Moyenne des notes
@@ -81,17 +76,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         .head(nb_recettes)
     )
 
-    filtered_df = filtered.to_pandas()
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=filtered_df,
+        data=filtered.to_pandas(),
         x="mean_rating",
         y="name",
         ax=ax,
         palette="crest",
-        hue="name",
-        dodge=False,
     )
-    if ax.get_legend() is not None:
-        ax.get_legend().remove()
     st.pyplot(fig)
