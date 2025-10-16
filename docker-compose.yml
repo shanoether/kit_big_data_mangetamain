@@ -7,7 +7,7 @@ services:
       - /opt/app/data:/app/data     # map local data folder
       - /opt/app/logs:/app/logs     # map logs folder
     environment:
-      - PYTHONPATH=/opt/app/src
+      - PYTHONPATH=/app/src
 
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
@@ -28,4 +28,4 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
     environment:
       - PORT=8501
-      - PYTHONPATH=/opt/app/src
+      - PYTHONPATH=/app/src
