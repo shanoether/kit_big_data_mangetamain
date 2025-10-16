@@ -2,6 +2,8 @@
 __pycache__/
 *.py[codz]
 *$py.class
+data/
+secrets.txt
 
 # C extensions
 *.so
