@@ -8,6 +8,7 @@ dates and preparing data for visualization.
 from pathlib import Path
 import zipfile
 
+import numpy as np
 import polars as pl
 
 from mangetamain.utils.logger import get_logger
@@ -93,6 +94,26 @@ class DataProcessor:
         logger.info(f"Merged medium recipes data shape: {self.total_medium.shape}.")
         logger.info(f"Merged long recipes data shape: {self.total_long.shape}.")
 
+    def compute_proportions(self) -> None:
+        minutes = np.array(sorted(self.df_recipes_court["minutes"].unique()))
+        proportion_m = [0 for m in minutes]
+        for m in range(len(minutes)):
+            comptes = self.df_total_court.filter(pl.col("minutes") == minutes[m])["rating"].value_counts().sort("rating")
+            proportion_m[m] = (comptes[5] / comptes.sum())[0,1]
+        proportion_m = pl.Series(np.array(proportion_m))
+
+        steps = np.array(sorted(self.df_recipes[self.df_recipes["n_steps"] <= 40].n_steps.unique()))
+        proportion_s = [0 for m in steps]
+        for m in range(len(steps)):
+            comptes = self.df_total.filter(pl.col("n_steps") == steps[m])["rating"].value_counts().sort("rating")
+            proportion_s[m] = (comptes[5] / comptes.sum())[0,1]
+        proportion_s = pl.Series(np.array(proportion_s))
+
+        self.minutes = minutes
+        self.proportion_m = proportion_m
+        self.steps = steps
+        self.proportion_s = proportion_s
+
     def save_data(self) -> None:
         """
         Save processed dataframes to parquet files.
@@ -109,4 +130,5 @@ if __name__ == "__main__":
     processor.split_minutes()
     processor.merge_data()
     processor.save_data()
+    processor.compute_proportions()
     logger.info("Data processing completed.")
