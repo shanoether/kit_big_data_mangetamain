@@ -35,7 +35,17 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     ax.set_title("Boxplot of Ratings")
     ax.set_ylabel("Values")
 
+
     # Show in Streamlit
+    st.pyplot(fig)
+
+    # Visualisation distribution des recettes par review
+    reviews_per_recipe = reviews_per_recipe = (df_interactions.group_by("recipe_id").agg(pl.count().alias("review_count")))
+    fig, ax = plt.subplots()
+    sns.histplot(reviews_per_recipe, bins=30, log_scale=(False, True), ax=ax)  # échelle log pour mieux visualiser
+    ax.set_title("Distribution du nombre de reviews par recette")
+    ax.set_xlabel("Nombre de reviews")
+    ax.set_ylabel("Nombre de recettes (échelle log)")
     st.pyplot(fig)
 
     st.header("Time Evolution of Ratings")

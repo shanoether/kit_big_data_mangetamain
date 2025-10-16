@@ -38,19 +38,39 @@ class DataProcessor:
         Returns:
             Tuple of interactions and recipes dataframes
         """
-        with (
-            zipfile.ZipFile(self.path_interactions) as zf,
-            zf.open(zf.namelist()[0]) as f,
-        ):  # assuming only one file inside
-            df_interactions = pl.read_csv(f, schema_overrides={"date": pl.Datetime})
+        # Interactions: accept either .zip (original expectation) or raw .csv
+        if self.path_interactions.exists():
+            if self.path_interactions.suffix == ".zip":
+                with zipfile.ZipFile(self.path_interactions) as zf:
+                    with zf.open(zf.namelist()[0]) as f:
+                        df_interactions = pl.read_csv(f, schema_overrides={"date": pl.Datetime})
+            else:
+                # plain file (csv)
+                df_interactions = pl.read_csv(self.path_interactions, schema_overrides={"date": pl.Datetime})
+        else:
+            # try fallback to same name without .zip (e.g. data/raw/RAW_interactions.csv)
+            fallback = Path(str(self.path_interactions).rstrip('.zip'))
+            if fallback.exists():
+                df_interactions = pl.read_csv(fallback, schema_overrides={"date": pl.Datetime})
+            else:
+                raise FileNotFoundError(f"Could not find interactions file: {self.path_interactions} or {fallback}")
         logger.info(
             f"Interactions loaded successfully | Data shape: {df_interactions.shape}.",
         )
-        with (
-            zipfile.ZipFile(self.path_recipes) as zf,
-            zf.open(zf.namelist()[0]) as f,
-        ):  # assuming only one file inside
-            df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
+        # Recipes: accept either .zip or .csv
+        if self.path_recipes.exists():
+            if self.path_recipes.suffix == ".zip":
+                with zipfile.ZipFile(self.path_recipes) as zf:
+                    with zf.open(zf.namelist()[0]) as f:
+                        df_recipes = pl.read_csv(f, schema_overrides={"submitted": pl.Datetime})
+            else:
+                df_recipes = pl.read_csv(self.path_recipes, schema_overrides={"submitted": pl.Datetime})
+        else:
+            fallback = Path(str(self.path_recipes).rstrip('.zip'))
+            if fallback.exists():
+                df_recipes = pl.read_csv(fallback, schema_overrides={"submitted": pl.Datetime})
+            else:
+                raise FileNotFoundError(f"Could not find recipes file: {self.path_recipes} or {fallback}")
         logger.info(
             f"Recipes loaded successfully | Data shape: {df_recipes.shape}.",
         )
