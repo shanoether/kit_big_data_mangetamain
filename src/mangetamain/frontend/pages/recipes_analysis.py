@@ -31,7 +31,7 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
         .agg(pl.count().alias("nb_reviews"))
         .sort("nb_reviews", descending=True)
         .head(nb_recettes)
-        .join(df_recipes.select(["id", "name"]), left_on="recipe_id", right_on="id", how="left")
+        .join(df_recipes.select(["recipe_id", "name"]), left_on="recipe_id", right_on="id", how="left")
     )
 
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -48,7 +48,7 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
             pl.count().alias("nb_reviews")
         ])
         .filter(pl.col("nb_reviews") >= 5)
-        .join(df_recipes.select(["id", "name"]), left_on="recipe_id", right_on="id", how="left")
+        .join(df_recipes.select(["recipe_id", "name"]), left_on="recipe_id", right_on="recipe_id", how="left")
         .sort("mean_rating", descending=False)
         .head(nb_recettes)
     )

@@ -35,8 +35,9 @@ class DataProcessor:
     def load_data(self):
         """Load data from csv or zip files into Polars DataFrames.
 
-        Returns:
-            Tuple of interactions and recipes dataframes
+        Args:
+            path_interactions: Path to the interactions zip file
+            path_recipes: Path to the recipes zip file
         """
         
         # Check if CSV files exist, otherwise look for ZIP files
@@ -147,4 +148,5 @@ if __name__ == "__main__":
     processor.split_minutes()
     processor.merge_data()
     processor.save_data()
+    processor.compute_proportions()
     logger.info("Data processing completed.")
