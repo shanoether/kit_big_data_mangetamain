@@ -32,6 +32,14 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     reviews_per_user_pd = reviews_per_user.to_pandas()
 
     def categorize_user(n):
+        """
+
+        Args:
+          n: 
+
+        Returns:
+
+        """
         if n == 1:
             return "Occasionnel (1 review)"
         elif n <= 5:

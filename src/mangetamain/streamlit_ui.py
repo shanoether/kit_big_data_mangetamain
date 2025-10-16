@@ -19,6 +19,7 @@ def load_data_from_parquet():
     logger.info("Data loaded into session state.")
 
 def main():
+    """ """
 
     if 'data_loaded' not in st.session_state:
         with st.spinner("🔄 Loading application data..."):

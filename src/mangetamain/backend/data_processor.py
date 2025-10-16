@@ -37,8 +37,11 @@ class DataProcessor:
         """Load data from csv or zip files into Polars DataFrames.
 
         Args:
-            path_interactions: Path to the interactions zip file
-            path_recipes: Path to the recipes zip file
+          path_interactions: Path to the interactions zip file
+          path_recipes: Path to the recipes zip file
+
+        Returns:
+
         """
         
         # Check if CSV files exist, otherwise look for ZIP files
@@ -75,6 +78,7 @@ class DataProcessor:
     
     
     def drop_na(self) -> None:
+        """ """
         self.df_interactions = self.df_interactions.filter(~self.df_interactions["review"].is_null())
         logger.info(f"Interactions after dropping NA | Data shape: {self.df_interactions.shape}.")
         self.df_recipes_nna = self.df_recipes.filter((self.df_recipes["minutes"] < 60*24*365) & (self.df_recipes["minutes"] == 0))
@@ -113,6 +117,7 @@ class DataProcessor:
         logger.info(f"Merged long recipes data shape: {self.total_long.shape}.")
 
     def compute_proportions(self) -> None:
+        """ """
         #minutes = np.array(sorted(self.df_recipes_nna_court["minutes"].unique()))
         logger.info("Computing proportions of 5-star ratings by minutes")
         minutes = np.array(sorted(self.df_recipes_nna_short["minutes"].unique()))
@@ -141,9 +146,7 @@ class DataProcessor:
 
 
     def save_data(self) -> None:
-        """
-        Save processed dataframes to parquet files.
-        """
+        """Save processed dataframes to parquet files."""
         logger.info("Starting to save the data in parquet")
         save_folder = Path("data/processed")
         save_folder.mkdir(parents=True, exist_ok=True)

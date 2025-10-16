@@ -37,6 +37,7 @@ dependencies = [
     "mkdocs-material>=9.6.20",
     "mkdocs-literate-nav>=0.6.2",
     "pre-commit>=4.3.0",
+    "pyment>=0.3.3",
 ]
 
 [dependency-groups]

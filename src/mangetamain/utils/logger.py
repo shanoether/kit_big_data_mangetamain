@@ -8,9 +8,7 @@ from logging.handlers import RotatingFileHandler
 
 
 class ColoredFormatter(logging.Formatter):
-    """
-    TODO
-    """
+    """TODO"""
     COLORS = {
         "DEBUG": "\033[0;36m",  # Cyan
         "INFO": "\033[0;32m",  # Green
@@ -21,6 +19,14 @@ class ColoredFormatter(logging.Formatter):
     }
 
     def format(self, record):
+        """
+
+        Args:
+          record: 
+
+        Returns:
+
+        """
         msg = (
             self.COLORS.get(record.levelname, self.COLORS["RESET"]) 
             + super().format(record) 
@@ -31,8 +37,12 @@ class ColoredFormatter(logging.Formatter):
 class BaseLogger:
     """_summary_
     TODO
+
+    Args:
+
     Returns:
-        _type_: _description_
+      _type_: _description_
+
     """
     _instance = None  # Singleton
 
@@ -43,6 +53,15 @@ class BaseLogger:
         return cls._instance
     
     def _init_logger(self, input_name: Path|str = None):
+        """
+
+        Args:
+          input_name: Path|str:  (Default value = None)
+          input_name: Path|str:  (Default value = None)
+
+        Returns:
+
+        """
         self._has_error = False
         self.base_folder = Path("logs")
 
@@ -75,36 +94,102 @@ class BaseLogger:
             self.logger.addHandler(console_handler)
     
     def _setup_handler(self, input_name: Path|str = None) -> tuple[Path, logging.FileHandler]:
+        """
+
+        Args:
+          input_name: Path|str:  (Default value = None)
+          input_name: Path|str:  (Default value = None)
+
+        Returns:
+
+        """
         os.makedirs(self.base_folder, exist_ok=True)
         log_path = self.base_folder / f"{(input_name or "app")}.log"
         file_handler = logging.FileHandler(log_path, encoding="utf-8")
         return log_path, file_handler
 
     def info(self, msg: str):
+        """
+
+        Args:
+          msg: str:
+          msg: str: 
+
+        Returns:
+
+        """
         self.logger.info(msg, stacklevel=2)
 
     def debug(self, msg: str):
+        """
+
+        Args:
+          msg: str:
+          msg: str: 
+
+        Returns:
+
+        """
         self.logger.debug(msg, stacklevel=2)
 
     def warning(self, msg: str):
+        """
+
+        Args:
+          msg: str:
+          msg: str: 
+
+        Returns:
+
+        """
         self.logger.warning(msg, stacklevel=2)
 
     def error(self, msg: str):
+        """
+
+        Args:
+          msg: str:
+          msg: str: 
+
+        Returns:
+
+        """
         self._has_error = True
         self.logger.error(msg, stacklevel=2)
 
     def critical(self, msg: str):
+        """
+
+        Args:
+          msg: str:
+          msg: str: 
+
+        Returns:
+
+        """
         self.logger.critical(msg, stacklevel=2)
 
     def get_log_path(self) -> Path:
+        """ """
         return self.log_path
 
     def has_errors(self) -> bool:
+        """ """
         return self._has_error
 
 
 class TimeLogger(BaseLogger):
+    """ """
     def _setup_handler(self, input_name: Path|str = None) -> tuple[Path, logging.FileHandler]:
+        """
+
+        Args:
+          input_name: Path|str:  (Default value = None)
+          input_name: Path|str:  (Default value = None)
+
+        Returns:
+
+        """
         timestamp = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
         log_dir = self.base_folder / (input_name or "app")
         log_path = log_dir / f"{timestamp}.log"
@@ -115,7 +200,17 @@ class TimeLogger(BaseLogger):
     
     
 class RotLogger(BaseLogger):
+    """ """
     def _setup_handler(self, input_name: Path|str = None) -> tuple[Path, logging.FileHandler]:
+        """
+
+        Args:
+          input_name: Path|str:  (Default value = None)
+          input_name: Path|str:  (Default value = None)
+
+        Returns:
+
+        """
         log_dir = self.base_folder / (input_name or "app")
         log_path = log_dir / f"{(input_name or "app")}.log"
         os.makedirs(log_dir, exist_ok=True)
@@ -132,4 +227,5 @@ class RotLogger(BaseLogger):
 
 logger = RotLogger("app")
 def get_logger() -> RotLogger:
+    """ """
     return logger
