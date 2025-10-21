@@ -23,14 +23,14 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
 
     # Top recettes
     st.subheader("Top recettes les plus commentées")
-    nb_recettes = st.slider("Nombre de recettes à afficher", 5, 30, 30)
-
+    nb_top = st.slider("Nombre de recettes à afficher", 5, 30, 20, key="slider_top_commented")
+    
     top_recipes = (
         df_interactions
         .group_by("recipe_id")
         .agg(pl.count().alias("nb_reviews"))
         .sort("nb_reviews", descending=True)
-        .head(nb_recettes)
+        .head(nb_top)
         .join(df_recipes.select(["id", "name"]), left_on="recipe_id", right_on="id", how="left")
     )
 
@@ -39,7 +39,9 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     st.pyplot(fig)
 
     # Moyenne des notes
-    st.subheader("Recettes les moins biens notéess")
+    st.subheader("Recettes les moins bien notées")
+    nb_worst = st.slider("Nombre de recettes à afficher (worst)", 5, 30, 20, key="slider_worst_rated")
+
     filtered = (
         df_interactions
         .group_by("recipe_id")
@@ -48,11 +50,21 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
             pl.count().alias("nb_reviews")
         ])
         .filter(pl.col("nb_reviews") >= 5)
-        .join(df_recipes.select(["id", "name"]), left_on="recipe_id", right_on="id", how="left")
+        .join(
+            df_recipes.select(["id", "name"]),
+            left_on="recipe_id", right_on="id", how="left"
+        )
         .sort("mean_rating", descending=False)
-        .head(nb_recettes)
+        .head(nb_worst)
     )
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(data=filtered.to_pandas(), x="mean_rating", y="name", ax=ax, palette="crest")
+    sns.barplot(
+        data=filtered.to_pandas(),
+        x="mean_rating", y="name",
+        palette="rocket", ax=ax
+    )
+    ax.set_xlabel("Note moyenne")
+    ax.set_ylabel("Recette")
     st.pyplot(fig)
+
