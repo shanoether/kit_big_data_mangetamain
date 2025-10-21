@@ -14,7 +14,6 @@ st.set_page_config(
 st.title("Rating")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    df_interactions = st.session_state.df_interactions
     df_interactions_nna = st.session_state.df_interactions_nna
     df_total = st.session_state.df_total
     df_total_court = st.session_state.df_total_court
@@ -25,13 +24,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # show first 10 rows of dataframe
     st.write("**Data from session_state:**")
-    st.dataframe(df_interactions.head(10))
-    st.write(f"Shape: {df_interactions.shape}")
+    st.dataframe(df_interactions_nna.head(10))
+    st.write(f"Shape: {df_interactions_nna.shape}")
 
     # draw histogram of ratings
     st.subheader("📈 Rating Distribution")
     fig, ax = plt.subplots()
-    sns.histplot(df_interactions["rating"], discrete=True, shrink=0.8, ax=ax)
+    sns.histplot(df_interactions_nna["rating"], discrete=True, shrink=0.8, ax=ax)
     ax.set_title("Distribution of Ratings")
     ax.set_xlabel("Rating")
     ax.set_ylabel("Count")
@@ -50,9 +49,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.pyplot(fig)
 
     # Visualisation distribution des recettes par review
-    reviews_per_recipe = df_interactions.group_by("recipe_id").agg(
-        pl.len().alias("review_count"),
-    )
+    reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(pl.len().alias("review_count"))
     fig, ax = plt.subplots()
     sns.histplot(
         reviews_per_recipe,
@@ -73,8 +70,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """,
     )
 
-    min_year = df_interactions["date"].dt.year().min()
-    max_year = df_interactions["date"].dt.year().max()
+    min_year = df_interactions_nna["date"].dt.year().min()
+    max_year = df_interactions_nna["date"].dt.year().max()
 
     # Streamlit slider for year selection
     year_range = st.slider(
@@ -86,7 +83,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
 
     # Filter DataFrame based on slider
-    filtered_interactions = df_interactions.filter(
+    filtered_interactions = df_interactions_nna.select(["date", "rating"]).filter(
         (pl.col("date").dt.year() >= year_range[0])
         & (pl.col("date").dt.year() <= year_range[1]),
     )

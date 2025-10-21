@@ -14,19 +14,12 @@ st.set_page_config(
 st.title("Trends")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    df_interactions = st.session_state.df_interactions
+    df_interactions = st.session_state.df_interactions_nna
 
     # Parsing des dates
     df_interaction = df_interactions.with_columns(
-        [
-            pl.col("date").alias("date_parsed"),
-        ],
-    )
-    df_interaction = df_interaction.with_columns(
-        [
-            pl.col("date_parsed").dt.year().alias("year"),
-            pl.col("date_parsed").dt.month().alias("month"),
-        ],
+        [pl.col("date_").dt.year().alias("year"),
+        pl.col("date_").dt.month().alias("month")],
     )
 
     # Évolution des notes moyennes
@@ -38,7 +31,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     fig, ax = plt.subplots()
     sns.lineplot(
-        data=mean_by_year.to_pandas(),
+        data=mean_by_year,
         x="year",
         y="mean_rating",
         marker="o",
@@ -55,7 +48,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     fig, ax = plt.subplots()
     sns.lineplot(
-        data=monthly_counts.to_pandas(),
+        data=monthly_counts,
         x="month",
         y="nb_reviews",
         hue="year",

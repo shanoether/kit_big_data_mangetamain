@@ -165,6 +165,11 @@ class DataProcessor:
         Produces ``total`` tables for each duration bucket that are used to
         compute rating proportions and other aggregates.
         """
+        self.total_nt = self.df_interactions.join(
+            self.df_recipes,
+            on="recipe_id",
+            how="inner",
+        )
         self.total = self.df_interactions_nna.join(
             self.df_recipes_nna,
             on="recipe_id",
@@ -240,6 +245,7 @@ class DataProcessor:
         self.df_recipes.write_parquet("data/processed/initial_recipes.parquet")
         self.df_recipes_nna.write_parquet("data/processed/processed_recipes.parquet")
         logger.info("Done \n Saving total data")
+        self.total_nt.write_parquet("data/processed/total_nt.parquet")
         self.total.write_parquet("data/processed/total.parquet")
         logger.info("Done \n Saving total short data")
         self.total_short.write_parquet("data/processed/short.parquet")

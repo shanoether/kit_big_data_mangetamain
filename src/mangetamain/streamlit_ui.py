@@ -37,6 +37,9 @@ def load_data_from_parquet() -> None:
     st.session_state.df_recipes_nna = load_parquet_with_progress(
         "data/processed/processed_recipes.parquet",
     )
+    st.session_state.df_total_nt = load_parquet_with_progress(
+        "data/processed/total_nt.parquet",
+    )
     st.session_state.df_total = load_parquet_with_progress(
         "data/processed/total.parquet",
     )

@@ -14,7 +14,7 @@ st.set_page_config(
 st.title("Users Analysis")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    df_interactions = st.session_state.df_interactions
+    df_interactions = st.session_state.df_interactions_nna
 
     # Distribution du nombre de reviews par utilisateur
     st.subheader("Distribution du nombre de reviews par utilisateur")
