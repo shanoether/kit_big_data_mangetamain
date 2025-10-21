@@ -60,6 +60,9 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application code
 COPY --from=builder /app/src /app/src
 
+# Download spacy English model (need to add uv add pip first)
+RUN uv run -- spacy download es_core_news_md
+
 #RUN uv sync
 
 # Expose port

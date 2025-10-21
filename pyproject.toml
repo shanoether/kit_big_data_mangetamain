@@ -39,6 +39,10 @@ dependencies = [
     "pre-commit>=4.3.0",
     "pyment>=0.3.3",
     "mkdocs-include-markdown-plugin>=7.2.0",
+    "spacy>=3.8.7",
+    "matplotlib-venn>=1.1.2",
+    "wordcloud>=1.9.4",
+    "pip>=25.2",
 ]
 
 [dependency-groups]
@@ -89,8 +93,8 @@ docs-cov = "interrogate -c pyproject.toml"
 
 # To build the library in wheel. - example
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
-include = ["src/**/*"]
+packages = ["src/mangetamain"]
+include = ["src/mangetamain/**/*"]
 
 [tool.hatch.envs.default.scripts]
 httphello = "src.mypkg.httphello:httphello"
