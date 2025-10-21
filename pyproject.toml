@@ -89,8 +89,8 @@ docs-cov = "interrogate -c pyproject.toml"
 
 # To build the library in wheel. - example
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
-include = ["src/**/*"]
+packages = ["src/mangetamain"]
+include = ["src/mangetamain/**/*"]
 
 [tool.hatch.envs.default.scripts]
 httphello = "src.mypkg.httphello:httphello"

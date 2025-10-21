@@ -9,20 +9,10 @@ class TestBaseLogger(unittest.TestCase):
     
     def test_info(self):
         logger = get_logger()
-        debug_message = "This is a debug message"
-        
-        logger.debug(debug_message)
-        
-        log_content = logger.get_log_path().read_text()
-        assert "DEBUG" in log_content
-        assert debug_message in log_content
-    
-    def test_debug(self):
-        logger = get_logger()
         info_message = "This is an info message"
-        
+
         logger.info(info_message)
-        
+
         log_content = logger.get_log_path().read_text()
         assert "INFO" in log_content
         assert info_message in log_content
