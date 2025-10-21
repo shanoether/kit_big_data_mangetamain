@@ -6,7 +6,7 @@ services:
     volumes:
       - ./data:/app/data     # map local data folder
       # - ./logs:/app/logs     # map logs folder
-      - PYTHONPATH=/app/src
+      # - PYTHONPATH=/app/src
 
   streamlit:
     # image: myapp:latest
@@ -22,4 +22,4 @@ services:
       - preprocess
     environment:
       - PORT=8501
-      - PYTHONPATH=/app/src
+      # - PYTHONPATH=/app/src
