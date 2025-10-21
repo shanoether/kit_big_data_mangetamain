@@ -1,17 +1,23 @@
-import streamlit as st
+"""Recipe Analysis for the Stremalit app."""
+
+import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
-import matplotlib.pyplot as plt
+import streamlit as st
+
+from mangetamain.utils.logger import get_logger
+
+logger = get_logger()
 
 st.set_page_config(
     page_title="Recipes Analysis",
     page_icon="🍲",
-    layout="centered",    
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
 st.title("Recipes analysis")
 
-if 'data_loaded' in st.session_state and st.session_state.data_loaded:
+if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions
     df_recipes = st.session_state.df_recipes
 
@@ -26,16 +32,21 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
     nb_top = st.slider("Nombre de recettes à afficher", 5, 30, 20, key="slider_top_commented")
     
     top_recipes = (
-        df_interactions
-        .group_by("recipe_id")
-        .agg(pl.count().alias("nb_reviews"))
+        df_interactions.group_by("recipe_id")
+        .agg(pl.len().alias("nb_reviews"))
         .sort("nb_reviews", descending=True)
         .head(nb_top)
         .join(df_recipes.select(["id", "name"]), left_on="recipe_id", right_on="id", how="left")
     )
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(data=top_recipes.to_pandas(), x="nb_reviews", y="name", palette='viridis', ax=ax)
+    sns.barplot(
+        data=top_recipes.to_pandas(),
+        x="nb_reviews",
+        y="name",
+        palette="viridis",
+        ax=ax,
+    )
     st.pyplot(fig)
 
     # Moyenne des notes

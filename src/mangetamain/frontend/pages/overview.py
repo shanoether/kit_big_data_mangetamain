@@ -1,17 +1,16 @@
+"""Overview page of the Streamlit app."""
+
 import streamlit as st
-import polars as pl
-from mangetamain.backend.helper import load_parquet_with_progress
-from mangetamain.utils.logger import get_logger
 
 st.set_page_config(
     page_title="Overview",
     page_icon="🔍",
-    layout="centered",    
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
 st.title("Data overview")
 
-if 'data_loaded' in st.session_state and st.session_state.data_loaded:
+if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions
     df_recipes = st.session_state.df_recipes
 
@@ -27,5 +26,3 @@ if 'data_loaded' in st.session_state and st.session_state.data_loaded:
 
     st.subheader("Recipes")
     st.write(df_recipes.head(10).to_pandas())
-
-

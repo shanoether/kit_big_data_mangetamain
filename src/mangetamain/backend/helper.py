@@ -1,38 +1,45 @@
-import streamlit as st
+"""Helper functions for data loading with progress indication in Streamlit."""
+
+import time
+
 import polars as pl
+import streamlit as st
 
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
 
-@st.cache_data
+
+@st.cache_data  # type: ignore[misc]
 def load_csv_with_progress(file_path: str) -> tuple[pl.DataFrame, float]:
-    """Load a CSV file with a progress bar.
+    """Read a CSV file into a Polars DataFrame while showing a Streamlit spinner.
 
     Args:
-        file_path: Path to the CSV file.
+      file_path: Path to the CSV file to read.
 
     Returns:
-        A tuple containing the loaded DataFrame and the time taken to load it.
+      A tuple (df, load_time) where ``df`` is the loaded Polars DataFrame and
+      ``load_time`` is the elapsed time in seconds.
     """
-    import time
     start_time = time.time()
     with st.spinner(f"Loading data from {file_path}..."):
         df = pl.read_csv(file_path)
-    end_time = time.time()
-    load_time = end_time - start_time
-    logger.info(f"Data loaded successfully from {file_path} in {load_time:.2f} seconds.")
+    load_time = time.time() - start_time
+    logger.info(
+        f"Data loaded successfully from {file_path} in {load_time:.2f} seconds.",
+    )
     return df, load_time
 
-@st.cache_data
-def load_parquet_with_progress(file_path: str) -> tuple[pl.DataFrame, float]:
-    """Load a Parquet file with a progress bar.
+
+@st.cache_data  # type: ignore[misc]
+def load_parquet_with_progress(file_path: str) -> pl.DataFrame:
+    """Read a Parquet file into a Polars DataFrame while showing a Streamlit spinner.
 
     Args:
-        file_path: Path to the Parquet file.
+      file_path: Path to the Parquet file to read.
 
     Returns:
-        A tuple containing the loaded DataFrame and the time taken to load it.
+      A Polars DataFrame loaded from the specified parquet file.
     """
     with st.spinner(f"Loading data from {file_path}..."):
         df = pl.read_parquet(file_path)
