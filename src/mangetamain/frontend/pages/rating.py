@@ -15,6 +15,7 @@ st.title("Rating")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions
+    df_interactions_nna = st.session_state.df_interactions_nna
     df_total = st.session_state.df_total
     df_total_court = st.session_state.df_total_court
     proportion_m = st.session_state.proportion_m
@@ -29,13 +30,19 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # draw histogram of ratings
     st.subheader("📈 Rating Distribution")
-    st.bar_chart(df_interactions["rating"].value_counts())
+    fig, ax = plt.subplots()
+    sns.histplot(df_interactions["rating"], discrete=True, shrink=0.8, ax=ax)
+    ax.set_title("Distribution of Ratings")
+    ax.set_xlabel("Rating")
+    ax.set_ylabel("Count")
+    sns.despine()
+    st.pyplot(fig)
 
     # draw boxplot of ratings
     st.subheader("📊 Rating Boxplot")
 
     fig, ax = plt.subplots()
-    ax.boxplot(df_interactions["rating"].drop_nans(), vert=True)
+    ax.boxplot(df_interactions_nna["rating"], vert=True)
     ax.set_title("Boxplot of Ratings")
     ax.set_ylabel("Values")
 
