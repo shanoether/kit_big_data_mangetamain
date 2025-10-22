@@ -63,14 +63,8 @@ def main() -> None:
     rating_page = st.Page("frontend/pages/rating.py", title="Rating")
     # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
     overview_page = st.Page("frontend/pages/overview.py", title="Overview")
-    recipes_analysis_page = st.Page(
-        "frontend/pages/recipes_analysis.py",
-        title="Recipes Analysis",
-    )
-    users_analysis_page = st.Page(
-        "frontend/pages/users_analysis.py",
-        title="Users Analysis",
-    )
+    recipes_analysis_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipes Analysis")
+    users_analysis_page = st.Page("frontend/pages/users_analysis.py", title="Users Analysis")
     trends_page = st.Page("frontend/pages/trends.py", title="Trends")
 
     pg = st.navigation(
