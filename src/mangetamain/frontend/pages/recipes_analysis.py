@@ -53,7 +53,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         .agg(
             [
                 pl.col("rating").mean().alias("mean_rating"),
-                pl.len().alias("nb_reviews"),
+                pl.count().alias("nb_reviews"),
             ],
         )
         .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)

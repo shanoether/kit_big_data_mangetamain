@@ -217,6 +217,8 @@ __marimo__/
 __pycache__/
 *.py[codz]
 *$py.class
+data/
+secrets.txt
 
 # C extensions
 *.so
@@ -423,3 +425,7 @@ __marimo__/
 
 # Logger
 logs/
+
+
+src/mangetamain/.DS_Store
+src/.DS_Store

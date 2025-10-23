@@ -42,6 +42,9 @@ uv add mkdocs-literate-nav
 
 uv run hatch run docs:serve
 
+uv run coverage run -m pytest tests/
+uv run coverage report
+
 # Then install the precommituv install pre-commit
 uv add pre-commit
 pre-commit install
