@@ -49,7 +49,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.pyplot(fig)
 
     # Visualisation distribution des recettes par review
-    reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(pl.len().alias("review_count"))
+    reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(
+        pl.len().alias("review_count"),
+    )
     fig, ax = plt.subplots()
     sns.histplot(
         reviews_per_recipe,

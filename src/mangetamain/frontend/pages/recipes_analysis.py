@@ -24,9 +24,14 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.subheader("Top recettes les plus commentées")
     nb_top = st.slider("Nombre de recettes à afficher", 5, 30, 20, key="nb_top_recipes")
 
-    top_recipes = df_total_nt.group_by("name").agg(
-        pl.len().alias("nb_reviews"),
-    ).sort("nb_reviews", descending=True).head(nb_top)
+    top_recipes = (
+        df_total_nt.group_by("name")
+        .agg(
+            pl.len().alias("nb_reviews"),
+        )
+        .sort("nb_reviews", descending=True)
+        .head(nb_top)
+    )
 
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(data=top_recipes, x="nb_reviews", y="name", palette="viridis", ax=ax)
@@ -34,12 +39,26 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Moyenne des notes
     st.subheader("Recettes les moins biens notées")
-    nb_worst = st.slider("Nombre de recettes à afficher", 5, 30, 20, key="nb_worst_recipes")
+    nb_worst = st.slider(
+        "Nombre de recettes à afficher",
+        5,
+        30,
+        20,
+        key="nb_worst_recipes",
+    )
     NB_REVIEW_MIN = 5
-    worst_recipes = df_total_nt.group_by("name").agg(
-        [pl.col("rating").mean().alias("mean_rating"),
-        pl.len().alias("nb_reviews")],
-    ).filter(pl.col("nb_reviews") >= NB_REVIEW_MIN).sort("mean_rating").head(nb_worst)
+    worst_recipes = (
+        df_total_nt.group_by("name")
+        .agg(
+            [
+                pl.col("rating").mean().alias("mean_rating"),
+                pl.len().alias("nb_reviews"),
+            ],
+        )
+        .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)
+        .sort("mean_rating")
+        .head(nb_worst)
+    )
 
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(data=worst_recipes, x="mean_rating", y="name", ax=ax, palette="viridis")

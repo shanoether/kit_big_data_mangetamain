@@ -39,6 +39,7 @@ dependencies = [
     "pre-commit>=4.3.0",
     "pyment>=0.3.3",
     "mkdocs-include-markdown-plugin>=7.2.0",
+    "hatch>=1.15.1",
 ]
 
 [dependency-groups]

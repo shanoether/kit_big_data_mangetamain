@@ -43,8 +43,8 @@ uv add mkdocs-literate-nav
 uv run hatch run docs:serve
 
 # Then install the precommituv install pre-commit
- uv add pre-commit
- pre-commit install
- pre-commit run --all-files
- # avoid precommit with
- git commit -nm 'my message'
+uv add pre-commit
+pre-commit install
+pre-commit run --all-files
+# avoid precommit with
+git commit -nm 'my message'

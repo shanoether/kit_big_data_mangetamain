@@ -130,7 +130,9 @@ class DataProcessor:
         logger.info(
             f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}.",
         )
-        self.df_recipes_nna = self.df_recipes_nna.filter(self.df_recipes_nna["n_steps"] > 0)
+        self.df_recipes_nna = self.df_recipes_nna.filter(
+            self.df_recipes_nna["n_steps"] > 0,
+        )
         logger.info(
             f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}.",
         )
@@ -206,20 +208,51 @@ class DataProcessor:
         # minutes = np.array(sorted(self.df_recipes_nna_court["minutes"].unique()))
         logger.info("Computing proportions of 5-star ratings by minutes")
         minutes = np.array(sorted(self.df_recipes_nna_short["minutes"].unique()))
-        comptes = self.total_short["minutes"].value_counts().sort("minutes")["count"].to_numpy()
-        proportions = self.total_short.filter(pl.col("rating") == RATING_MAX)["minutes"].value_counts().sort("minutes")["count"].to_numpy()
+        comptes = (
+            self.total_short["minutes"]
+            .value_counts()
+            .sort("minutes")["count"]
+            .to_numpy()
+        )
+        proportions = (
+            self.total_short.filter(pl.col("rating") == RATING_MAX)["minutes"]
+            .value_counts()
+            .sort("minutes")["count"]
+            .to_numpy()
+        )
         proportion_m = proportions / comptes
 
         # steps = np.array(sorted(self.df_recipes_nna[self.df_recipes_nna["n_steps"] <= 40].n_steps.unique()))
         logger.info("Computing proportions of 5-star ratings by steps")
-        steps = np.array(sorted(self.df_recipes_nna.filter(pl.col("n_steps") <= NB_STEPS_MAX)["n_steps"].unique()))
-        comptes = self.total.filter(pl.col("n_steps") <= NB_STEPS_MAX)["n_steps"].value_counts().sort("n_steps")["count"].to_numpy()
-        proportions = self.total.filter((pl.col("n_steps") <= NB_STEPS_MAX) & (pl.col("rating") == RATING_MAX))["n_steps"].value_counts().sort("n_steps")["count"].to_numpy()
+        steps = np.array(
+            sorted(
+                self.df_recipes_nna.filter(pl.col("n_steps") <= NB_STEPS_MAX)[
+                    "n_steps"
+                ].unique(),
+            ),
+        )
+        comptes = (
+            self.total.filter(pl.col("n_steps") <= NB_STEPS_MAX)["n_steps"]
+            .value_counts()
+            .sort("n_steps")["count"]
+            .to_numpy()
+        )
+        proportions = (
+            self.total.filter(
+                (pl.col("n_steps") <= NB_STEPS_MAX) & (pl.col("rating") == RATING_MAX),
+            )["n_steps"]
+            .value_counts()
+            .sort("n_steps")["count"]
+            .to_numpy()
+        )
         proportion_s = proportions / comptes
 
         logger.info("Proportions computed. Loading internally")
         self.df_proportion_m = pl.DataFrame(
-            {"minutes": minutes.astype(int), "proportion_m": proportion_m.astype(float),},
+            {
+                "minutes": minutes.astype(int),
+                "proportion_m": proportion_m.astype(float),
+            },
         )  # type conversion needed for parquet
         self.df_proportion_s = pl.DataFrame(
             {"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)},
@@ -239,8 +272,12 @@ class DataProcessor:
         save_folder = Path("data/processed")
         save_folder.mkdir(parents=True, exist_ok=True)
         logger.info("Saving df_interactions")
-        self.df_interactions.write_parquet("data/processed/initial_interactions.parquet")
-        self.df_interactions_nna.write_parquet("data/processed/processed_interactions.parquet")
+        self.df_interactions.write_parquet(
+            "data/processed/initial_interactions.parquet",
+        )
+        self.df_interactions_nna.write_parquet(
+            "data/processed/processed_interactions.parquet",
+        )
         logger.info("Done \n Saving df_recipes")
         self.df_recipes.write_parquet("data/processed/initial_recipes.parquet")
         self.df_recipes_nna.write_parquet("data/processed/processed_recipes.parquet")
