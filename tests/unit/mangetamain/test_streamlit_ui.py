@@ -1,8 +1,10 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import streamlit as st
 
 from mangetamain.streamlit_ui import load_data_from_parquet, main
+
 
 class TestStreamlitUI(unittest.TestCase):
     @patch("mangetamain.streamlit_ui.load_parquet_with_progress")
@@ -40,7 +42,12 @@ class TestStreamlitUI(unittest.TestCase):
     @patch("mangetamain.streamlit_ui.st")
     @patch("mangetamain.streamlit_ui.load_data_from_parquet")
     @patch("mangetamain.streamlit_ui.logger")
-    def test_main_calls_data_loading_and_navigation(self, mock_logger, mock_load_data, mock_st):
+    def test_main_calls_data_loading_and_navigation(
+        self,
+        mock_logger,
+        mock_load_data,
+        mock_st,
+    ):
         # Simulate empty session_state
         mock_st.session_state = {}
 
@@ -62,6 +69,7 @@ class TestStreamlitUI(unittest.TestCase):
 
         # Logger info should be called at startup
         mock_logger.info.assert_any_call("Application started, loading data.")
+
 
 if __name__ == "__main__":
     unittest.main()

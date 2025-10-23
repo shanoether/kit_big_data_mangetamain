@@ -43,11 +43,12 @@ uv add mkdocs-literate-nav
 uv run hatch run docs:serve
 
 uv run coverage run -m pytest tests/
-uv run coverage html
+uv run coverage report
 
 # Then install the precommituv install pre-commit
  uv add pre-commit
  pre-commit install
  pre-commit run --all-files
+
  # avoid precommit with
  git commit -nm 'my message'

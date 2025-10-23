@@ -1,7 +1,9 @@
 # tests/unit/mangetamain/backend/test_dataprocessor.py
-import pytest
-import polars as pl
 from pathlib import Path
+
+import polars as pl
+import pytest
+
 from mangetamain.backend.data_processor import DataProcessor
 
 
@@ -17,7 +19,7 @@ class TestDataProcessor:
             "user_id,recipe_id,rating,review,date\n"
             "1,101,5,Great,2023-01-01\n"
             "2,102,4,,2023-01-02\n"  # NA review
-            "3,103,5,Excellent,2023-01-03\n"
+            "3,103,5,Excellent,2023-01-03\n",
         )
 
         # Recipes CSV
@@ -26,7 +28,7 @@ class TestDataProcessor:
             "id,name,minutes,n_steps,submitted\n"
             "101,Recipe A,30,5,2023-01-01\n"
             "102,Recipe B,120,0,2023-01-02\n"  # zéro steps
-            "103,Recipe C,150,3,2023-01-03\n"
+            "103,Recipe C,150,3,2023-01-03\n",
         )
 
         # Initialiser DataProcessor
@@ -51,7 +53,7 @@ class TestDataProcessor:
         """Vérifie la suppression des NA et des recettes irréalistes."""
         self.processor.drop_na()
         assert self.processor.df_interactions_nna.shape[0] == 2  # 1 review manquante
-        assert self.processor.df_recipes_nna.shape[0] == 2       # 1 recette avec 0 steps
+        assert self.processor.df_recipes_nna.shape[0] == 2  # 1 recette avec 0 steps
 
     def test_split_minutes(self):
         """Vérifie que les recettes sont bien bucketées en short/medium/long."""
@@ -59,8 +61,8 @@ class TestDataProcessor:
         self.processor.split_minutes()
         assert all(self.processor.df_recipes_nna_short["minutes"] <= 100)
         assert all(
-            (self.processor.df_recipes_nna_medium["minutes"] > 100) &
-            (self.processor.df_recipes_nna_medium["minutes"] <= 2880)
+            (self.processor.df_recipes_nna_medium["minutes"] > 100)
+            & (self.processor.df_recipes_nna_medium["minutes"] <= 2880),
         )
 
     def test_merge_data(self):
@@ -142,7 +144,7 @@ class TestDataProcessor:
         bad_csv = tmp_path / "bad_interactions.csv"
         bad_csv.write_text(
             "user_id,recipe_id,rating,review,date\n"
-            "1,101,5,Good,notadate"  # invalid date
+            "1,101,5,Good,notadate",  # invalid date
         )
         with pytest.raises(Exception):
             DataProcessor(
@@ -151,13 +153,11 @@ class TestDataProcessor:
                 path_recipes=self.recipes_csv,
             )
 
-    
     def test_corrupted_recipes_csv(self, tmp_path):
         """Vérifie que load_data lève une exception pour un CSV recipes corrompu (mauvais format submitted)."""
         bad_csv = tmp_path / "bad_recipes.csv"
         bad_csv.write_text(
-            "id,name,minutes,n_steps,submitted\n"
-            "101,Recipe A,30,5,notadate"
+            "id,name,minutes,n_steps,submitted\n101,Recipe A,30,5,notadate",
         )
         with pytest.raises(Exception):
             DataProcessor(
@@ -165,23 +165,20 @@ class TestDataProcessor:
                 path_interactions=self.interactions_csv,
                 path_recipes=bad_csv,
             )
-            
+
     def test_load_data_from_zip(self, tmp_path):
         """Vérifie que DataProcessor extrait bien les ZIP si les CSV manquent."""
         import zipfile
-        import shutil
 
         # --- Créer les CSV valides ---
         interactions_csv = tmp_path / "RAW_interactions.csv"
         interactions_csv.write_text(
-            "user_id,recipe_id,rating,review,date\n"
-            "1,101,5,Great,2023-01-01\n"
+            "user_id,recipe_id,rating,review,date\n1,101,5,Great,2023-01-01\n",
         )
 
         recipes_csv = tmp_path / "RAW_recipes.csv"
         recipes_csv.write_text(
-            "id,name,minutes,n_steps,submitted\n"
-            "101,Recipe A,30,5,2023-01-01\n"
+            "id,name,minutes,n_steps,submitted\n101,Recipe A,30,5,2023-01-01\n",
         )
 
         # --- Créer les ZIP contenant les CSV ---
@@ -208,7 +205,9 @@ class TestDataProcessor:
         extracted_interactions = tmp_path / "RAW_interactions.csv"
         extracted_recipes = tmp_path / "RAW_recipes.csv"
 
-        assert extracted_interactions.exists(), "Le CSV interactions devrait être extrait du ZIP"
+        assert extracted_interactions.exists(), (
+            "Le CSV interactions devrait être extrait du ZIP"
+        )
         assert extracted_recipes.exists(), "Le CSV recipes devrait être extrait du ZIP"
 
         # Les DataFrames doivent être chargés correctement

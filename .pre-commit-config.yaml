@@ -25,14 +25,14 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: coverage
+        entry: bash
         language: system
         pass_filenames: false
         always_run: true
         args:
           - -c
           - |
-            coverage run -m pytest tests && coverage report -m
+            coverage run --omit='*/tests/*,*/test_*' -m pytest && coverage report -m
 
   - repo: local
     hooks:

@@ -1,13 +1,10 @@
 import os
-from pathlib import Path
-import logging
-from logging.handlers import RotatingFileHandler
-
 import unittest
-from unittest.mock import MagicMock, patch
-import tempfile
+from logging.handlers import RotatingFileHandler
+from unittest.mock import patch
 
-from mangetamain.utils.logger import BaseLogger, TimeLogger, RotLogger, get_logger
+from mangetamain.utils.logger import BaseLogger, RotLogger, TimeLogger, get_logger
+
 
 class TestBaseLogger(unittest.TestCase):
     def setUp(self):
@@ -30,7 +27,7 @@ class TestBaseLogger(unittest.TestCase):
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
-        with patch.object(logger.logger, 'info') as mock_info:
+        with patch.object(logger.logger, "info") as mock_info:
             logger.info("Info message")
             mock_info.assert_called_once_with("Info message", stacklevel=2)
 
@@ -38,23 +35,23 @@ class TestBaseLogger(unittest.TestCase):
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
-        with patch.object(logger.logger, 'debug') as mock_debug:
+        with patch.object(logger.logger, "debug") as mock_debug:
             logger.debug("Debug message")
             mock_debug.assert_called_once_with("Debug message", stacklevel=2)
-    
+
     def test_warning(self):
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
-        with patch.object(logger.logger, 'warning') as mock_warning:
+        with patch.object(logger.logger, "warning") as mock_warning:
             logger.warning("Warning message")
             mock_warning.assert_called_once_with("Warning message", stacklevel=2)
-    
+
     def test_error(self):
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
-        with patch.object(logger.logger, 'error') as mock_error:
+        with patch.object(logger.logger, "error") as mock_error:
             logger.error("Error message")
             mock_error.assert_called_once_with("Error message", stacklevel=2)
 
@@ -62,7 +59,7 @@ class TestBaseLogger(unittest.TestCase):
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
-        with patch.object(logger.logger, 'critical') as mock_critical:
+        with patch.object(logger.logger, "critical") as mock_critical:
             logger.critical("Critical message")
             mock_critical.assert_called_once_with("Critical message", stacklevel=2)
 
@@ -70,7 +67,10 @@ class TestBaseLogger(unittest.TestCase):
         logger = BaseLogger(self.logger_name)
         self.assertFalse(logger.has_errors(), "Initially, has_errors should be False")
         logger.error("Test error")
-        self.assertTrue(logger.has_errors(), "After logging an error, has_errors should be True")
+        self.assertTrue(
+            logger.has_errors(),
+            "After logging an error, has_errors should be True",
+        )
 
     def tearDown(self):
         # Clean up created log files
@@ -122,7 +122,11 @@ class TestRotLogger(unittest.TestCase):
         logger = RotLogger(self.logger_name)
         log_path = logger.get_log_path()
         self.assertTrue(log_path.exists(), "Rotating log file should be created")
-        self.assertIsInstance(logger.logger.handlers[0], RotatingFileHandler, "Handler should be RotatingFileHandler")
+        self.assertIsInstance(
+            logger.logger.handlers[0],
+            RotatingFileHandler,
+            "Handler should be RotatingFileHandler",
+        )
 
     def tearDown(self):
         logger = RotLogger(self.logger_name)
@@ -133,10 +137,12 @@ class TestRotLogger(unittest.TestCase):
         if log_dir.exists():
             os.rmdir(log_dir)
 
+
 def test_get_logger_instance():
     logger1 = get_logger()
     logger2 = get_logger()
     assert logger1 is logger2, "get_logger should return the same RotLogger instance"
+
 
 if __name__ == "__main__":
     unittest.main()
