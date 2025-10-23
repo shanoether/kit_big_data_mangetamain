@@ -17,7 +17,7 @@ jobs:
         uses: pyupio/safety-action@v1
         with:
           api-key: ${{ secrets.SAFETY_API_KEY }}
-          
+
   build-deploy:
     needs: [ security ]
     environment: vm-kit-big-data-1        # <- if you use GitHub Environments
