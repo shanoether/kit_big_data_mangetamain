@@ -1,6 +1,7 @@
 """Main entry point for the Streamlit UI application and doing the dispatch between the pages."""
 
 import streamlit as st
+from streamlit_extras.exception_handler import set_global_exception_handler
 
 from mangetamain.backend.helper import load_parquet_with_progress
 from mangetamain.utils.logger import get_logger
@@ -54,6 +55,22 @@ def load_data_from_parquet() -> None:
     )["proportion_s"]
     st.session_state.data_loaded = True
     logger.info("Data loaded into session state.")
+
+
+def custom_exception_handler(exception: Exception) -> None:
+    """Custom exception handler to log exceptions.
+    This function prevents the errors from being shown to the user directly.
+    """
+    import streamlit as st
+
+    from mangetamain.utils.logger import get_logger
+
+    logger = get_logger()
+    logger.error(f"An error occurred: {exception}")
+    st.error("An unexpected error occurred. Please contact support.")
+
+
+set_global_exception_handler(custom_exception_handler)
 
 
 def main() -> None:

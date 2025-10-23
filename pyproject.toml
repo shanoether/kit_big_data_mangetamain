@@ -40,6 +40,7 @@ dependencies = [
     "pyment>=0.3.3",
     "mkdocs-include-markdown-plugin>=7.2.0",
     "hatch>=1.15.1",
+    "streamlit-extras>=0.7.8",
 ]
 
 [dependency-groups]
