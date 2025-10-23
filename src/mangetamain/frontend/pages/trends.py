@@ -18,8 +18,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Parsing des dates
     df_interaction = df_interactions.with_columns(
-        [pl.col("date_").dt.year().alias("year"),
-        pl.col("date_").dt.month().alias("month")],
+        [pl.col("date").dt.year().alias("year"),
+        pl.col("date").dt.month().alias("month")],
     )
 
     # Évolution des notes moyennes
