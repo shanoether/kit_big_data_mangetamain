@@ -126,6 +126,7 @@ markers = [
 
 # Configuration coverage
 [tool.coverage.run]
+fail_under = 90
 source = ["src"]
 omit = [
     "*/tests/*",

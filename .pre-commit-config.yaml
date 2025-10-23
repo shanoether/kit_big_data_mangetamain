@@ -32,7 +32,7 @@ repos:
         args:
           - -c
           - |
-            coverage run --omit='*/tests/*,*/test_*' -m pytest && coverage report -m
+            coverage run -m pytest && coverage report -m
 
   - repo: local
     hooks:
