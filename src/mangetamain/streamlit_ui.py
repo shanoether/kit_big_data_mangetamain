@@ -59,11 +59,12 @@ def load_data_from_parquet() -> None:
 
 def custom_exception_handler(exception: Exception) -> None:
     """Custom exception handler to log exceptions.
+
     This function prevents the errors from being shown to the user directly.
     """
-    import streamlit as st
+    import streamlit as st  # noqa: PLC0415
 
-    from mangetamain.utils.logger import get_logger
+    from mangetamain.utils.logger import get_logger  # noqa: PLC0415
 
     logger = get_logger()
     logger.error(f"An error occurred: {exception}")
