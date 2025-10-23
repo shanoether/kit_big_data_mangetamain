@@ -14,6 +14,8 @@ class TestStreamlitUI(unittest.TestCase):
             {"dummy": 2},  # df_recipes
             {"dummy": 3},  # df_total
             {"dummy": 4},  # df_total_court
+            {"dummy": 5},  # df_interactions_nna
+            {"dummy": 6},  # df_recipes_nna
             {"proportion_m": [0.1, 0.2]},  # proportion_m
             {"proportion_s": [0.3, 0.4]},  # proportion_s
         ]
