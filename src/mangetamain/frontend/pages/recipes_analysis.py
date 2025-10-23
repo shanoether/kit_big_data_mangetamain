@@ -23,9 +23,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Distribution des notes
     st.subheader("Distribution des notes")
-    fig, ax = plt.subplots()
-    sns.countplot(x="rating", data=df_interactions.to_pandas(), ax=ax)
-    st.pyplot(fig)
+    with st.spinner("Generating rating distribution chart..."):
+        fig, ax = plt.subplots()
+        sns.countplot(x="rating", data=df_interactions.to_pandas(), ax=ax)
+        st.pyplot(fig)
 
     # Top recettes
     st.subheader("Top recettes les plus commentées")
