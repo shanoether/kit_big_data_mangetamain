@@ -39,7 +39,6 @@ dependencies = [
     "pre-commit>=4.3.0",
     "pyment>=0.3.3",
     "mkdocs-include-markdown-plugin>=7.2.0",
-    "coverage>=7.11.0",
 ]
 
 [dependency-groups]
@@ -59,6 +58,8 @@ dev = [
     "pymdown-extensions>=10.16.1",
     "mkdocstrings[python]>=0.30.1",
     "mkdocs_gen_files",
+    "coverage>=7.11.0",
+    "safety>=3.6.2",
 ]
 
 jupyter = [
