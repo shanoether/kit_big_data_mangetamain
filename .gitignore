@@ -425,3 +425,10 @@ __marimo__/
 
 # Logger
 logs/
+<<<<<<< HEAD
+
+
+src/mangetamain/.DS_Store
+src/.DS_Store
+=======
+>>>>>>> 87226aa4ec0269f9f3dd15dfdd9de134b13d731d
