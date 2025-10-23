@@ -35,6 +35,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(data=top_recipes, x="nb_reviews", y="name", palette="viridis", ax=ax)
+    sns.despine()
     st.pyplot(fig)
 
     # Moyenne des notes
@@ -62,4 +63,5 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(data=worst_recipes, x="mean_rating", y="name", ax=ax, palette="viridis")
+    sns.despine()
     st.pyplot(fig)

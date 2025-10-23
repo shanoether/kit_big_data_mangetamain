@@ -29,6 +29,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         log_scale=(False, True),
         ax=ax,
     )
+    sns.despine()
     st.pyplot(fig)
 
     # Catégorisation
@@ -67,6 +68,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         palette="Blues_r",
     )
     plt.xticks(rotation=25)
+    sns.despine()
     st.pyplot(fig)
 
     # Moyenne des notes par utilisateur
@@ -84,4 +86,5 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         y="mean_rating",
         ax=ax,
     )
+    sns.despine()
     st.pyplot(fig)

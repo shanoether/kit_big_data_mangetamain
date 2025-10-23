@@ -39,6 +39,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         marker="o",
         ax=ax,
     )
+    ax.set_ylim(0, 5)
+    ax.grid()
+    plt.xticks(range(2000, 2019, 3))
+    sns.despine()
     st.pyplot(fig)
 
     # Nombre de reviews par mois et année
@@ -58,4 +62,5 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax=ax,
     )
     plt.xticks(range(1, 13))
+    sns.despine()
     st.pyplot(fig)

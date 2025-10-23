@@ -62,6 +62,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     ax.set_title("Distribution du nombre de reviews par recette")
     ax.set_xlabel("Nombre de reviews")
     ax.set_ylabel("Nombre de recettes (échelle log)")
+    sns.despine()
     st.pyplot(fig)
 
     st.header("Time Evolution of Ratings")
@@ -98,10 +99,11 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         discrete=True,
         shrink=0.8,
     )
-    sns.despine()
     ax_year.set_title("Time evolution of ratings")
     ax_year.set_xlabel("Year")
     ax_year.set_ylabel("Count by rating")
+    plt.xticks(range(2000, 2019, 3))
+    sns.despine()
     st.pyplot(fig_year)
 
     # Ratings vs Preparation Time
