@@ -9,71 +9,9 @@ from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
 
-
-def display_wordclouds():
-    st.header("🗣️ WordClouds (6 graphiques)")
-
-    categories = [
-        ("Recettes les plus commentées", None),
-        ("Recettes mieux notées", "best"),
-        ("Recettes moins bien notées", "worst")
-    ]
-
-    # Grille 2x3 pour les 6 wordclouds
-    for i, (title, filter_type) in enumerate(categories):
-        st.subheader(title)
-        cols = st.columns(2)
-
-        with cols[0]:
-            with st.spinner(f"Génération WordCloud (Fréquence) pour {title}..."):
-                recipe_ids = recipe_analyzer.get_top_recipe_ids(
-                    n=review_count,
-                    rating_filter=filter_type
-                )
-                reviews = recipe_analyzer.get_reviews_for_recipes(recipe_ids)
-                fig = recipe_analyzer.plot_word_frequency(
-                    reviews,
-                    f"Fréquence - {title}",
-                    freq_words
-                )
-                st.pyplot(fig)
-
-            with cols[1]:
-                with st.spinner(f"Génération WordCloud (TF-IDF) pour {title}..."):
-                    fig = recipe_analyzer.plot_tfidf(
-                        reviews,
-                        f"TF-IDF - {title}",
-                        freq_words
-                    )
-                    st.pyplot(fig)
-
-   # Fonction pour afficher les comparaisons avec sabliers
-def display_comparisons():
-    st.header("🔄 Comparaisons Fréquence/TF-IDF (3 graphiques)")
-
-    categories = [
-        ("Recettes les plus commentées", None),
-        ("Recettes mieux notées", "best"),
-        ("Recettes moins bien notées", "worst")
-    ]
-
-    # Grille 1x3 pour les 3 comparaisons
-    cols = st.columns(3)
-    for i, (title, filter_type) in enumerate(categories):
-        with cols[i]:
-            with st.spinner(f"Comparaison pour {title}..."):
-                recipe_ids = recipe_analyzer.get_top_recipe_ids(
-                    n=review_count,
-                    rating_filter=filter_type
-                )
-                reviews = recipe_analyzer.get_reviews_for_recipes(recipe_ids)
-                fig = recipe_analyzer.compare_frequency_and_tfidf(
-                    reviews,
-                    f"Comparaison - {title}",
-                    freq_words
-                )
-                st.pyplot(fig)
-
+# =============================================================================
+# PAGE CONFIGURATION
+# =============================================================================
 
 st.set_page_config(
     page_title="Recipes Analysis",
@@ -81,28 +19,45 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded",
 )
-st.title("Recipes analysis")
+st.title("Recipes Analysis")
 
+# =============================================================================
+# DATA LOADING AND VALIDATION
+# =============================================================================
+
+# Check if data has been loaded in the session state
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
+    # Load dataframes and analyzer from session state
     df_interactions = st.session_state.df_interactions
     df_recipes = st.session_state.df_recipes
     recipe_analyzer = st.session_state.recipe_analyzer
 
-    # Distribution des notes
-    st.subheader("Distribution des notes")
+    # =========================================================================
+    # SECTION 1: RATING DISTRIBUTION
+    # =========================================================================
+
+    st.subheader("Rating Distribution")
+
+    # Create a count plot showing the distribution of ratings (1-5 stars)
     fig, ax = plt.subplots()
     sns.countplot(x="rating", data=df_interactions.to_pandas(), ax=ax)
     st.pyplot(fig)
 
-    # Top recettes
-    st.subheader("Top recettes les plus commentées")
-    nb_recettes = st.slider("Nombre de recettes à afficher", 5, 30, 30)
+    # =========================================================================
+    # SECTION 2: TOP MOST REVIEWED RECIPES
+    # =========================================================================
 
+    st.subheader("Top Most Reviewed Recipes")
+
+    # User input: number of recipes to display
+    nb_recipes = st.slider("Number of recipes to display", 5, 30, 30)
+
+    # Aggregate reviews by recipe_id, count them, and join with recipe names
     top_recipes = (
         df_interactions.group_by("recipe_id")
         .agg(pl.len().alias("nb_reviews"))
         .sort("nb_reviews", descending=True)
-        .head(nb_recettes)
+        .head(nb_recipes)
         .join(
             df_recipes.select(["recipe_id", "name"]),
             left_on="recipe_id",
@@ -111,6 +66,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         )
     )
 
+    # Display horizontal bar chart of most reviewed recipes
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
         data=top_recipes.to_pandas(),
@@ -121,9 +77,16 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     st.pyplot(fig)
 
-    # Moyenne des notes
-    st.subheader("Recettes les moins biens notéess")
-    NB_REVIEW_MIN = 5
+    # =========================================================================
+    # SECTION 3: LOWEST RATED RECIPES
+    # =========================================================================
+
+    st.subheader("Lowest Rated Recipes")
+
+    # Minimum number of reviews required to be included in the analysis
+    MIN_REVIEWS = 5
+
+    # Calculate mean rating for each recipe with at least MIN_REVIEWS reviews
     filtered = (
         df_interactions.group_by("recipe_id")
         .agg(
@@ -132,7 +95,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 pl.len().alias("nb_reviews"),
             ],
         )
-        .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)
+        .filter(pl.col("nb_reviews") >= MIN_REVIEWS)
         .join(
             df_recipes.select(["recipe_id", "name"]),
             left_on="recipe_id",
@@ -140,9 +103,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             how="left",
         )
         .sort("mean_rating", descending=False)
-        .head(nb_recettes)
+        .head(nb_recipes)
     )
 
+    # Display horizontal bar chart of lowest rated recipes
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
         data=filtered.to_pandas(),
@@ -153,58 +117,90 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     st.pyplot(fig)
 
+    # =========================================================================
+    # SECTION 4: USER CONTROLS - SLIDERS
+    # =========================================================================
 
-### --- Mat modif
-
+    # Slider for number of top ingredients to display
     ingredient_count = st.slider(
-        "Nombre d'ingrédients",
+        "Number of ingredients",
         min_value=10,
         max_value=35,
-        value=20
+        value=20,
     )
 
-    review_count = st.slider(
-        "Nombre de recettes",
+    # Slider for number of recipes to analyze for word clouds
+    recipe_count = st.slider(
+        "Number of recipes",
         min_value=20,
         max_value=500,
-        value=100
+        value=100,
     )
 
-    freq_words = st.slider(
-        "Mots max dans WordClouds",
+    # Slider for maximum words in word clouds
+    wordcloud_max_words = st.slider(
+        "Max words in WordClouds",
         min_value=30,
         max_value=200,
-        value=100
+        value=100,
     )
 
-    # Boutons pour afficher/masquer les sections
-    st.sidebar.header("Affichage")
-    show_ingredients = st.sidebar.checkbox("Top ingrédients", value=True)
+    # =========================================================================
+    # SIDEBAR: SECTION VISIBILITY CONTROLS
+    # =========================================================================
+
+    # Checkboxes to show/hide different sections
+    st.sidebar.header("Display Options")
+    show_ingredients = st.sidebar.checkbox("Top Ingredients", value=True)
     show_wordclouds = st.sidebar.checkbox("WordClouds (6)", value=True)
-    show_comparisons = st.sidebar.checkbox("Comparaisons (3)", value=True)
+    show_comparisons = st.sidebar.checkbox("Venn Comparisons (3)", value=True)
 
+    # =========================================================================
+    # SECTION 5: TOP INGREDIENTS VISUALIZATION
+    # =========================================================================
 
-    # Fonction pour afficher les wordclouds avec sabliers
-    
- 
     if show_ingredients:
-        with st.spinner("Calcul des ingrédients..."):
-            st.header("🍳 Top ingrédients utilisés")
+        with st.spinner("Computing top ingredients..."):
+            st.header("🍳 Top Ingredients Used")
+            # Generate radar chart showing most common ingredients
             fig = recipe_analyzer.plot_top_ingredients(ingredient_count)
             st.pyplot(fig)
 
+    # =========================================================================
+    # SECTION 6: WORD CLOUDS VISUALIZATION
+    # =========================================================================
+
     if show_wordclouds:
-        display_wordclouds()
+        with st.spinner("Generating word clouds..."):
+            st.header("🍳 Word Clouds")
+            # Generate word clouds from recipe reviews
+            fig = recipe_analyzer.display_wordclouds(wordcloud_max_words)
+            st.pyplot(fig)
+
+    # =========================================================================
+    # SECTION 7: VENN DIAGRAM COMPARISONS
+    # =========================================================================
 
     if show_comparisons:
-        display_comparisons()
+        with st.spinner("Computing Venn diagram comparisons..."):
+            st.header("🍳 Venn Diagram Comparisons")
+            # Compare frequency-based vs TF-IDF word extraction
+            fig = recipe_analyzer.display_comparisons(recipe_count, wordcloud_max_words)
+            st.pyplot(fig)
 
-    # Informations supplémentaires
+    # =========================================================================
+    # SIDEBAR: CURRENT PARAMETERS SUMMARY
+    # =========================================================================
+
     st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Paramètres actuels:**")
-    st.sidebar.markdown(f"- Recettes analysées: {review_count}")
-    st.sidebar.markdown(f"- Mots par nuage: {freq_words}")
-    st.sidebar.markdown(f"- Ingrédients: {ingredient_count}")
+    st.sidebar.markdown("**Current Parameters:**")
+    st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
+    st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
+    st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
+
+    # =========================================================================
+    # FOOTER
+    # =========================================================================
 
     st.markdown("---")
-    st.caption("© 2025 - Analyse de données culinaires")
+    st.caption("© 2025 - Culinary Data Analysis")

@@ -2,8 +2,8 @@
 
 import streamlit as st
 
-from mangetamain.backend.recipe_analyzer import RecipeAnalyzer  
 from mangetamain.backend.helper import load_parquet_with_progress
+from mangetamain.backend.recipe_analyzer import RecipeAnalyzer
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
@@ -44,11 +44,15 @@ def load_data_from_parquet() -> None:
     st.session_state.proportion_s = load_parquet_with_progress(
         "data/processed/proportion_s.parquet",
     )["proportion_s"]
-    
-    st.session_state.recipe_analyzer = RecipeAnalyzer(st.session_state.df_interactions, st.session_state.df_recipes)
+
+    st.session_state.recipe_analyzer = RecipeAnalyzer(
+        st.session_state.df_interactions,
+        st.session_state.df_recipes,
+        st.session_state.df_total,
+    )
 
     st.session_state.data_loaded = True
-    
+
     logger.info("Data loaded into session state.")
 
 
@@ -85,7 +89,7 @@ def main() -> None:
             recipes_analysis_page,
             users_analysis_page,
             trends_page,
-            rating_page
+            rating_page,
         ],
     )
 
