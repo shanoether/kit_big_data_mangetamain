@@ -1,4 +1,7 @@
 """Main entry point for the Streamlit UI application and doing the dispatch between the pages."""
+import sys        
+import cProfile
+import pstats
 
 import streamlit as st
 from streamlit_extras.exception_handler import set_global_exception_handler
@@ -117,4 +120,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "profile":
+        cProfile.run("main()", filename="docs/streamlit_profile.prof")
+        stats = pstats.Stats("docs/streamlit_profile.prof")
+        stats.strip_dirs().sort_stats("cumulative").print_stats(10)
+    else:
+        main()

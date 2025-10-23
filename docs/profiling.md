@@ -7,12 +7,12 @@
 - run
 
     ```bash
-    streamlit run src/mangetamain/profiling.py
+    streamlit run src/mangetamain/streamlit_ui.py profile
     ```
 
 - after starting application, test the web as you wish and stop after finish
 
-- visualize 
+- visualize
 
     ```bash
     snakeviz docs/streamlit_profile.prof
@@ -34,7 +34,7 @@
     ps aux | grep "[s]treamlit run src/mangetamain/streamlit_ui.py" | awk '{print $2}'
     ```
 
-- if want to run realtime profiling 
+- if want to run realtime profiling
 
     ```bash
     py-spy top --pid <PID>
