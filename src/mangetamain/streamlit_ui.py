@@ -26,9 +26,15 @@ def load_data_from_parquet() -> None:
     This is deliberately small and fails early if files are missing.
     """
     st.session_state.df_interactions = load_parquet_with_progress(
+        "data/processed/initial_interactions.parquet",
+    )
+    st.session_state.df_interactions_nna = load_parquet_with_progress(
         "data/processed/processed_interactions.parquet",
     )
     st.session_state.df_recipes = load_parquet_with_progress(
+        "data/processed/initial_recipes.parquet",
+    )
+    st.session_state.df_recipes_nna = load_parquet_with_progress(
         "data/processed/processed_recipes.parquet",
     )
     st.session_state.df_total = load_parquet_with_progress(

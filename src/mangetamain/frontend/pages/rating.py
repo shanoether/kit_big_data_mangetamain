@@ -15,6 +15,7 @@ st.title("Rating")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions
+    df_interactions_nna = st.session_state.df_interactions_nna
     df_total = st.session_state.df_total
     df_total_court = st.session_state.df_total_court
     proportion_m = st.session_state.proportion_m
