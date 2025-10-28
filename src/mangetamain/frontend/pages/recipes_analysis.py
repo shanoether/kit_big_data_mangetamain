@@ -139,6 +139,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     if show_ingredients:
         with st.spinner("Computing top ingredients..."):
             st.header("🍳 Top Ingredients Used")
+            st.markdown(""" In addition, a radar chart was created to visualize the most common ingredients in the recipes.
+            It shows a strong presence of fundamental elements such as onion, eggs, milk, and garlic, emphasizing their central role in most dishes.
+            Ingredients such as parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes, ranging from savory dishes to sweet preparations.
+            The prior filtering of generic terms (salt, water, oil, sugar) makes it possible to focus on ingredients with true descriptive value.
+            This chart complements the textual analysis by offering a synthetic and visual overview of dominant culinary trends.
+            """)
             # Generate radar chart showing most common ingredients
             fig = recipe_analyzer.plot_top_ingredients(ingredient_count)
             st.pyplot(fig)
@@ -151,8 +157,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         with st.spinner("Generating word clouds..."):
             st.header("🍳 Ingredient Analysis")
             st.markdown(
-                "Most Present Ingredient in Function of the Recipe Rating based on frequency (left) or on a TF-IDF metric (right).",
+                """In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
+            The first method is based on the raw frequency of words, after a rigorous filtering process aimed at removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative such as recipe, thing, or definitely.
+            This approach highlights the most frequent words in the corpus. However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more meaningful words for the analysis.
+            The second method uses TF-IDF (Term Frequency–Inverse Document Frequency), a technique that weights the importance of a word according to its frequency within a document and its rarity across the entire corpus.
+            This weighting helps emphasize discriminative words — those that best characterize specific recipes. In practice, the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF matrix using the TfidfVectorizer function from scikit-learn.
+            Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
+            """
             )
+
             # Slider for number of recipes to analyze for word clouds
             recipe_count = st.slider(
                 "Number of recipes",
@@ -178,6 +191,14 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             if show_comparisons:
                 with st.spinner("Computing Venn diagram comparisons..."):
                     st.header("🍳 Venn Diagram Comparisons")
+                    st.markdown(
+                        """ To compare both approaches, Venn diagrams were used.
+                        These charts provide a clear visualization of the intersections and differences between the selected word sets.
+                        The overlapping areas represent the words identified by both methods, often associated with basic vocabulary used to describe or comment on recipes.
+                        The words exclusive to the TF-IDF method reveal rarer or more specific terms, such as distinctive ingredients or particular cooking techniques.
+                        A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection highlights divergences in word selection.
+                    """
+                    )
                     # Compare frequency-based vs TF-IDF word extraction
                     recipe_analyzer.display_comparisons(
                         recipe_count,
