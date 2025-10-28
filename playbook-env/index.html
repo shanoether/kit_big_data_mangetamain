@@ -1,0 +1,1103 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="http://34.1.14.43:8501/playbook-env/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Environment Setup Playbook - Mangetamain - Kit Big data</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#environment-setup-playbook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Mangetamain - Kit Big data" class="md-header__button md-logo" aria-label="Mangetamain - Kit Big data" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Mangetamain - Kit Big data
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Environment Setup Playbook
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/shanoether/kit_big_data_mangetamain" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Mangetamain - Kit Big data" class="md-nav__button md-logo" aria-label="Mangetamain - Kit Big data" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Mangetamain - Kit Big data
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/shanoether/kit_big_data_mangetamain" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Code Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/mangetamain/__init__/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    mangetamain
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            mangetamain
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/mangetamain/backend/__init__/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    backend
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1_1" id="__nav_2_1_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            backend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mangetamain/backend/data_processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    data_processor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mangetamain/backend/recipe_analyzer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    recipe_analyzer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mangetamain/streamlit_ui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamlit_ui
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/mangetamain/utils/__init__/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    utils
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1_3" id="__nav_2_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mangetamain/utils/helper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    helper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mangetamain/utils/logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    logger
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initial-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initial Environment Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Initial Environment Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Project Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-development-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install Development Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#virtual-environment-with-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      Virtual Environment with UV
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Virtual Environment with UV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-uv-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic UV Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-assurance-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality Assurance Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jupyter-kernel-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jupyter Kernel Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Jupyter Kernel Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-jupyter-kernel-for-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install Jupyter Kernel for VS Code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#useful-kernel-management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Useful Kernel Management Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dependency Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-version-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Version Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standard Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyarrow-installation-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      PyArrow Installation Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-environment-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Environment Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Environment Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-dependencies-not-found-after-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Dependencies Not Found After Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-virtual-environment-not-activated" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Virtual Environment Not Activated
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-python-version-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Python Version Mismatch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-jupyter-kernel-not-appearing-in-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Jupyter Kernel Not Appearing in VS Code
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="environment-setup-playbook">Environment Setup Playbook<a class="headerlink" href="#environment-setup-playbook" title="Permanent link">&para;</a></h1>
+<p>This playbook covers environment setup, configuration, and troubleshooting for the Mangetamain project.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#initial-environment-setup">Initial Environment Setup</a></li>
+<li><a href="#virtual-environment-with-uv">Virtual Environment with UV</a></li>
+<li><a href="#jupyter-kernel-configuration">Jupyter Kernel Configuration</a></li>
+<li><a href="#dependency-management">Dependency Management</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2 id="initial-environment-setup">Initial Environment Setup<a class="headerlink" href="#initial-environment-setup" title="Permanent link">&para;</a></h2>
+<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Python 3.12 (required to avoid TensorFlow incompatibility)</li>
+<li>UV package manager</li>
+<li>VS Code (recommended)</li>
+</ul>
+<h3 id="create-project-structure">Create Project Structure<a class="headerlink" href="#create-project-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Initialize project with package structure</span>
+uv<span class="w"> </span>init<span class="w"> </span>--package<span class="w">  </span><span class="c1"># Creates src/ and pyproject.toml</span>
+
+<span class="c1"># Create virtual environment with Python 3.12</span>
+uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+</code></pre></div>
+<h3 id="install-development-dependencies">Install Development Dependencies<a class="headerlink" href="#install-development-dependencies" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add essential development tools</span>
+uv<span class="w"> </span>add<span class="w"> </span>--dev<span class="w"> </span>ruff<span class="w"> </span>mypy<span class="w"> </span>pytest<span class="w"> </span>black<span class="w"> </span>ipykernel<span class="w"> </span>jupyterlab<span class="w"> </span>ipython
+
+<span class="c1"># Sync all dependencies</span>
+uv<span class="w"> </span>sync
+</code></pre></div>
+<hr />
+<h2 id="virtual-environment-with-uv">Virtual Environment with UV<a class="headerlink" href="#virtual-environment-with-uv" title="Permanent link">&para;</a></h2>
+<h3 id="basic-uv-commands">Basic UV Commands<a class="headerlink" href="#basic-uv-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Sync dependencies from pyproject.toml and lock file</span>
+uv<span class="w"> </span>sync
+
+<span class="c1"># Sync including development dependencies</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>dev
+
+<span class="c1"># Build distribution packages (wheel + sdist)</span>
+uv<span class="w"> </span>build
+</code></pre></div>
+<h3 id="quality-assurance-tools">Quality Assurance Tools<a class="headerlink" href="#quality-assurance-tools" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check code formatting issues</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+
+<span class="c1"># Auto-fix formatting errors</span>
+uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>.
+
+<span class="c1"># Type checking for consistency</span>
+uv<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>.
+
+<span class="c1"># Run unit tests</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest
+</code></pre></div>
+<hr />
+<h2 id="jupyter-kernel-configuration">Jupyter Kernel Configuration<a class="headerlink" href="#jupyter-kernel-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="install-jupyter-kernel-for-vs-code">Install Jupyter Kernel for VS Code<a class="headerlink" href="#install-jupyter-kernel-for-vs-code" title="Permanent link">&para;</a></h3>
+<p>Create a custom kernel for the project:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ipython<span class="w"> </span>kernel<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="o">=</span>venv-3.12-mangetamain<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--display-name<span class="w"> </span><span class="s2">&quot;Python 3.12 (mangetamain)&quot;</span>
+</code></pre></div>
+<h3 id="useful-kernel-management-commands">Useful Kernel Management Commands<a class="headerlink" href="#useful-kernel-management-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># List all available Jupyter kernels</span>
+uv<span class="w"> </span>run<span class="w"> </span>jupyter<span class="w"> </span>kernelspec<span class="w"> </span>list
+
+<span class="c1"># Remove old/unused kernel</span>
+uv<span class="w"> </span>run<span class="w"> </span>jupyter<span class="w"> </span>kernelspec<span class="w"> </span>uninstall<span class="w"> </span>python3
+</code></pre></div>
+<h3 id="configuration-notes">Configuration Notes<a class="headerlink" href="#configuration-notes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Adapt dependencies in <code>pyproject.toml</code> after kernel installation</li>
+<li>The kernel name <code>venv-3.12-mangetamain</code> should match your project structure</li>
+<li>Reference: <a href="https://medium.com/@luismarcelobp/create-virtual-environments-with-uv-to-use-jupyter-notebooks-inside-vs-code-48f336023e7f">Create Virtual Environments with UV for Jupyter in VS Code</a></li>
+</ul>
+<hr />
+<h2 id="dependency-management">Dependency Management<a class="headerlink" href="#dependency-management" title="Permanent link">&para;</a></h2>
+<h3 id="python-version-configuration">Python Version Configuration<a class="headerlink" href="#python-version-configuration" title="Permanent link">&para;</a></h3>
+<p>Edit <code>pyproject.toml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[tool.uv]</span>
+<span class="n">python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;3.12.*&quot;</span>
+</code></pre></div>
+<h3 id="standard-dependencies">Standard Dependencies<a class="headerlink" href="#standard-dependencies" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add runtime dependencies</span>
+uv<span class="w"> </span>add<span class="w"> </span>package-name
+
+<span class="c1"># Add development-only dependencies</span>
+uv<span class="w"> </span>add<span class="w"> </span>--dev<span class="w"> </span>package-name
+
+<span class="c1"># Remove dependencies</span>
+uv<span class="w"> </span>remove<span class="w"> </span>package-name
+</code></pre></div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="pyarrow-installation-issues">PyArrow Installation Issues<a class="headerlink" href="#pyarrow-installation-issues" title="Permanent link">&para;</a></h3>
+<p>If you encounter PyArrow compatibility issues:</p>
+<p><strong>Problem</strong>: PyArrow binary build failures or version conflicts</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li>
+<p><strong>Modify <code>pyproject.toml</code></strong>:
+   <div class="highlight"><pre><span></span><code><span class="k">[tool.uv]</span>
+<span class="n">python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;3.12.*&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Force binary-only installation</strong>:
+   <div class="highlight"><pre><span></span><code><span class="c1"># Set environment variable to use pre-built binaries only</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">UV_PIP_ONLY_BINARY</span><span class="o">=</span><span class="s2">&quot;:all:&quot;</span>
+<span class="c1"># Alternative:</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PIP_ONLY_BINARY</span><span class="o">=</span><span class="s2">&quot;:all:&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Install compatible PyArrow version</strong>:
+   <div class="highlight"><pre><span></span><code><span class="c1"># Recreate virtual environment</span>
+uv<span class="w"> </span>venv<span class="w"> </span>--recreate
+
+<span class="c1"># Install PyArrow with version constraint</span>
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;pyarrow&gt;=16,&lt;18&quot;</span><span class="w"> </span>--no-sync
+
+<span class="c1"># Sync all dependencies</span>
+uv<span class="w"> </span>sync
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="common-environment-issues">Common Environment Issues<a class="headerlink" href="#common-environment-issues" title="Permanent link">&para;</a></h3>
+<h4 id="issue-dependencies-not-found-after-installation">Issue: Dependencies Not Found After Installation<a class="headerlink" href="#issue-dependencies-not-found-after-installation" title="Permanent link">&para;</a></h4>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Clear cache and reinstall</span>
+uv<span class="w"> </span>cache<span class="w"> </span>clean
+uv<span class="w"> </span>sync<span class="w"> </span>--reinstall
+</code></pre></div></p>
+<h4 id="issue-virtual-environment-not-activated">Issue: Virtual Environment Not Activated<a class="headerlink" href="#issue-virtual-environment-not-activated" title="Permanent link">&para;</a></h4>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Check if virtual environment exists</span>
+ls<span class="w"> </span>.venv
+
+<span class="c1"># Activate manually (if needed)</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># Unix/macOS</span>
+<span class="c1"># or</span>
+.venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">  </span><span class="c1"># Windows</span>
+</code></pre></div></p>
+<h4 id="issue-python-version-mismatch">Issue: Python Version Mismatch<a class="headerlink" href="#issue-python-version-mismatch" title="Permanent link">&para;</a></h4>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Recreate venv with specific Python version</span>
+uv<span class="w"> </span>venv<span class="w"> </span>--recreate<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.12
+
+<span class="c1"># Verify Python version</span>
+uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>--version
+</code></pre></div></p>
+<h4 id="issue-jupyter-kernel-not-appearing-in-vs-code">Issue: Jupyter Kernel Not Appearing in VS Code<a class="headerlink" href="#issue-jupyter-kernel-not-appearing-in-vs-code" title="Permanent link">&para;</a></h4>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Reinstall kernel</span>
+uv<span class="w"> </span>run<span class="w"> </span>jupyter<span class="w"> </span>kernelspec<span class="w"> </span>uninstall<span class="w"> </span>venv-3.12-mangetamain
+uv<span class="w"> </span>run<span class="w"> </span>ipython<span class="w"> </span>kernel<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="o">=</span>venv-3.12-mangetamain<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--display-name<span class="w"> </span><span class="s2">&quot;Python 3.12 (mangetamain)&quot;</span>
+
+<span class="c1"># Restart VS Code</span>
+<span class="c1"># Select the correct kernel in notebook interface</span>
+</code></pre></div></p>
+<h3 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h3>
+<p>When working with Google Cloud or other services requiring credentials:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Load environment variables from .env file</span>
+<span class="nb">set</span><span class="w"> </span>-a<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.env<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>+a
+</code></pre></div>
+<hr />
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Always sync after modifying dependencies</strong>:
+   <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Use specific Python versions</strong> to avoid compatibility issues</p>
+</li>
+<li>
+<p><strong>Keep development dependencies separate</strong> using <code>--dev</code> flag</p>
+</li>
+<li>
+<p><strong>Regularly update dependencies</strong>:
+   <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--upgrade
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Use virtual environments</strong> to isolate project dependencies</p>
+</li>
+<li>
+<p><strong>Document custom requirements</strong> in <code>pyproject.toml</code> comments</p>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
