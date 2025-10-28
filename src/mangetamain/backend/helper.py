@@ -41,7 +41,6 @@ def load_parquet_with_progress(file_path: str) -> pl.DataFrame:
     Returns:
       A Polars DataFrame loaded from the specified parquet file.
     """
-    with st.spinner(f"Loading data from {file_path}..."):
-        df = pl.read_parquet(file_path)
+    df = pl.read_parquet(file_path)
     logger.info(f"Data loaded successfully from {file_path}.")
     return df

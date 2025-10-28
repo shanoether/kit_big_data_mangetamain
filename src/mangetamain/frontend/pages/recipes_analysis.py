@@ -27,25 +27,10 @@ st.title("Recipes Analysis")
 
 # Check if data has been loaded in the session state
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    # Load dataframes and analyzer from session state
+    df_total_nt = st.session_state.df_total_nt
     df_interactions = st.session_state.df_interactions
     df_recipes = st.session_state.df_recipes
     recipe_analyzer = st.session_state.recipe_analyzer
-
-    # =========================================================================
-    # SECTION 1: RATING DISTRIBUTION
-    # =========================================================================
-
-    st.subheader("Rating Distribution")
-
-    # Create a count plot showing the distribution of ratings (1-5 stars)
-    fig, ax = plt.subplots()
-    sns.countplot(x="rating", data=df_interactions.to_pandas(), ax=ax)
-    st.pyplot(fig)
-
-    # =========================================================================
-    # SECTION 2: TOP MOST REVIEWED RECIPES
-    # =========================================================================
 
     st.subheader("Top Most Reviewed Recipes")
 
@@ -54,27 +39,28 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Aggregate reviews by recipe_id, count them, and join with recipe names
     top_recipes = (
-        df_interactions.group_by("recipe_id")
-        .agg(pl.len().alias("nb_reviews"))
+        df_total_nt.group_by("name")
+        .agg(
+            pl.len().alias("nb_reviews"),
+        )
         .sort("nb_reviews", descending=True)
         .head(nb_recipes)
-        .join(
-            df_recipes.select(["recipe_id", "name"]),
-            left_on="recipe_id",
-            right_on="recipe_id",
-            how="left",
-        )
     )
 
     # Display horizontal bar chart of most reviewed recipes
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=top_recipes.to_pandas(),
+        data=top_recipes,
         x="nb_reviews",
         y="name",
         palette="viridis",
         ax=ax,
+        hue="name",
+        legend=False,
     )
+    ax.set_xlabel("Number of Reviews")
+    ax.set_ylabel("")
+    sns.despine()
     st.pyplot(fig)
 
     # =========================================================================
@@ -86,35 +72,42 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # Minimum number of reviews required to be included in the analysis
     MIN_REVIEWS = 5
 
-    # Calculate mean rating for each recipe with at least MIN_REVIEWS reviews
-    filtered = (
-        df_interactions.group_by("recipe_id")
+    # Moyenne des notes
+    nb_worst = st.slider(
+        "Number of recipes to display",
+        5,
+        30,
+        20,
+        key="nb_worst_recipes",
+    )
+    NB_REVIEW_MIN = 5
+    worst_recipes = (
+        df_total_nt.group_by("name")
         .agg(
             [
                 pl.col("rating").mean().alias("mean_rating"),
                 pl.len().alias("nb_reviews"),
             ],
         )
-        .filter(pl.col("nb_reviews") >= MIN_REVIEWS)
-        .join(
-            df_recipes.select(["recipe_id", "name"]),
-            left_on="recipe_id",
-            right_on="recipe_id",
-            how="left",
-        )
-        .sort("mean_rating", descending=False)
-        .head(nb_recipes)
+        .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)
+        .sort("mean_rating")
+        .head(nb_worst)
     )
 
     # Display horizontal bar chart of lowest rated recipes
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.barplot(
-        data=filtered.to_pandas(),
+        data=worst_recipes,
         x="mean_rating",
         y="name",
         ax=ax,
-        palette="crest",
+        palette="viridis",
+        hue="name",
+        legend=False,
     )
+    ax.set_xlabel("Average Rating")
+    ax.set_ylabel("")
+    sns.despine()
     st.pyplot(fig)
 
     # =========================================================================
@@ -127,22 +120,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         min_value=10,
         max_value=35,
         value=20,
-    )
-
-    # Slider for number of recipes to analyze for word clouds
-    recipe_count = st.slider(
-        "Number of recipes",
-        min_value=20,
-        max_value=500,
-        value=100,
-    )
-
-    # Slider for maximum words in word clouds
-    wordcloud_max_words = st.slider(
-        "Max words in WordClouds",
-        min_value=30,
-        max_value=200,
-        value=100,
     )
 
     # =========================================================================
@@ -170,9 +147,28 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
 
+    # Slider for number of recipes to analyze for word clouds
+    recipe_count = st.slider(
+        "Number of recipes",
+        min_value=20,
+        max_value=500,
+        value=100,
+    )
+
+    # Slider for maximum words in word clouds
+    wordcloud_max_words = st.slider(
+        "Max words in WordClouds",
+        min_value=30,
+        max_value=200,
+        value=100,
+    )
+
     if show_wordclouds:
         with st.spinner("Generating word clouds..."):
-            st.header("🍳 Word Clouds")
+            st.header("🍳 Ingredient Analysis")
+            st.markdown(
+                "Most Present Ingredient in Function of the Recipe Rating based on frequency (left) or on a TF-IDF metric (right)."
+            )
             # Generate word clouds from recipe reviews
             recipe_analyzer.display_wordclouds(wordcloud_max_words)
 
@@ -199,6 +195,3 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # =========================================================================
     # FOOTER
     # =========================================================================
-
-    st.markdown("---")
-    st.caption("© 2025 - Culinary Data Analysis")

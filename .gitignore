@@ -425,3 +425,7 @@ __marimo__/
 
 # Logger
 logs/
+
+
+src/mangetamain/.DS_Store
+src/.DS_Store

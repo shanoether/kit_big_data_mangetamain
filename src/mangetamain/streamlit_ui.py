@@ -1,6 +1,11 @@
 """Main entry point for the Streamlit UI application and doing the dispatch between the pages."""
 
+import cProfile
+import pstats
+import sys
+
 import streamlit as st
+from streamlit_extras.exception_handler import set_global_exception_handler
 
 from mangetamain.backend.helper import load_parquet_with_progress
 from mangetamain.backend.recipe_analyzer import RecipeAnalyzer
@@ -27,10 +32,19 @@ def load_data_from_parquet() -> None:
     This is deliberately small and fails early if files are missing.
     """
     st.session_state.df_interactions = load_parquet_with_progress(
+        "data/processed/initial_interactions.parquet",
+    )
+    st.session_state.df_interactions_nna = load_parquet_with_progress(
         "data/processed/processed_interactions.parquet",
     )
     st.session_state.df_recipes = load_parquet_with_progress(
+        "data/processed/initial_recipes.parquet",
+    )
+    st.session_state.df_recipes_nna = load_parquet_with_progress(
         "data/processed/processed_recipes.parquet",
+    )
+    st.session_state.df_total_nt = load_parquet_with_progress(
+        "data/processed/total_nt.parquet",
     )
     st.session_state.df_total = load_parquet_with_progress(
         "data/processed/total.parquet",
@@ -54,6 +68,23 @@ def load_data_from_parquet() -> None:
     st.session_state.data_loaded = True
 
     logger.info("Data loaded into session state.")
+
+
+def custom_exception_handler(exception: Exception) -> None:
+    """Custom exception handler to log exceptions.
+
+    This function prevents the errors from being shown to the user directly.
+    """
+    import streamlit as st  # noqa: PLC0415
+
+    from mangetamain.utils.logger import get_logger  # noqa: PLC0415
+
+    logger = get_logger()
+    logger.error(f"An error occurred: {exception}")
+    st.error("An unexpected error occurred. Please contact support.")
+
+
+set_global_exception_handler(custom_exception_handler)
 
 
 def main() -> None:
@@ -97,4 +128,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "profile":
+        cProfile.run("main()", filename="docs/streamlit_profile.prof")
+        stats = pstats.Stats("docs/streamlit_profile.prof")
+        stats.strip_dirs().sort_stats("cumulative").print_stats(10)
+    else:
+        main()

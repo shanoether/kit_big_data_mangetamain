@@ -23,6 +23,19 @@ repos:
 
   - repo: local
     hooks:
+      - id: pytest
+        name: pytest
+        entry: bash
+        language: system
+        pass_filenames: false
+        always_run: true
+        args:
+          - -c
+          - |
+            coverage run -m pytest && coverage report -m
+
+  - repo: local
+    hooks:
       # Docstring coverage
       - id: interrogate
         name: interrogate

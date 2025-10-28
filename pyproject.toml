@@ -42,7 +42,9 @@ dependencies = [
     "spacy>=3.8.7",
     "matplotlib-venn>=1.1.2",
     "wordcloud>=1.9.4",
-    "pip>=25.2",
+    "pip",
+    "hatch",
+    "streamlit-extras",
 ]
 
 [dependency-groups]
@@ -62,6 +64,10 @@ dev = [
     "pymdown-extensions>=10.16.1",
     "mkdocstrings[python]>=0.30.1",
     "mkdocs_gen_files",
+    "coverage>=7.11.0",
+    "safety>=3.6.2",
+    "snakeviz>=2.2.2",
+    "py-spy>=0.4.1",
 ]
 
 jupyter = [
@@ -111,21 +117,16 @@ deploy = "mkdocs gh-deploy --force"
 # Configuration pytest
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=todo_app",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-    "--cov-fail-under=85",
-    "--cov-branch",
+    "--import-mode=append",
     "-v"
 ]
-
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
@@ -134,6 +135,7 @@ markers = [
 
 # Configuration coverage
 [tool.coverage.run]
+fail_under = 90
 source = ["src"]
 omit = [
     "*/tests/*",

@@ -14,7 +14,7 @@ st.set_page_config(
 st.title("Users Analysis")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    df_interactions = st.session_state.df_interactions
+    df_interactions = st.session_state.df_interactions_nna
 
     # Distribution du nombre de reviews par utilisateur
     st.subheader("Distribution du nombre de reviews par utilisateur")
@@ -29,6 +29,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         log_scale=(False, True),
         ax=ax,
     )
+    sns.despine()
     st.pyplot(fig)
 
     # Catégorisation
@@ -65,8 +66,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         y=user_categories.values,
         ax=ax,
         palette="Blues_r",
+        hue=user_categories.index,
     )
     plt.xticks(rotation=25)
+    sns.despine()
     st.pyplot(fig)
 
     # Moyenne des notes par utilisateur
@@ -84,4 +87,5 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         y="mean_rating",
         ax=ax,
     )
+    sns.despine()
     st.pyplot(fig)

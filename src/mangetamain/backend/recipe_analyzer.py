@@ -636,27 +636,29 @@ class RecipeAnalyzer:
         if cache_key not in self._cache:
             ingredients_counts = self.top_ingredients.head(top_n)
 
-        if ingredients_counts.height == 0:
+            if ingredients_counts.height == 0:
+                fig, ax = plt.subplots(
+                    figsize=(8, 8), subplot_kw={"projection": "polar"}
+                )
+                ax.text(0.5, 0.5, "No ingredients found", ha="center", va="center")
+                self._cache[cache_key] = fig
+                return fig
+
+            labels = ingredients_counts["ingredients"].to_list()
+            values = ingredients_counts["count"].to_list()
+            angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+            values += values[:1]
+            angles += angles[:1]
+
             fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={"projection": "polar"})
-            ax.text(0.5, 0.5, "No ingredients found", ha="center", va="center")
+            ax.plot(angles, values, linewidth=2, color="blue")
+            ax.fill(angles, values, alpha=0.3, color="skyblue")
+            ax.set_xticks(angles[:-1])
+            ax.set_xticklabels(labels, rotation=45, ha="right")
+            ax.set_yticklabels([])
+            ax.set_title(f"Top {top_n} ingredients")
+            plt.tight_layout()
             self._cache[cache_key] = fig
-            return fig
-
-        labels = ingredients_counts["ingredients"].to_list()
-        values = ingredients_counts["count"].to_list()
-        angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-        values += values[:1]
-        angles += angles[:1]
-
-        fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={"projection": "polar"})
-        ax.plot(angles, values, linewidth=2, color="blue")
-        ax.fill(angles, values, alpha=0.3, color="skyblue")
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(labels, rotation=45, ha="right")
-        ax.set_yticklabels([])
-        ax.set_title(f"Top {top_n} ingredients")
-        plt.tight_layout()
-        self._cache[cache_key] = fig
 
         return self._cache[cache_key]
 
@@ -673,7 +675,7 @@ class RecipeAnalyzer:
         Args:
             wordcloud_nbr_word: Maximum number of words to display in each cloud.
         """
-        st.header("🗣️ WordClouds (6 charts)")
+        st.subheader("🗣️ WordClouds (6 charts)")
 
         categories = [
             ("Most reviewed recipes", "most"),
@@ -683,7 +685,7 @@ class RecipeAnalyzer:
 
         # 2x3 grid for the 6 wordclouds
         for _i, (title, filter_type) in enumerate(categories):
-            st.subheader(title)
+            st.markdown(title)
             cols = st.columns(2)
 
             with (
@@ -725,7 +727,7 @@ class RecipeAnalyzer:
             recipe_count: Number of recipes to analyze (passed to comparison method).
             wordcloud_nbr_word: Maximum features for TF-IDF vectorization.
         """
-        st.header("🔄 Frequency/TF-IDF Comparisons (3 charts)")
+        st.subheader("🔄 Frequency/TF-IDF Comparisons (3 charts)")
 
         categories = [
             ("Most reviewed recipes", "most"),

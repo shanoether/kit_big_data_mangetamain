@@ -14,18 +14,13 @@ st.set_page_config(
 st.title("Trends")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
-    df_interactions = st.session_state.df_interactions
+    df_interactions = st.session_state.df_interactions_nna
 
     # Parsing des dates
     df_interaction = df_interactions.with_columns(
         [
-            pl.col("date").alias("date_parsed"),
-        ],
-    )
-    df_interaction = df_interaction.with_columns(
-        [
-            pl.col("date_parsed").dt.year().alias("year"),
-            pl.col("date_parsed").dt.month().alias("month"),
+            pl.col("date").dt.year().alias("year"),
+            pl.col("date").dt.month().alias("month"),
         ],
     )
 
@@ -38,12 +33,16 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     fig, ax = plt.subplots()
     sns.lineplot(
-        data=mean_by_year.to_pandas(),
+        data=mean_by_year,
         x="year",
         y="mean_rating",
         marker="o",
         ax=ax,
     )
+    ax.set_ylim(0, 5)
+    ax.grid()
+    plt.xticks(range(2000, 2019, 3))
+    sns.despine()
     st.pyplot(fig)
 
     # Nombre de reviews par mois et année
@@ -55,7 +54,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     fig, ax = plt.subplots()
     sns.lineplot(
-        data=monthly_counts.to_pandas(),
+        data=monthly_counts,
         x="month",
         y="nb_reviews",
         hue="year",
@@ -63,4 +62,5 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax=ax,
     )
     plt.xticks(range(1, 13))
+    sns.despine()
     st.pyplot(fig)

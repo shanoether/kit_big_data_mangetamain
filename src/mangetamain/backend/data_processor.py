@@ -117,7 +117,7 @@ class DataProcessor:
         recipes with unrealistic preparation times or zero steps. It
         updates the instance attributes used by downstream processing.
         """
-        self.df_interactions = self.df_interactions.filter(
+        self.df_interactions_nna = self.df_interactions.filter(
             ~self.df_interactions["review"].is_null(),
         )
         logger.info(
@@ -125,12 +125,14 @@ class DataProcessor:
         )
         self.df_recipes_nna = self.df_recipes.filter(
             (self.df_recipes["minutes"] < 60 * 24 * 365)
-            & (self.df_recipes["minutes"] == 0),
+            & (self.df_recipes["minutes"] > 0),
         )
         logger.info(
             f"Recipes after dropping unrealistic times | Data shape: {self.df_recipes.shape}.",
         )
-        self.df_recipes_nna = self.df_recipes.filter(self.df_recipes["n_steps"] > 0)
+        self.df_recipes_nna = self.df_recipes_nna.filter(
+            self.df_recipes_nna["n_steps"] > 0,
+        )
         logger.info(
             f"Recipes after dropping zero steps | Data shape: {self.df_recipes.shape}.",
         )
@@ -165,28 +167,29 @@ class DataProcessor:
         Produces ``total`` tables for each duration bucket that are used to
         compute rating proportions and other aggregates.
         """
-        self.total = self.df_interactions.join(
+        self.total_nt = self.df_interactions.join(
+            self.df_recipes,
+            on="recipe_id",
+            how="inner",
+        )
+        self.total = self.df_interactions_nna.join(
             self.df_recipes_nna,
-            left_on="recipe_id",
-            right_on="recipe_id",
+            on="recipe_id",
             how="inner",
         )
-        self.total_short = self.df_interactions.join(
+        self.total_short = self.df_interactions_nna.join(
             self.df_recipes_nna_short,
-            left_on="recipe_id",
-            right_on="recipe_id",
+            on="recipe_id",
             how="inner",
         )
-        self.total_medium = self.df_interactions.join(
+        self.total_medium = self.df_interactions_nna.join(
             self.df_recipes_nna_medium,
-            left_on="recipe_id",
-            right_on="recipe_id",
+            on="recipe_id",
             how="inner",
         )
-        self.total_long = self.df_interactions.join(
+        self.total_long = self.df_interactions_nna.join(
             self.df_recipes_nna_long,
-            left_on="recipe_id",
-            right_on="recipe_id",
+            on="recipe_id",
             how="inner",
         )
         logger.info(f"Merged data shape: {self.total.shape}.")
@@ -205,47 +208,44 @@ class DataProcessor:
         # minutes = np.array(sorted(self.df_recipes_nna_court["minutes"].unique()))
         logger.info("Computing proportions of 5-star ratings by minutes")
         minutes = np.array(sorted(self.df_recipes_nna_short["minutes"].unique()))
-        proportion_m = [0 for m in minutes]
-        for m in range(len(minutes)):
-            # comptes = self.df_total_court.filter(pl.col("minutes") == minutes[m])["rating"].value_counts().sort("rating")
-            comptes = (
-                self.total_short.filter(pl.col("minutes") == minutes[m])["rating"]
-                .value_counts()
-                .sort("rating")
-            )
-            proportion_m[m] = (
-                comptes.filter(pl.col("rating") == RATING_MAX) / comptes.sum()
-            )[0, 1]
-        # proportion_m = pl.Series(np.array(proportion_m))
-        proportion_m = np.array(proportion_m)
+        comptes = (
+            self.total_short["minutes"]
+            .value_counts()
+            .sort("minutes")["count"]
+            .to_numpy()
+        )
+        proportions = (
+            self.total_short.filter(pl.col("rating") == RATING_MAX)["minutes"]
+            .value_counts()
+            .sort("minutes")["count"]
+            .to_numpy()
+        )
+        proportion_m = proportions / comptes
 
         # steps = np.array(sorted(self.df_recipes_nna[self.df_recipes_nna["n_steps"] <= 40].n_steps.unique()))
         logger.info("Computing proportions of 5-star ratings by steps")
         steps = np.array(
             sorted(
-                self.df_recipes_nna.filter(pl.col("n_steps") <= NB_STEPS_MAX)
-                .select(pl.col("n_steps"))
-                .unique()
-                .to_series()
-                .to_list(),
+                self.df_recipes_nna.filter(pl.col("n_steps") <= NB_STEPS_MAX)[
+                    "n_steps"
+                ].unique(),
             ),
         )
-        proportion_s = [0 for m in steps]
-        for m in range(len(steps)):
-            comptes = (
-                self.total.filter(pl.col("n_steps") == steps[m])["rating"]
-                .value_counts()
-                .sort("rating")
-            )
-            # proportion_s[m] = (comptes[5] / comptes.sum())[0,1]
-            proportion_s[m] = (
-                comptes.filter(pl.col("rating") == RATING_MAX) / comptes.sum()
-            )[
-                0,
-                1,
-            ]  # Sometimes missing ratings so fetching index 5 is out of bound
-        # proportion_s = pl.Series(np.array(proportion_s))
-        proportion_s = np.array(proportion_s)
+        comptes = (
+            self.total.filter(pl.col("n_steps") <= NB_STEPS_MAX)["n_steps"]
+            .value_counts()
+            .sort("n_steps")["count"]
+            .to_numpy()
+        )
+        proportions = (
+            self.total.filter(
+                (pl.col("n_steps") <= NB_STEPS_MAX) & (pl.col("rating") == RATING_MAX),
+            )["n_steps"]
+            .value_counts()
+            .sort("n_steps")["count"]
+            .to_numpy()
+        )
+        proportion_s = proportions / comptes
 
         logger.info("Proportions computed. Loading internally")
         self.df_proportion_m = pl.DataFrame(
@@ -273,11 +273,16 @@ class DataProcessor:
         save_folder.mkdir(parents=True, exist_ok=True)
         logger.info("Saving df_interactions")
         self.df_interactions.write_parquet(
+            "data/processed/initial_interactions.parquet",
+        )
+        self.df_interactions_nna.write_parquet(
             "data/processed/processed_interactions.parquet",
         )
         logger.info("Done \n Saving df_recipes")
-        self.df_recipes.write_parquet("data/processed/processed_recipes.parquet")
+        self.df_recipes.write_parquet("data/processed/initial_recipes.parquet")
+        self.df_recipes_nna.write_parquet("data/processed/processed_recipes.parquet")
         logger.info("Done \n Saving total data")
+        self.total_nt.write_parquet("data/processed/total_nt.parquet")
         self.total.write_parquet("data/processed/total.parquet")
         logger.info("Done \n Saving total short data")
         self.total_short.write_parquet("data/processed/short.parquet")
