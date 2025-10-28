@@ -37,6 +37,16 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax.set_ylabel("Count")
         sns.despine()
         st.pyplot(fig)
+        st.markdown(
+            """
+                The rating distribution shows that the large majority of ratings are 5 stars,
+                which means that there is a huge bias in all analysis related to ratings.
+                This bias can be explained by the fact that users tend to rate only recipes
+                they liked, and not the ones they didn't like. The problem is that we don't have
+                any information about the recipes that were not rated, which makes it difficult
+                to draw realistic conclusions from the ratings.
+                """,
+        )
 
     # draw boxplot of ratings
     st.subheader("📊 Rating Boxplot")
@@ -48,6 +58,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
         # Show in Streamlit
         st.pyplot(fig)
+        st.markdown(
+            """
+                The boxplot shows that the distribution is really skewed to the right,
+                since all votes below three are considered as outliers.
+                """,
+        )
 
     # Visualisation distribution des recettes par review
     with st.spinner("Generating rating distribution by review..."):
@@ -140,6 +156,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax2.grid()
         sns.despine()
         st.pyplot(fig_time)
+        st.markdown(
+            """
+                It can be observed that the ratings do not appear to depend strongly
+                on the preparation time. The proportion of 5-star ratings remains relatively
+                stable.""",
+        )
 
     # Ratings vs Number of Steps
     st.header("Ratings vs Number of Steps")
@@ -178,6 +200,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax4.grid()
         sns.despine()
         st.pyplot(fig_steps)
+        st.markdown(
+            """
+                And we can also see that the proportion of 5-star rankings does not
+                either depend on the number of steps in the recipe.
+                """,
+        )
 
 else:
     st.error("❌ Data not loaded properly. Please refresh the page.")
