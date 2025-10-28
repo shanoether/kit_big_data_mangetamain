@@ -11,15 +11,15 @@ on:
 jobs:
   security:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       packages: write
       attestations: write
       id-token: write
-      
+
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v4
 
       - name: Debug SAFETY_API_KEY
         run: |
