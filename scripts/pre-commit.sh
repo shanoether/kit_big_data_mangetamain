@@ -42,6 +42,13 @@ uv add mkdocs-literate-nav
 
 uv run hatch run docs:serve
 
+# Test
+ur coverage run -m pytest && coverage report -m
+tests/unit/mangetamain/backend/test_recipe_analyzer.py::TestRecipeAnalyzer::test_compare_frequency_and_tfidf_returns_figure  # run a specific test
+rm -rf tests/unit/mangetamain/backend/__pycache__ # if some test still faile
+ur coverage run -m pytest && ur coverage report -m
+
+
 # Then install the precommituv install pre-commit
 uv add pre-commit
 pre-commit install

@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 import polars as pl
 
+from mangetamain.backend.recipe_analyzer import RecipeAnalyzer
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
@@ -258,6 +259,19 @@ class DataProcessor:
             {"n_steps": steps.astype(int), "proportion_s": proportion_s.astype(float)},
         )
 
+    def process_recipes(self) -> None:
+        """Create a RecipeAnalyzer instance for NLP and visualization.
+
+        Initializes a :class:`RecipeAnalyzer` with the loaded data and stores
+        it as ``self.recipe_analyzer``. This object provides word cloud generation,
+        TF-IDF analysis, and other recipe text analysis features.
+        """
+        self.recipe_analyzer = RecipeAnalyzer(
+            self.df_interactions,
+            self.df_recipes,
+            self.total,
+        )
+
     def save_data(self) -> None:
         """Persist processed tables to parquet files under ``data/processed/``.
 
@@ -281,16 +295,24 @@ class DataProcessor:
         logger.info("Done \n Saving df_recipes")
         self.df_recipes.write_parquet("data/processed/initial_recipes.parquet")
         self.df_recipes_nna.write_parquet("data/processed/processed_recipes.parquet")
+
         logger.info("Done \n Saving total data")
         self.total_nt.write_parquet("data/processed/total_nt.parquet")
         self.total.write_parquet("data/processed/total.parquet")
+
         logger.info("Done \n Saving total short data")
         self.total_short.write_parquet("data/processed/short.parquet")
         # self.df_recipes_nna_medium.write_parquet("data/processed/medium.parquet")
         # self.df_recipes_nna_long.write_parquet("data/processed/long.parquet")
+
         logger.info("Done \n Saving proportions data")
         self.df_proportion_m.write_parquet("data/processed/proportion_m.parquet")
         self.df_proportion_s.write_parquet("data/processed/proportion_s.parquet")
+
+        logger.info("Done \n Saving recipe analyzer object")
+
+        self.recipe_analyzer.save("data/processed/recipe_analyzer.pkl")
+
         logger.info("All processed data saved to parquet files.")
 
 
@@ -300,5 +322,6 @@ if __name__ == "__main__":
     processor.split_minutes()
     processor.merge_data()
     processor.compute_proportions()
+    processor.process_recipes()
     processor.save_data()
     logger.info("Data processing completed.")

@@ -3,54 +3,53 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-import streamlit as st
-
-from mangetamain.streamlit_ui import load_data_from_parquet, main
+from mangetamain.streamlit_ui import main
 
 
 class TestStreamlitUI(unittest.TestCase):
     """Unit tests for the Streamlit UI functions."""
 
-    @patch("mangetamain.streamlit_ui.load_parquet_with_progress")
-    @patch("mangetamain.streamlit_ui.logger")
-    def test_load_data_from_parquet(
-        self,
-        mock_logger: MagicMock,
-        mock_load_parquet: MagicMock,
-    ) -> None:
-        """Test loading data from parquet files into Streamlit session state."""
-        # Mock return values for each parquet file
-        mock_load_parquet.side_effect = [
-            {"dummy": 1},  # df_interactions
-            {"dummy": 2},  # df_recipes
-            {"dummy": 3},  # df_total
-            {"dummy": 4},  # df_total_court
-            {"dummy": 5},  # df_interactions_nna
-            {"dummy": 6},  # df_recipes_nna
-            {"dummy": 7},  # df_recipes_nna
-            {"proportion_m": [0.1, 0.2]},  # proportion_m
-            {"proportion_s": [0.3, 0.4]},  # proportion_s
-        ]
+    # Moved to test_helper.py
+    # @patch("mangetamain.streamlit_ui.load_parquet_with_progress")
+    # @patch("mangetamain.streamlit_ui.logger")
+    # def test_load_data_from_parquet(
+    #     self,
+    #     mock_logger: MagicMock,
+    #     mock_load_parquet: MagicMock,
+    # ) -> None:
+    #     """Test loading data from parquet files into Streamlit session state."""
+    #     # Mock return values for each parquet file
+    #     mock_load_parquet.side_effect = [
+    #         {"dummy": 1},  # df_interactions
+    #         {"dummy": 2},  # df_recipes
+    #         {"dummy": 3},  # df_total
+    #         {"dummy": 4},  # df_total_court
+    #         {"dummy": 5},  # df_interactions_nna
+    #         {"dummy": 6},  # df_recipes_nna
+    #         {"dummy": 7},  # df_recipes_nna
+    #         {"proportion_m": [0.1, 0.2]},  # proportion_m
+    #         {"proportion_s": [0.3, 0.4]},  # proportion_s
+    #     ]
 
-        # Clear session state
-        st.session_state.clear()
+    #     # Clear session state
+    #     st.session_state.clear()
 
-        load_data_from_parquet()
+    #     load_data_from_parquet()
 
-        # Verify st.session_state is populated
-        assert "df_interactions" in st.session_state
-        assert "df_recipes" in st.session_state
-        assert "df_total" in st.session_state
-        assert "df_total_court" in st.session_state
-        assert "proportion_m" in st.session_state
-        assert "proportion_s" in st.session_state
-        assert st.session_state.data_loaded
+    #     # Verify st.session_state is populated
+    #     assert "df_interactions" in st.session_state
+    #     assert "df_recipes" in st.session_state
+    #     assert "df_total" in st.session_state
+    #     assert "df_total_court" in st.session_state
+    #     assert "proportion_m" in st.session_state
+    #     assert "proportion_s" in st.session_state
+    #     assert st.session_state.data_loaded
 
-        # Logger info called
-        mock_logger.info.assert_called_with("Data loaded into session state.")
+    #     # Logger info called
+    #     mock_logger.info.assert_called_with("Data loaded into session state.")
 
     @patch("mangetamain.streamlit_ui.st")
-    @patch("mangetamain.streamlit_ui.load_data_from_parquet")
+    @patch("mangetamain.streamlit_ui.load_data_from_parquet_and_pickle")
     @patch("mangetamain.streamlit_ui.logger")
     def test_main_calls_data_loading_and_navigation(
         self,
@@ -66,6 +65,9 @@ class TestStreamlitUI(unittest.TestCase):
         mock_st.Page = MagicMock()
         mock_pg = MagicMock()
         mock_st.navigation.return_value = mock_pg
+        mock_st.spinner = MagicMock()
+        mock_st.spinner.return_value.__enter__ = MagicMock()
+        mock_st.spinner.return_value.__exit__ = MagicMock()
 
         main()
 

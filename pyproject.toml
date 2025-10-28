@@ -127,6 +127,11 @@ addopts = [
     "--import-mode=append",
     "-v"
 ]
+filterwarnings = [
+    "ignore::DeprecationWarning:weasel.util.config",
+    "ignore::DeprecationWarning:click.parser",
+    "ignore::DeprecationWarning:spacy.cli._util",
+]
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
@@ -144,6 +149,7 @@ omit = [
     "*/migrations/*",
     "*/venv/*",
     "*/env/*",
+    "src/mangetamain/frontend/pages/recipe_analyzer.py",
 ]
 
 [tool.coverage.report]

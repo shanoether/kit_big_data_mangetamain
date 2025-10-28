@@ -26,6 +26,7 @@ Note:
     to ensure instant rendering on subsequent calls.
 """
 
+import pickle
 from collections import Counter
 from functools import lru_cache
 from typing import Any
@@ -97,6 +98,8 @@ class RecipeAnalyzer:
         self._preprocessed_500_best_reviews()
         self._preprocessed_500_worst_reviews()
         self._preprocessed_500_most_reviews()
+        self._preprocess_word_cloud(100)
+        self._preprocess_comparisons(100, 100)
 
     def _extend_stop_words(self) -> None:
         """Extend the default stop words with recipe-specific terms.
@@ -304,7 +307,7 @@ class RecipeAnalyzer:
 
         # Use batch processing instead of loop (MUCH faster)
         ingredients_list = most_reviews_with_ing["ingredients"].to_list()
-        logger.info(f"Processing {len(ingredients_list)} ingredient strings...")
+        logger.info(f"Processing {len(ingredients_list)} ingredients strings...")
         cleaned_reviews = self._clean_texts_batch(ingredients_list)
 
         logger.info(f"Most reviews cleaned: {cleaned_reviews[:5]}")
@@ -403,7 +406,7 @@ class RecipeAnalyzer:
         return recipe_ids
 
     # could use  df_total
-    def get_reviews_for_recipes(self, recipe_ids: list[str]) -> list[str]:
+    def get_reviews_for_recipes(self, recipe_ids: list[int]) -> list[str]:
         """Retrieve all review texts for specified recipe IDs.
 
         Args:
@@ -638,7 +641,8 @@ class RecipeAnalyzer:
 
             if ingredients_counts.height == 0:
                 fig, ax = plt.subplots(
-                    figsize=(8, 8), subplot_kw={"projection": "polar"}
+                    figsize=(8, 8),
+                    subplot_kw={"projection": "polar"},
                 )
                 ax.text(0.5, 0.5, "No ingredients found", ha="center", va="center")
                 self._cache[cache_key] = fig
@@ -661,6 +665,24 @@ class RecipeAnalyzer:
             self._cache[cache_key] = fig
 
         return self._cache[cache_key]
+
+    def _preprocess_word_cloud(self, wordcloud_nbr_word: int) -> None:
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
+        for _i, (title, filter_type) in enumerate(categories):
+            self.plot_word_cloud(
+                wordcloud_nbr_word,
+                filter_type,
+                f"Frequency - {title}",
+            )
+            self.plot_tfidf(
+                wordcloud_nbr_word,
+                filter_type,
+                f"TF-IDF - {title}",
+            )
 
     def display_wordclouds(self, wordcloud_nbr_word: int) -> None:
         """Render a Streamlit UI with 6 word cloud visualizations.
@@ -707,6 +729,33 @@ class RecipeAnalyzer:
                 )
                 st.pyplot(fig)
 
+    def _preprocess_comparisons(
+        self,
+        recipe_count: int,
+        wordcloud_nbr_word: int,
+    ) -> None:
+        """Pre-generate and cache all Venn diagram comparison figures.
+
+        Generates comparison visualizations for all three categories (most, best,
+        worst) to populate the cache. This speeds up subsequent display calls.
+
+        Args:
+            recipe_count: Number of recipes to analyze for comparisons.
+            wordcloud_nbr_word: Maximum features for TF-IDF vectorization.
+        """
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
+        for _i, (title, filter_type) in enumerate(categories):
+            self.compare_frequency_and_tfidf(
+                recipe_count,
+                wordcloud_nbr_word,
+                filter_type,
+                f"Comparison - {title}",
+            )
+
     # Function to display comparisons
     def display_comparisons(
         self,
@@ -745,3 +794,55 @@ class RecipeAnalyzer:
                     f"Comparison - {title}",
                 )
                 st.pyplot(fig)
+
+    def __getstate__(self) -> dict[str, Any]:
+        """Prepare object for pickling - exclude spaCy model.
+
+        The spaCy NLP model cannot be pickled directly, so we exclude it
+        from the serialized state. It will be reloaded in __setstate__.
+
+        Returns:
+            dict[str, Any]: Object state dictionary without the spaCy model.
+        """
+        state = self.__dict__.copy()
+        state["nlp"] = None  # Don't pickle the spaCy model
+        return state
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """Restore object after unpickling - reload spaCy model.
+
+        Args:
+            state: The object state dictionary from pickle.
+        """
+        self.__dict__.update(state)
+        # Reload the spaCy model with same configuration as __init__
+
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+
+    def save(self, filepath: str) -> None:
+        """Save the RecipeAnalyzer instance to disk using pickle.
+
+        Args:
+            filepath: Path where to save the analyzer (e.g., 'analyzer.pkl').
+
+        Note:
+            The spaCy model is excluded from serialization and reloaded on load.
+        """
+        with open(filepath, "wb") as f:
+            pickle.dump(self, f)
+        logger.info(f"RecipeAnalyzer saved to {filepath}")
+
+    @staticmethod
+    def load(filepath: str) -> "RecipeAnalyzer":
+        """Load a RecipeAnalyzer instance from disk.
+
+        Args:
+            filepath: Path to the saved analyzer file.
+
+        Returns:
+            RecipeAnalyzer: Loaded analyzer instance with spaCy model reloaded.
+        """
+        with open(filepath, "rb") as f:
+            analyzer: RecipeAnalyzer = pickle.load(f)
+        logger.info(f"RecipeAnalyzer loaded from {filepath}")
+        return analyzer

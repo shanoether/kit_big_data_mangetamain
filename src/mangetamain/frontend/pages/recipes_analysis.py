@@ -147,40 +147,42 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
 
-    # Slider for number of recipes to analyze for word clouds
-    recipe_count = st.slider(
-        "Number of recipes",
-        min_value=20,
-        max_value=500,
-        value=100,
-    )
-
-    # Slider for maximum words in word clouds
-    wordcloud_max_words = st.slider(
-        "Max words in WordClouds",
-        min_value=30,
-        max_value=200,
-        value=100,
-    )
-
     if show_wordclouds:
         with st.spinner("Generating word clouds..."):
             st.header("🍳 Ingredient Analysis")
             st.markdown(
-                "Most Present Ingredient in Function of the Recipe Rating based on frequency (left) or on a TF-IDF metric (right)."
+                "Most Present Ingredient in Function of the Recipe Rating based on frequency (left) or on a TF-IDF metric (right).",
+            )
+            # Slider for number of recipes to analyze for word clouds
+            recipe_count = st.slider(
+                "Number of recipes",
+                min_value=20,
+                max_value=500,
+                value=100,
+            )
+
+            # Slider for maximum words in word clouds
+            wordcloud_max_words = st.slider(
+                "Max words in WordClouds",
+                min_value=30,
+                max_value=200,
+                value=100,
             )
             # Generate word clouds from recipe reviews
             recipe_analyzer.display_wordclouds(wordcloud_max_words)
 
-    # =========================================================================
-    # SECTION 7: VENN DIAGRAM COMPARISONS
-    # =========================================================================
+            # =========================================================================
+            # SECTION 7: VENN DIAGRAM COMPARISONS
+            # =========================================================================
 
-    if show_comparisons:
-        with st.spinner("Computing Venn diagram comparisons..."):
-            st.header("🍳 Venn Diagram Comparisons")
-            # Compare frequency-based vs TF-IDF word extraction
-            recipe_analyzer.display_comparisons(recipe_count, wordcloud_max_words)
+            if show_comparisons:
+                with st.spinner("Computing Venn diagram comparisons..."):
+                    st.header("🍳 Venn Diagram Comparisons")
+                    # Compare frequency-based vs TF-IDF word extraction
+                    recipe_analyzer.display_comparisons(
+                        recipe_count,
+                        wordcloud_max_words,
+                    )
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
