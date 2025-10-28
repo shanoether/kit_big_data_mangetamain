@@ -3,6 +3,7 @@
 # tests/unit/mangetamain/backend/test_dataprocessor.py
 import zipfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import polars as pl
 import pytest
@@ -40,6 +41,13 @@ class TestDataProcessor:
             path_interactions=self.interactions_csv,
             path_recipes=self.recipes_csv,
         )
+
+    @pytest.fixture  # type: ignore
+    def mock_recipe_analyzer(self) -> MagicMock:
+        """Create a reusable mock RecipeAnalyzer instance with save method."""
+        mock_analyzer = MagicMock()
+        mock_analyzer.save = MagicMock()
+        return mock_analyzer
 
     # ---------------------------
     # Tests fonctionnels de base
@@ -94,12 +102,44 @@ class TestDataProcessor:
         assert len(self.processor.df_proportion_m) > 0
         assert len(self.processor.df_proportion_s) > 0
 
-    def test_save_data(self, tmp_path: Path) -> None:
-        """Vérifie que save_data écrit bien les fichiers parquet."""
+    @patch("mangetamain.backend.data_processor.RecipeAnalyzer")
+    def test_process_recipes(
+        self,
+        mock_recipe_analyzer_class: MagicMock,
+        mock_recipe_analyzer: MagicMock,
+    ) -> None:
+        """Vérifie que process_recipes crée une instance RecipeAnalyzer."""
+        # Arrange: Use the fixture mock instance
+        mock_recipe_analyzer_class.return_value = mock_recipe_analyzer
+
         self.processor.drop_na()
         self.processor.split_minutes()
         self.processor.merge_data()
         self.processor.compute_proportions()
+        self.processor.process_recipes()
+
+        assert hasattr(self.processor, "recipe_analyzer")
+        assert self.processor.recipe_analyzer is not None
+        assert self.processor.recipe_analyzer == mock_recipe_analyzer
+
+    @patch("mangetamain.backend.data_processor.RecipeAnalyzer")
+    @patch("builtins.open", new_callable=MagicMock)
+    def test_save_data(
+        self,
+        mock_open_func: MagicMock,
+        mock_recipe_analyzer_class: MagicMock,
+        mock_recipe_analyzer: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """Vérifie que save_data écrit bien les fichiers parquet."""
+        # Arrange: Setup mock for RecipeAnalyzer
+        mock_recipe_analyzer_class.return_value = mock_recipe_analyzer
+
+        self.processor.drop_na()
+        self.processor.split_minutes()
+        self.processor.merge_data()
+        self.processor.compute_proportions()
+        self.processor.process_recipes()
 
         # Rediriger les fichiers vers tmp_path pour le test
         processed_dir = tmp_path / "processed"
@@ -133,6 +173,9 @@ class TestDataProcessor:
         ]
         for f in expected_files:
             assert (processed_dir / f).exists()
+
+        # Verify that recipe_analyzer.save() was called
+        mock_recipe_analyzer.save.assert_called_once()
 
     # ---------------------------
     # Tests d'exceptions
@@ -225,3 +268,74 @@ class TestDataProcessor:
         # Les DataFrames doivent être chargés correctement
         assert processor.df_interactions.shape[0] == 1
         assert processor.df_recipes.shape[0] == 1
+
+    # ---------------------------
+    # Tests pour process_recipes
+    # ---------------------------
+
+    @patch("mangetamain.backend.data_processor.RecipeAnalyzer")
+    def test_process_recipes_creates_analyzer(
+        self,
+        mock_recipe_analyzer_class: MagicMock,
+        mock_recipe_analyzer: MagicMock,
+    ) -> None:
+        """Vérifie que process_recipes crée correctement une instance RecipeAnalyzer."""
+        # Arrange: Use the fixture mock instance
+        mock_recipe_analyzer_class.return_value = mock_recipe_analyzer
+
+        # Ensure data is processed
+        self.processor.drop_na()
+        self.processor.split_minutes()
+        self.processor.merge_data()
+
+        # Act: Call process_recipes
+        self.processor.process_recipes()
+
+        # Assert: RecipeAnalyzer was instantiated with correct parameters
+        mock_recipe_analyzer_class.assert_called_once_with(
+            self.processor.df_interactions,
+            self.processor.df_recipes,
+            self.processor.total,
+        )
+
+        # Assert: The instance is stored in processor.recipe_analyzer
+        assert self.processor.recipe_analyzer == mock_recipe_analyzer
+
+    @patch("mangetamain.backend.data_processor.RecipeAnalyzer")
+    def test_process_recipes_with_real_dataframes(
+        self,
+        mock_recipe_analyzer_class: MagicMock,
+        mock_recipe_analyzer: MagicMock,
+    ) -> None:
+        """Vérifie que process_recipes passe des DataFrames Polars valides au RecipeAnalyzer."""
+        # Arrange: Use the fixture mock instance
+        mock_recipe_analyzer_class.return_value = mock_recipe_analyzer
+
+        # Process data
+        self.processor.drop_na()
+        self.processor.split_minutes()
+        self.processor.merge_data()
+
+        # Act
+        self.processor.process_recipes()
+
+        # Assert: Check that the call was made with Polars DataFrames
+        call_args = mock_recipe_analyzer_class.call_args[0]
+        assert isinstance(call_args[0], pl.DataFrame), (
+            "First arg should be a Polars DataFrame (df_interactions)"
+        )
+        assert isinstance(call_args[1], pl.DataFrame), (
+            "Second arg should be a Polars DataFrame (df_recipes)"
+        )
+        assert isinstance(call_args[2], pl.DataFrame), (
+            "Third arg should be a Polars DataFrame (total)"
+        )
+
+        # Verify the DataFrames have expected content
+        assert call_args[0].shape[0] == 3, (
+            "df_interactions should have 2 rows (after drop_na)"
+        )
+        assert call_args[1].shape[0] == 3, (
+            "df_recipes should have 2 rows (after drop_na)"
+        )
+        assert call_args[2].shape[0] > 0, "total should have merged data"

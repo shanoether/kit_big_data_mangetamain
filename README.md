@@ -1,50 +1,35 @@
-# Kit Big Data: Mangetamain
-
-## How to run this project
-
-1. Set up the environment (I recommend to use UV and that's what I did)
-   1. Install uv
-   2. Spin up the environment
-        ```bash
-        uv venv --python 3.12
-        uv sync
-        uv add --dev ruff mypy pytest black ipykernel jupyterlab ipython
-        uv run ipython kernel install --user --name=venv-3.12-mangetamain --display-name "Python 3.12 (mangetamain)"
-        ```
-    3. Select the right python kernel for jupyternotebook (reload windows if necessary from command palet)
-2. Donwload data
-   1. The project data can be found in [kaggle](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data?select=RAW_interactions.csv)
-   2. Download the data called RAW_interactions.zip.csv and RAW_recipes.zip.csv and put them in the folder `data/raw/`
-   3.
-      1.
-`
-
-
-## How to contribute
-
-Work on separate notebook or use branch in git:
-1. Branch to dev: `git checkout -b <dev-branch-name>`-
-2. Commit your (multiple changes)
-```bash
-git add .
-git commit -m "My feature work"
-git push -u origin dev/myfeature
-```
-- When changes accpeted by team and reviewed, merge with dev:
-```bash
-git checkout dev
-git pull origin dev        # update main with latest from remote
-git merge dev/myfeature               # merge dev into main
-git add .
-git commit -m "Merge with dev for my feature"
-git push origin dev        # publish merged main
-```
-- Then go back to your dev branch:
-```bash
-git checkout dev/myfeature
-git pull origin dev   # or: git merge main
-```
+# Mangetamain, Garde l'Autre Pour Demain - A Food Data Visualiaation Tool
 
 ## Introduction
 
-## Conclusion
+*Mangetamin* is a leader of the B2C client recommendation thanks to its massive data analytics methodology. Today it will share with the all world its best insights so that everybody at home can cook the best meal! How? Through a webapp visualization platform where we can analyze and see why some recipes are so delicious... or not! Go to [](http://34.1.14.43:8501/) to learn more about how our recipes are rated, what are the trends and how our users behaves on our website.
+
+
+## How to Run This Project
+
+**Run locally**
+You can run locally the project by following those steps
+1. Install [UV](https://docs.astral.sh/uv/getting-started/installation/)
+2. Clone the project: `git clone https://
+3. Set-up the environment: `uv sync`
+4. Download the data from [kaggle](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data?select=RAW_interactions.csv): `RAW_interactions.zip.csv` and `RAW_recipes.zip.csv` and save them in /data/raw
+5. Run the pre-processing tool: `uv run python src/mangetamain/backend/data_processor.py`
+6. When the pre-processing is done, you can launch locally teh streamlit app with: `uv run streamlit run src/mangetamain/streamlit_ui.py`
+7. Then visit http://http://localhost:8501 to see your web app
+
+**Docker**
+
+Alternatively you can also build docker image by using docker compose:
+`docker-compose -f docker-compose-local.yml up`
+This will build locally a docker image, spaw a first container that will run the preprocessing and saving the preprocessed files on disk and then launch the webapp within a container. To stop the webapp run:
+
+`docker-compose -f docker-compose-local.yml down`
+
+
+##
+
+## Structure of the project
+
+@copilot fill that in with directory struture and most import parts
+
+##

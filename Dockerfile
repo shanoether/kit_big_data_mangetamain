@@ -25,6 +25,9 @@ COPY pyproject.toml uv.lock README.md ./
 # Install Python dependencies
 RUN uv sync --frozen --no-dev
 
+# Download spaCy model
+RUN uv run python -m spacy download en_core_web_sm --no-cache-dir
+
 # Copy source code
 COPY . .
 

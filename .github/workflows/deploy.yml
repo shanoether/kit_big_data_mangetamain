@@ -10,9 +10,26 @@ on:
 
 jobs:
   security:
+    environment: vm-kit-big-data-1
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v4
+
+      - name: Debug SAFETY_API_KEY
+        run: |
+          if [ -z "${{ secrets.SAFETY_API_KEY }}" ]; then
+            echo "❌ SAFETY_API_KEY is missing!"
+          else
+            echo "✅ SAFETY_API_KEY is set."
+          fi
+
       - name: Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
         with:
