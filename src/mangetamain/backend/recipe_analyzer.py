@@ -288,26 +288,23 @@ class RecipeAnalyzer:
         cache_key = "preprocessed_500_most_reviews"
 
         # Find the 500 recipes with most reviews
-        most_reviews = (
+        most_reviewed_ids = (
             self.df_total.group_by("recipe_id")
-            .agg(
-                [
-                    pl.len().alias("nb_reviews"),
-                ],
-            )
+            .agg(pl.len().alias("nb_reviews"))
             .sort("nb_reviews", descending=True)
             .head(500)
         )
 
-        # Join with ingredients data
-        most_reviews_with_ing = most_reviews.join(
-            self.df_total.select(["recipe_id", "ingredients"]),
+        # Join with ingredients data - use unique() to avoid duplicates
+        most_reviews_with_ing = most_reviewed_ids.join(
+            self.df_total.select(["recipe_id", "ingredients"]).unique("recipe_id"),
             on="recipe_id",
             how="left",
-        )
+        ).drop_nulls("ingredients")
 
         # Use batch processing instead of loop (MUCH faster)
         ingredients_list = most_reviews_with_ing["ingredients"].to_list()
+        logger.info(f"Processing {len(ingredients_list)} ingredient strings...")
         cleaned_reviews = self._clean_texts_batch(ingredients_list)
 
         logger.info(f"Most reviews cleaned: {cleaned_reviews[:5]}")
@@ -689,8 +686,9 @@ class RecipeAnalyzer:
             st.subheader(title)
             cols = st.columns(2)
 
-            with cols[0] and st.spinner(
-                f"Generating WordCloud (Frequency) for {title}...",
+            with (
+                cols[0],
+                st.spinner(f"Generating WordCloud (Frequency) for {title}..."),
             ):
                 fig = self.plot_word_cloud(
                     wordcloud_nbr_word,
@@ -699,9 +697,7 @@ class RecipeAnalyzer:
                 )
                 st.pyplot(fig)
 
-            with cols[1] and st.spinner(
-                f"Generating WordCloud (TF-IDF) for {title}...",
-            ):
+            with cols[1], st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
                 fig = self.plot_tfidf(
                     wordcloud_nbr_word,
                     filter_type,
