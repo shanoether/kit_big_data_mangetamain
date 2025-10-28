@@ -11,7 +11,7 @@ services:
 
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
-    command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py", "--config", "/app/.streamlit/config.docker.toml",]
     #depends_on:
     #  preprocess
     restart: unless-stopped
@@ -27,6 +27,7 @@ services:
       - /opt/app/data:/app/data     # map local data folder
       - /opt/app/logs:/app/logs     # map logs folder
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /opt/app/.streamlit:/app/.streamlit:ro # for HTTPS on production
 
     environment:
       - PORT=8501

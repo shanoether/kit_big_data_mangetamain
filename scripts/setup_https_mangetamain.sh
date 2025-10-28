@@ -91,20 +91,27 @@ echo "📁 Certificate: $CERT_PATH"
 echo "🔑 Key: $KEY_PATH"
 
 echo ""
-echo "📝 Step 5: Creating Streamlit SSL configuration..."
+echo "📝 Step 5: Creating Streamlit SSL configuration on VM..."
 mkdir -p /opt/app/.streamlit
 
-cat > /opt/app/.streamlit/config.toml <<EOF
-.sit
+cat > /opt/app/.streamlit/config.docker.toml <<EOF
+[server]
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+sslCertFile = "/etc/letsencrypt/live/mangetamain.duckdns.org/fullchain.pem"
+sslKeyFile = "/etc/letsencrypt/live/mangetamain.duckdns.org/privkey.pem"
+
+[browser]
+serverAddress = "mangetamain.duckdns.org"
+serverPort = 443
 EOF
 
-echo "✅ Config created: /opt/app/.streamlit/config.toml"
-echo "   Note: Streamlit runs on internal port 8501, mapped to external port 443"
+echo "✅ Config created: /opt/app/.streamlit/config.docker.toml (SSL enabled for Docker only)"
+echo "   Note: Local .streamlit/config.toml remains without SSL for development"
 
 echo ""
-echo "📦 Step 6: Updating Docker Compose to mount certificates..."
-# Backup original docker-compose.yml
-sudo cp /opt/app/docker-compose.yml /opt/app/docker-compose.yml.backup
+echo "📦 Step 6: Checking Docker Compose to mount certificates..."
 
 # Check if volumes already configured
 if ! grep -q "/etc/letsencrypt" /opt/app/docker-compose.yml; then

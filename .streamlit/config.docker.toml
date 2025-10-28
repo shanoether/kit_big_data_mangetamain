@@ -1,0 +1,12 @@
+# For HTTPS deployment overwritten by script/setup_https_mangetamain.sh
+
+[server]
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+sslCertFile = "/etc/letsencrypt/live/mangetamain.duckdns.org/fullchain.pem"
+sslKeyFile = "/etc/letsencrypt/live/mangetamain.duckdns.org/privkey.pem"
+
+[browser]
+serverAddress = "mangetamain.duckdns.org"
+serverPort = 443
