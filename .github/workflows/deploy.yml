@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
+
+      - name: Debug SAFETY_API_KEY
+        run: |
+          if [ -z "${{ secrets.SAFETY_API_KEY }}" ]; then
+            echo "❌ SAFETY_API_KEY is missing!"
+          else
+            echo "✅ SAFETY_API_KEY is set."
+          fi
+
       - name: Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
         with:
