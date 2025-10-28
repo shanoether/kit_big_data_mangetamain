@@ -1,3 +1,5 @@
+"""Unit tests for the Streamlit UI module."""
+
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -7,9 +9,16 @@ from mangetamain.streamlit_ui import load_data_from_parquet, main
 
 
 class TestStreamlitUI(unittest.TestCase):
+    """Unit tests for the Streamlit UI functions."""
+
     @patch("mangetamain.streamlit_ui.load_parquet_with_progress")
     @patch("mangetamain.streamlit_ui.logger")
-    def test_load_data_from_parquet(self, mock_logger, mock_load_parquet):
+    def test_load_data_from_parquet(
+        self,
+        mock_logger: MagicMock,
+        mock_load_parquet: MagicMock,
+    ) -> None:
+        """Test loading data from parquet files into Streamlit session state."""
         # Mock return values for each parquet file
         mock_load_parquet.side_effect = [
             {"dummy": 1},  # df_interactions
@@ -29,13 +38,13 @@ class TestStreamlitUI(unittest.TestCase):
         load_data_from_parquet()
 
         # Verify st.session_state is populated
-        self.assertIn("df_interactions", st.session_state)
-        self.assertIn("df_recipes", st.session_state)
-        self.assertIn("df_total", st.session_state)
-        self.assertIn("df_total_court", st.session_state)
-        self.assertIn("proportion_m", st.session_state)
-        self.assertIn("proportion_s", st.session_state)
-        self.assertTrue(st.session_state.data_loaded)
+        assert "df_interactions" in st.session_state
+        assert "df_recipes" in st.session_state
+        assert "df_total" in st.session_state
+        assert "df_total_court" in st.session_state
+        assert "proportion_m" in st.session_state
+        assert "proportion_s" in st.session_state
+        assert st.session_state.data_loaded
 
         # Logger info called
         mock_logger.info.assert_called_with("Data loaded into session state.")
@@ -45,10 +54,11 @@ class TestStreamlitUI(unittest.TestCase):
     @patch("mangetamain.streamlit_ui.logger")
     def test_main_calls_data_loading_and_navigation(
         self,
-        mock_logger,
-        mock_load_data,
-        mock_st,
-    ):
+        mock_logger: MagicMock,
+        mock_load_data: MagicMock,
+        mock_st: MagicMock,
+    ) -> None:
+        """Test that main function loads data and sets up navigation."""
         # Simulate empty session_state
         mock_st.session_state = {}
 
@@ -63,7 +73,7 @@ class TestStreamlitUI(unittest.TestCase):
         mock_load_data.assert_called_once()
 
         # Ensure pages are instantiated
-        self.assertTrue(mock_st.Page.called)
+        assert mock_st.Page.called
 
         # Ensure navigation run was called
         mock_pg.run.assert_called_once()

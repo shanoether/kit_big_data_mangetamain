@@ -1,3 +1,5 @@
+"""Recipe analysis and visualization module."""
+
 from collections import Counter
 from functools import lru_cache
 
@@ -10,8 +12,33 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from wordcloud import WordCloud
 
 
+@lru_cache(maxsize=128)
+def _cached_clean_text(
+    text: str,
+    stop_words_frozen: frozenset[str],
+    nlp: spacy.Language,
+) -> list[str]:
+    if not isinstance(text, str) or not text.strip():
+        return []
+    doc = nlp(text.lower())
+    LEN_MIN = 2
+    return [
+        token.lemma_
+        for token in doc
+        if (
+            token.is_alpha
+            and token.lemma_ not in stop_words_frozen
+            and len(token.text) > LEN_MIN
+            and token.pos_ != "VERB"
+        )
+    ]
+
+
 class RecipeAnalyzer:
-    def __init__(self, path_recipe: str, path_interaction: str):
+    """Analyzes recipes and user interactions."""
+
+    def __init__(self, path_recipe: str, path_interaction: str) -> None:
+        """Initializes the RecipeAnalyzer with recipe and interaction data."""
         # Chargement des données sans cache (car on ne peut pas cacher self)
         self.df_recipe = pl.read_csv(path_recipe)
         self.df_interaction = pl.read_csv(path_interaction).with_columns(
@@ -22,7 +49,7 @@ class RecipeAnalyzer:
         self._extend_stop_words()
 
         # Cache des données pré-traitées
-        self._cache = {}
+        self._cache: dict[str, list[str]] = {}
 
     def _extend_stop_words(self) -> None:
         extra_stop_words = [
@@ -51,21 +78,8 @@ class RecipeAnalyzer:
         ]
         self.stop_words.update(extra_stop_words)
 
-    @lru_cache(maxsize=128)
     def _clean_text(self, text: str) -> list[str]:
-        if not isinstance(text, str) or not text.strip():
-            return []
-        doc = self.nlp(text.lower())
-        return [
-            token.lemma_
-            for token in doc
-            if (
-                token.is_alpha
-                and token.lemma_ not in self.stop_words
-                and len(token.text) > 2
-                and token.pos_ != "VERB"
-            )
-        ]
+        return _cached_clean_text(text, frozenset(self.stop_words), self.nlp)
 
     def _preprocess_reviews(self, texts: list[str]) -> list[str]:
         cache_key = str(texts[:5]) + str(len(texts))  # Clé de cache simple
@@ -76,7 +90,12 @@ class RecipeAnalyzer:
             self._cache[cache_key] = cleaned_texts
         return self._cache[cache_key]
 
-    def plot_contributions_by_semester(self, start_year: int, end_year: int):
+    def plot_contributions_by_semester(
+        self,
+        start_year: int,
+        end_year: int,
+    ) -> plt.Figure:
+        """Plots the number of contributions per semester between start_year and end_year."""
         cache_key = f"contributions_{start_year}_{end_year}"
         if cache_key not in self._cache:
             df = (
@@ -120,8 +139,16 @@ class RecipeAnalyzer:
             self._cache[cache_key] = fig
         return self._cache[cache_key]
 
-    def get_top_recipe_ids(self, n: int = 50, rating_filter: str = None) -> list[str]:
+    def get_top_recipe_ids(
+        self,
+        n: int = 50,
+        rating_filter: str | None = None,
+    ) -> list[str]:
+        """Récupère les top N recipe_id basés sur le nombre d'avis, avec filtre optionnel."""
         cache_key = f"top_recipes_{n}_{rating_filter}"
+        BEST_RATING = 5
+        WORST_RATING = 0
+        COMMENT_THRESHOLD = 10
         if cache_key not in self._cache:
             df = (
                 self.df_interaction.group_by("recipe_id")
@@ -131,13 +158,13 @@ class RecipeAnalyzer:
                         pl.col("rating").mean().alias("avg_rating"),
                     ],
                 )
-                .filter(pl.col("comment_count") >= 10)
+                .filter(pl.col("comment_count") >= COMMENT_THRESHOLD)
             )  # Filtre 10 commentaires minimum
 
             if rating_filter == "best":
-                df = df.filter(pl.col("avg_rating") == 5)
+                df = df.filter(pl.col("avg_rating") == BEST_RATING)
             elif rating_filter == "worst":
-                df = df.filter(pl.col("avg_rating") == 0)
+                df = df.filter(pl.col("avg_rating") == WORST_RATING)
 
             self._cache[cache_key] = (
                 df.sort("comment_count", descending=True).head(n)["recipe_id"].to_list()
@@ -145,6 +172,7 @@ class RecipeAnalyzer:
         return self._cache[cache_key]
 
     def get_reviews_for_recipes(self, recipe_ids: list[str]) -> list[str]:
+        """Récupère les avis pour une liste de recipe_id."""
         cache_key = f"reviews_{recipe_ids[:3]!s}_{len(recipe_ids)}"
         if cache_key not in self._cache:
             self._cache[cache_key] = (
@@ -155,7 +183,13 @@ class RecipeAnalyzer:
             )
         return self._cache[cache_key]
 
-    def plot_word_frequency(self, texts: list[str], title: str, max_features: int):
+    def plot_word_frequency(
+        self,
+        texts: list[str],
+        title: str,
+        max_features: int,
+    ) -> plt.Figure:
+        """Plots a word cloud based on word frequency."""
         cache_key = f"word_freq_{texts[:3]!s}_{len(texts)}_{max_features}"
         if cache_key not in self._cache:
             cleaned = self._preprocess_reviews(texts)
@@ -185,7 +219,8 @@ class RecipeAnalyzer:
             self._cache[cache_key] = fig
         return self._cache[cache_key]
 
-    def plot_tfidf(self, texts: list[str], title: str, max_features: int):
+    def plot_tfidf(self, texts: list[str], title: str, max_features: int) -> plt.Figure:
+        """Plots a word cloud based on TF-IDF scores."""
         cache_key = f"tfidf_{texts[:3]!s}_{len(texts)}_{max_features}"
         if cache_key not in self._cache:
             docs = [" ".join(self._clean_text(text)) for text in texts if text]
@@ -228,7 +263,8 @@ class RecipeAnalyzer:
         texts: list[str],
         title: str,
         max_features: int,
-    ):
+    ) -> plt.Figure:
+        """Compares word frequency and TF-IDF using a Venn diagram."""
         cache_key = f"compare_{texts[:3]!s}_{len(texts)}_{max_features}"
         if cache_key not in self._cache:
             cleaned = [" ".join(self._clean_text(t)) for t in texts if t]
@@ -241,15 +277,15 @@ class RecipeAnalyzer:
 
             # Fréquence brute
             freq_counts = Counter([word for doc in cleaned for word in doc.split()])
-            freq_top = set([w for w, _ in freq_counts.most_common(20)])
+            freq_top = {w for w, _ in freq_counts.most_common(20)}
 
             # TF-IDF
             vectorizer = TfidfVectorizer(
                 max_features=max_features,
                 stop_words="english",
             )
-            tfidf = vectorizer.fit_transform(cleaned)
-            scores = tfidf.sum(axis=0).A1
+            # tfidf = vectorizer.fit_transform(cleaned)
+            # scores = tfidf.sum(axis=0).A1
             tfidf_top = set(vectorizer.get_feature_names_out()[:20])
 
             fig, ax = plt.subplots(figsize=(8, 8))
@@ -278,7 +314,8 @@ class RecipeAnalyzer:
             self._cache[cache_key] = fig
         return self._cache[cache_key]
 
-    def plot_top_ingredients(self, top_n: int = 20):
+    def plot_top_ingredients(self, top_n: int = 20) -> plt.Figure:
+        """Plots the top N ingredients in a radar chart."""
         cache_key = f"top_ingredients_{top_n}"
         if cache_key not in self._cache:
             excluded = {
@@ -303,6 +340,7 @@ class RecipeAnalyzer:
                 "liter",
                 "black pepper",
             }
+            MIN_INGREDIENT_LENGTH = 2
 
             ingredients_cleaned = (
                 self.df_recipe.with_columns(
@@ -316,7 +354,7 @@ class RecipeAnalyzer:
                 .filter(
                     ~pl.col("ingredient").is_in(excluded)
                     & (pl.col("ingredient") != "")
-                    & (pl.col("ingredient").str.len_chars() > 2),
+                    & (pl.col("ingredient").str.len_chars() > MIN_INGREDIENT_LENGTH),
                 )
             )
 

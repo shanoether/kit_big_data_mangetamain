@@ -1,4 +1,7 @@
+"""Unit tests for the DataProcessor module."""
+
 # tests/unit/mangetamain/backend/test_dataprocessor.py
+import zipfile
 from pathlib import Path
 
 import polars as pl
@@ -10,8 +13,8 @@ from mangetamain.backend.data_processor import DataProcessor
 class TestDataProcessor:
     """Tests complets pour le module DataProcessor."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self, tmp_path):
+    @pytest.fixture(autouse=True)  # type: ignore
+    def setup(self, tmp_path: Path) -> None:
         """Créer des fichiers CSV temporaires et initialiser DataProcessor."""
         # Interactions CSV
         self.interactions_csv = tmp_path / "RAW_interactions.csv"
@@ -42,20 +45,20 @@ class TestDataProcessor:
     # Tests fonctionnels de base
     # ---------------------------
 
-    def test_load_data(self):
+    def test_load_data(self) -> None:
         """Vérifie que les CSV sont bien chargés."""
         assert isinstance(self.processor.df_interactions, pl.DataFrame)
         assert isinstance(self.processor.df_recipes, pl.DataFrame)
         assert self.processor.df_interactions.shape[0] == 3
         assert self.processor.df_recipes.shape[0] == 3
 
-    def test_drop_na(self):
+    def test_drop_na(self) -> None:
         """Vérifie la suppression des NA et des recettes irréalistes."""
         self.processor.drop_na()
         assert self.processor.df_interactions_nna.shape[0] == 2  # 1 review manquante
         assert self.processor.df_recipes_nna.shape[0] == 2  # 1 recette avec 0 steps
 
-    def test_split_minutes(self):
+    def test_split_minutes(self) -> None:
         """Vérifie que les recettes sont bien bucketées en short/medium/long."""
         self.processor.drop_na()
         self.processor.split_minutes()
@@ -65,7 +68,7 @@ class TestDataProcessor:
             & (self.processor.df_recipes_nna_medium["minutes"] <= 2880),
         )
 
-    def test_merge_data(self):
+    def test_merge_data(self) -> None:
         """Vérifie le merge des interactions avec les recettes."""
         self.processor.drop_na()
         self.processor.split_minutes()
@@ -78,7 +81,7 @@ class TestDataProcessor:
         assert hasattr(self.processor, "total_medium")
         assert hasattr(self.processor, "total_long")
 
-    def test_compute_proportions(self):
+    def test_compute_proportions(self) -> None:
         """Vérifie le calcul des proportions de notes 5 étoiles."""
         self.processor.drop_na()
         self.processor.split_minutes()
@@ -91,7 +94,7 @@ class TestDataProcessor:
         assert len(self.processor.df_proportion_m) > 0
         assert len(self.processor.df_proportion_s) > 0
 
-    def test_save_data(self, tmp_path):
+    def test_save_data(self, tmp_path: Path) -> None:
         """Vérifie que save_data écrit bien les fichiers parquet."""
         self.processor.drop_na()
         self.processor.split_minutes()
@@ -104,9 +107,14 @@ class TestDataProcessor:
 
         original_write_parquet = pl.DataFrame.write_parquet
 
-        def patched_write(self_df, path, *args, **kwargs):
+        def patched_write(
+            self_df: pl.DataFrame,
+            path: str | Path,
+            *args: object,
+            **kwargs: dict[str, object],
+        ) -> None:
             path = processed_dir / Path(path).name
-            return original_write_parquet(self_df, path, *args, **kwargs)
+            original_write_parquet(self_df, path, *args, **kwargs)
 
         pl.DataFrame.write_parquet = patched_write
         self.processor.save_data()
@@ -130,7 +138,7 @@ class TestDataProcessor:
     # Tests d'exceptions
     # ---------------------------
 
-    def test_missing_csv_files(self, tmp_path):
+    def test_missing_csv_files(self, tmp_path: Path) -> None:
         """Vérifie que FileNotFoundError est levé si CSV et ZIP manquants."""
         with pytest.raises(FileNotFoundError):
             DataProcessor(
@@ -139,37 +147,41 @@ class TestDataProcessor:
                 path_recipes=tmp_path / "missing_recipes.csv",
             )
 
-    def test_corrupted_csv_file(self, tmp_path):
+    def test_corrupted_csv_file(self, tmp_path: Path) -> None:
         """Vérifie que load_data lève une exception pour un CSV interactions corrompu (mauvais format date)."""
         bad_csv = tmp_path / "bad_interactions.csv"
         bad_csv.write_text(
             "user_id,recipe_id,rating,review,date\n"
             "1,101,5,Good,notadate",  # invalid date
         )
-        with pytest.raises(Exception):
+        with pytest.raises(
+            pl.exceptions.ComputeError,
+            match="could not parse `notadate`",
+        ):
             DataProcessor(
                 data_dir=tmp_path,
                 path_interactions=bad_csv,
                 path_recipes=self.recipes_csv,
             )
 
-    def test_corrupted_recipes_csv(self, tmp_path):
+    def test_corrupted_recipes_csv(self, tmp_path: Path) -> None:
         """Vérifie que load_data lève une exception pour un CSV recipes corrompu (mauvais format submitted)."""
         bad_csv = tmp_path / "bad_recipes.csv"
         bad_csv.write_text(
             "id,name,minutes,n_steps,submitted\n101,Recipe A,30,5,notadate",
         )
-        with pytest.raises(Exception):
+        with pytest.raises(
+            pl.exceptions.ComputeError,
+            match="could not parse `notadate`",
+        ):
             DataProcessor(
                 data_dir=tmp_path,
                 path_interactions=self.interactions_csv,
                 path_recipes=bad_csv,
             )
 
-    def test_load_data_from_zip(self, tmp_path):
+    def test_load_data_from_zip(self, tmp_path: Path) -> None:
         """Vérifie que DataProcessor extrait bien les ZIP si les CSV manquent."""
-        import zipfile
-
         # --- Créer les CSV valides ---
         interactions_csv = tmp_path / "RAW_interactions.csv"
         interactions_csv.write_text(

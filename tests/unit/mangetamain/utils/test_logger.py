@@ -1,3 +1,5 @@
+"""Unit tests for the logger utilities."""
+
 import os
 import unittest
 from logging.handlers import RotatingFileHandler
@@ -7,23 +9,29 @@ from mangetamain.utils.logger import BaseLogger, RotLogger, TimeLogger, get_logg
 
 
 class TestBaseLogger(unittest.TestCase):
-    def setUp(self):
+    """Unit tests for the BaseLogger class."""
+
+    def setUp(self) -> None:
+        """Reset singleton for each test."""
         BaseLogger._instance = None
         self.logger_name = "test_log"
 
-    def test_singleton_behavior(self):
+    def test_singleton_behavior(self) -> None:
+        """Test that BaseLogger implements singleton pattern."""
         logger1 = BaseLogger(self.logger_name)
         logger2 = BaseLogger(self.logger_name)
-        self.assertIs(logger1, logger2, "BaseLogger should implement singleton pattern")
+        assert logger1 is logger2, "BaseLogger should implement singleton pattern"
 
-    def test_log_file_creation(self):
+    def test_log_file_creation(self) -> None:
+        """Test that log file is created upon logger initialization."""
         logger = BaseLogger(self.logger_name)
         log_path = logger.get_log_path()
-        self.assertTrue(log_path.exists(), "Log file should be created")
-        self.assertTrue(log_path.is_file(), "Log path should point to a file")
-        self.assertIn(self.logger_name, log_path.name)
+        assert log_path.exists(), "Log file should be created"
+        assert log_path.is_file(), "Log path should point to a file"
+        assert self.logger_name in log_path.name
 
-    def test_info(self):
+    def test_info(self) -> None:
+        """Test info logging method."""
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
@@ -31,7 +39,8 @@ class TestBaseLogger(unittest.TestCase):
             logger.info("Info message")
             mock_info.assert_called_once_with("Info message", stacklevel=2)
 
-    def test_debug(self):
+    def test_debug(self) -> None:
+        """Test debug logging method."""
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
@@ -39,7 +48,8 @@ class TestBaseLogger(unittest.TestCase):
             logger.debug("Debug message")
             mock_debug.assert_called_once_with("Debug message", stacklevel=2)
 
-    def test_warning(self):
+    def test_warning(self) -> None:
+        """Test warning logging method."""
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
@@ -47,7 +57,8 @@ class TestBaseLogger(unittest.TestCase):
             logger.warning("Warning message")
             mock_warning.assert_called_once_with("Warning message", stacklevel=2)
 
-    def test_error(self):
+    def test_error(self) -> None:
+        """Test error logging method."""
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
@@ -55,7 +66,8 @@ class TestBaseLogger(unittest.TestCase):
             logger.error("Error message")
             mock_error.assert_called_once_with("Error message", stacklevel=2)
 
-    def test_critical(self):
+    def test_critical(self) -> None:
+        """Test critical logging method."""
         logger = BaseLogger(self.logger_name)
 
         # Patch logger methods to capture calls
@@ -63,16 +75,15 @@ class TestBaseLogger(unittest.TestCase):
             logger.critical("Critical message")
             mock_critical.assert_called_once_with("Critical message", stacklevel=2)
 
-    def test_has_errors_flag(self):
+    def test_has_errors_flag(self) -> None:
+        """Test has_errors flag behavior."""
         logger = BaseLogger(self.logger_name)
-        self.assertFalse(logger.has_errors(), "Initially, has_errors should be False")
+        assert not logger.has_errors(), "Initially, has_errors should be False"
         logger.error("Test error")
-        self.assertTrue(
-            logger.has_errors(),
-            "After logging an error, has_errors should be True",
-        )
+        assert logger.has_errors(), "After logging an error, has_errors should be True"
 
-    def tearDown(self):
+    def tearDown(self) -> None:
+        """Clean up after each test."""
         # Clean up created log files
         logger = BaseLogger(self.logger_name)
         if logger.get_log_path().exists():
@@ -80,24 +91,30 @@ class TestBaseLogger(unittest.TestCase):
 
 
 class TestTimeLogger(unittest.TestCase):
-    def setUp(self):
+    """Unit tests for the TimeLogger class."""
+
+    def setUp(self) -> None:
+        """Set up test case."""
         # Reset singleton for each test
         TimeLogger._instance = None
         self.logger_name = "time_test"
 
-    def test_singleton_behavior(self):
+    def test_singleton_behavior(self) -> None:
+        """Test that TimeLogger implements singleton pattern."""
         logger1 = TimeLogger(self.logger_name)
         logger2 = TimeLogger(self.logger_name)
-        self.assertIs(logger1, logger2, "TimeLogger should implement singleton pattern")
+        assert logger1 is logger2, "TimeLogger should implement singleton pattern"
 
-    def test_timestamped_log_file_creation(self):
+    def test_timestamped_log_file_creation(self) -> None:
+        """Test that timestamped log file is created upon logger initialization."""
         logger = TimeLogger(self.logger_name)
         log_path = logger.get_log_path()
-        self.assertTrue(log_path.exists(), "Timestamped log file should be created")
-        self.assertTrue(log_path.is_file(), "Log path should point to a file")
-        self.assertTrue(log_path.name.endswith(".log"))
+        assert log_path.exists(), "Timestamped log file should be created"
+        assert log_path.is_file(), "Log path should point to a file"
+        assert log_path.name.endswith(".log")
 
-    def tearDown(self):
+    def tearDown(self) -> None:
+        """Clean up after each test."""
         # Clean up created files and folders
         logger = TimeLogger(self.logger_name)
         log_path = logger.get_log_path()
@@ -109,26 +126,28 @@ class TestTimeLogger(unittest.TestCase):
 
 
 class TestRotLogger(unittest.TestCase):
-    def setUp(self):
+    """Unit tests for the RotLogger class."""
+
+    def setUp(self) -> None:
+        """Set up test case."""
         RotLogger._instance = None
         self.logger_name = "rot_test"
 
-    def test_singleton_behavior(self):
+    def test_singleton_behavior(self) -> None:
+        """Test that RotLogger implements singleton pattern."""
         logger1 = RotLogger(self.logger_name)
         logger2 = RotLogger(self.logger_name)
-        self.assertIs(logger1, logger2, "RotLogger should implement singleton pattern")
+        assert logger1 is logger2, "RotLogger should implement singleton pattern"
 
-    def test_rotating_file_handler_setup(self):
+    def test_rotating_file_handler_setup(self) -> None:
+        """Test that RotLogger sets up a rotating file handler."""
         logger = RotLogger(self.logger_name)
         log_path = logger.get_log_path()
-        self.assertTrue(log_path.exists(), "Rotating log file should be created")
-        self.assertIsInstance(
-            logger.logger.handlers[0],
-            RotatingFileHandler,
-            "Handler should be RotatingFileHandler",
-        )
+        assert log_path.exists(), "Rotating log file should be created"
+        assert isinstance(logger.logger.handlers[0], RotatingFileHandler)
 
-    def tearDown(self):
+    def tearDown(self) -> None:
+        """Clean up after each test."""
         logger = RotLogger(self.logger_name)
         log_path = logger.get_log_path()
         if log_path.exists():
@@ -138,7 +157,8 @@ class TestRotLogger(unittest.TestCase):
             os.rmdir(log_dir)
 
 
-def test_get_logger_instance():
+def test_get_logger_instance() -> None:
+    """Test that get_logger returns the same RotLogger instance."""
     logger1 = get_logger()
     logger2 = get_logger()
     assert logger1 is logger2, "get_logger should return the same RotLogger instance"

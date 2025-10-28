@@ -1,7 +1,8 @@
 """Main entry point for the Streamlit UI application and doing the dispatch between the pages."""
-import sys        
+
 import cProfile
 import pstats
+import sys
 
 import streamlit as st
 from streamlit_extras.exception_handler import set_global_exception_handler
