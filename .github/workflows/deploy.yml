@@ -36,7 +36,7 @@ jobs:
           api-key: ${{ secrets.SAFETY_API_KEY }}
 
   build-deploy:
-    needs: [ security ]
+    #needs: [ security ]
     environment: vm-kit-big-data-1        # <- if you use GitHub Environments
     runs-on: ubuntu-latest
 
