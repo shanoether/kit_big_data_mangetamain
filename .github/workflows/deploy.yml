@@ -10,6 +10,7 @@ on:
 
 jobs:
   security:
+    environment: vm-kit-big-data-1
     runs-on: ubuntu-latest
 
     permissions:
@@ -31,8 +32,6 @@ jobs:
 
       - name: Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
-        env:
-          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
         with:
           api-key: ${{ secrets.SAFETY_API_KEY }}
 
