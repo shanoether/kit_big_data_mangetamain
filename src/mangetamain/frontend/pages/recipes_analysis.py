@@ -174,8 +174,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         with st.spinner("Generating word clouds..."):
             st.header("🍳 Word Clouds")
             # Generate word clouds from recipe reviews
-            fig = recipe_analyzer.display_wordclouds(wordcloud_max_words)
-            st.pyplot(fig)
+            recipe_analyzer.display_wordclouds(wordcloud_max_words)
 
     # =========================================================================
     # SECTION 7: VENN DIAGRAM COMPARISONS
@@ -185,8 +184,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         with st.spinner("Computing Venn diagram comparisons..."):
             st.header("🍳 Venn Diagram Comparisons")
             # Compare frequency-based vs TF-IDF word extraction
-            fig = recipe_analyzer.display_comparisons(recipe_count, wordcloud_max_words)
-            st.pyplot(fig)
+            recipe_analyzer.display_comparisons(recipe_count, wordcloud_max_words)
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
