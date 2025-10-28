@@ -503,18 +503,7 @@ class RecipeAnalyzer:
             Uses preprocessed (already cleaned) tokens from cache. Does NOT re-clean text.
         """
         cache_key = f"tfidf_{rating_filter!s}_{wordcloud_nbr_word}"
-
-        if rating_filter == "best":
-            texts = self._cache["preprocessed_500_best_reviews"]
-        elif rating_filter == "worst":
-            texts = self._cache["preprocessed_500_worst_reviews"]
-        elif rating_filter == "most":
-            texts = self._cache["preprocessed_500_most_reviews"]
-        else:
-            texts = self._cache["preprocessed_500_best_reviews"]
-            logger.warning(
-                f"Invalid rating_filter: {rating_filter}. Using best reviews.",
-            )
+        texts = self._cache[self.switch_filter(rating_filter)]
 
         if cache_key not in self._cache:
             # texts is already a list of cleaned tokens, just join them into documents
