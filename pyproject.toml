@@ -45,6 +45,8 @@ dependencies = [
     "pip",
     "hatch",
     "streamlit-extras",
+    "coverage>=7.11.0",
+    "pytest-cov>=7.0.0",
 ]
 
 [dependency-groups]

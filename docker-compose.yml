@@ -22,10 +22,12 @@ services:
           retries: 8
           start_period: 15s
     ports:
-      - "8501:8501"
+      - "443:8501"
     volumes:
       - /opt/app/data:/app/data     # map local data folder
       - /opt/app/logs:/app/logs     # map logs folder
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
     environment:
       - PORT=8501
       # - PYTHONPATH=/app/src

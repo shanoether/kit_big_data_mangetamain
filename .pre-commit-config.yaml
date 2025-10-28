@@ -32,7 +32,7 @@ repos:
         args:
           - -c
           - |
-            coverage run -m pytest && coverage report -m
+            uv run coverage run -m pytest && uv run coverage report -m
 
   - repo: local
     hooks:

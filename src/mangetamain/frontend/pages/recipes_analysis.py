@@ -72,7 +72,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # Minimum number of reviews required to be included in the analysis
     MIN_REVIEWS = 5
 
-    # Moyenne des notes
+    # Average ratings
     nb_worst = st.slider(
         "Number of recipes to display",
         5,

@@ -49,7 +49,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         # Show in Streamlit
         st.pyplot(fig)
 
-    # Visualisation distribution des recettes par review
+    # Visualization of recipe distribution by review
     with st.spinner("Generating rating distribution by review..."):
         reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(
             pl.len().alias("review_count"),
@@ -60,10 +60,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             bins=30,
             log_scale=(False, True),
             ax=ax,
-        )  # échelle log pour mieux visualiser
-        ax.set_title("Distribution du nombre de reviews par recette")
-        ax.set_xlabel("Nombre de reviews")
-        ax.set_ylabel("Nombre de recettes (échelle log)")
+        )  # log scale for better visualization
+        ax.set_title("Distribution of number of reviews per recipe")
+        ax.set_xlabel("Number of reviews")
+        ax.set_ylabel("Number of recipes (log scale)")
         sns.despine()
         st.pyplot(fig)
 

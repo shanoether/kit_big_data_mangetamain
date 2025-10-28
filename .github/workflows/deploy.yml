@@ -1,7 +1,7 @@
 name: Build & Deploy to VM
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 on:
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       packages: write
       attestations: write
       id-token: write
@@ -49,6 +49,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git operations
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv sync --group dev
 
       - name: Compute tags
         id: meta
@@ -145,3 +160,12 @@ jobs:
 
             rm -rf "$TMP_DOCKER_CONFIG"
             unset DOCKER_CONFIG
+
+      - name: Configure Git for docs deployment
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy documentation to GitHub Pages
+        run: |
+          uv run mkdocs gh-deploy --message "docs: deploy documentation from commit ${GITHUB_SHA::7}"
