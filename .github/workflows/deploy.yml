@@ -109,15 +109,16 @@ jobs:
             export DOCKER_CONFIG="$TMP_DOCKER_CONFIG"
 
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
-            docker compose pull
-            docker compose up -d --remove-orphans
-
 
             # Pin the deployment to the new immutable tag
             PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
 
             export IMAGE_TAG="sha-${SHORT_SHA}"
-            echo "IMAGE_TAG=${IMAGE_TAG}" > .env
+            
+            # Write all variables to .env file
+            echo "GH_USER=${GH_USER}" > .env
+            echo "REPO=${REPO}" >> .env
+            echo "IMAGE_TAG=${IMAGE_TAG}" >> .env
 
             # Pull & restart
             echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}

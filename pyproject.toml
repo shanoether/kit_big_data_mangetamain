@@ -47,6 +47,7 @@ dependencies = [
     "streamlit-extras",
     "coverage>=7.11.0",
     "pytest-cov>=7.0.0",
+    "inflect>=7.5.0",
 ]
 
 [dependency-groups]
