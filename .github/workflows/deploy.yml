@@ -30,7 +30,9 @@ jobs:
           fi
 
       - name: Run Safety CLI to check for vulnerabilities
-        uses: pyupio/safety-action@v2
+        uses: pyupio/safety-action@v1
+        env:
+          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
         with:
           api-key: ${{ secrets.SAFETY_API_KEY }}
 
