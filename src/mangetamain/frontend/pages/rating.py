@@ -77,9 +77,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             log_scale=(False, True),
             ax=ax,
         )  # échelle log pour mieux visualiser
-        ax.set_title("Distribution du nombre de reviews par recette")
-        ax.set_xlabel("Nombre de reviews")
-        ax.set_ylabel("Nombre de recettes (échelle log)")
+        ax.set_title("Distribution of the number of reviews by recipe")
+        ax.set_xlabel("Number of reviews")
+        ax.set_ylabel("Number of recipes (log scale)")
         sns.despine()
         st.pyplot(fig)
 
