@@ -34,7 +34,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(data=top_recipes, x="nb_reviews", y="name", palette="viridis", ax=ax)
+    sns.barplot(
+        data=top_recipes,
+        x="nb_reviews",
+        y="name",
+        palette="viridis",
+        ax=ax,
+        hue="name",
+        legend=False,
+    )
     sns.despine()
     st.pyplot(fig)
 
@@ -53,7 +61,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         .agg(
             [
                 pl.col("rating").mean().alias("mean_rating"),
-                pl.count().alias("nb_reviews"),
+                pl.len().alias("nb_reviews"),
             ],
         )
         .filter(pl.col("nb_reviews") >= NB_REVIEW_MIN)
@@ -62,6 +70,14 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(data=worst_recipes, x="mean_rating", y="name", ax=ax, palette="viridis")
+    sns.barplot(
+        data=worst_recipes,
+        x="mean_rating",
+        y="name",
+        ax=ax,
+        palette="viridis",
+        hue="name",
+        legend=False,
+    )
     sns.despine()
     st.pyplot(fig)

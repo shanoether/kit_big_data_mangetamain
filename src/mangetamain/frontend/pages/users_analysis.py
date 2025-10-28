@@ -66,6 +66,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         y=user_categories.values,
         ax=ax,
         palette="Blues_r",
+        hue=user_categories.index,
     )
     plt.xticks(rotation=25)
     sns.despine()
