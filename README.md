@@ -31,11 +31,11 @@ Once the application is running, you can access multiple analytical pages:
 
 ### 📱 Available Dashboards
 
-1. **Overview** - High-level statistics and key metrics
-2. **Recipe Analysis** - Deep dive into recipe characteristics and ingredients
-3. **User Analysis** - User behavior patterns and engagement metrics
-4. **Trends** - Temporal trends and popular recipe categories
-5. **Ratings Dashboard** - Rating distributions and popularity analysis
+4. **Ratings Dashboard** - Rating distributions and popularity analysis
+3. **Trends** - Temporal trends and popular recipe categories
+2. **User Analysis** - User behavior patterns and engagement metrics
+1. **Recipe Analysis** - Deep dive into recipe characteristics and ingredients
+
 
 ### 🎯 Key Capabilities
 
