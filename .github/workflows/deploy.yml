@@ -74,23 +74,15 @@ jobs:
       - name: Login to GHCR (push)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build & push (multi-arch)
+      - name: Build image
         run: |
-          docker buildx create --use || true
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t ${{ steps.meta.outputs.IMAGE }}:latest \
-            -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} \
-            --push .
-      #- name: Build image
-      #  run: |
-      #    docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
-      #                 -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
-#
-      #- name: Push image
-      #  run: |
-      #    docker push ${{ steps.meta.outputs.IMAGE }}:latest
-      #    docker push ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }}
+          docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
+                      -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
+
+      - name: Push image
+        run: |
+          docker push ${{ steps.meta.outputs.IMAGE }}:latest
+          docker push ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }}
 
       - name: Deploy on VM
         uses: appleboy/ssh-action@v1.1.0
