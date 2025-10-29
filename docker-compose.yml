@@ -10,7 +10,7 @@ services:
       # - PYTHONPATH=/app/src
     mem_limit: 4g              # Hard limit (container killed if exceeded)
     mem_reservation: 2g        # Soft limit (guaranteed minimum)
-    memswap_limit: 4g          # Total memory + swap limit
+    memswap_limit: 4g          # Total memory and swap limit
 
 
   streamlit:
