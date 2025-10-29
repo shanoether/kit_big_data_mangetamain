@@ -160,6 +160,9 @@ def get_comparison_figures(
 
 
 st.title("Recipes Analysis")
+st.markdown(
+    "This page provides an in-depth analysis of recipes on the Mangetamain platform. We will explore the most reviewed and lowest rated recipes, analyze ingredient usage, and visualize key terms through word clouds and comparisons.",
+)
 
 # =============================================================================
 # DATA LOADING AND VALIDATION
@@ -195,6 +198,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     ax.set_ylabel("")
     sns.despine()
     st.pyplot(fig)
+    st.markdown(
+        """
+        This graph highlights the platform's most engaging recipes. These recipes, often simple, universal, or viral
+        (such as the "best banana bread"), generate significant interest and interaction. Identifying these recipes
+        helps us understand what types of dishes appeal most to the community.
+        """,
+    )
 
     # =========================================================================
     # SECTION 3: LOWEST RATED RECIPES
@@ -233,6 +243,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     ax.set_ylabel("")
     sns.despine()
     st.pyplot(fig)
+    st.markdown(
+        """
+        **Least Popular Recipes:**
+
+        These recipes have received poor ratings despite several reviews. This may indicate problems with the recipe
+        (incorrect measurements, cooking time, or unclear instructions) or unmet expectations. These extreme cases
+        are useful for analyzing areas for improvement or identifying common mistakes.
+        """,
+    )
 
     # =========================================================================
     # SECTION 4: USER CONTROLS - SLIDERS
@@ -262,18 +281,24 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     if show_ingredients:
         st.header("🍳 Top Ingredients Used")
-        st.markdown(""" In addition, a radar chart was created to visualize the most common ingredients in the recipes.
-        It shows a strong presence of fundamental elements such as onion, eggs, milk, and garlic, emphasizing their central role in most dishes.
-        Ingredients such as parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes, ranging from savory dishes to sweet preparations.
-        The prior filtering of generic terms (salt, water, oil, sugar) makes it possible to focus on ingredients with true descriptive value.
-        This chart complements the textual analysis by offering a synthetic and visual overview of dominant culinary trends.
-        """)
+        st.markdown(
+            """
+            A radar chart was created to visualize the most common ingredients in the recipes. It shows a strong
+            presence of fundamental elements such as onion, eggs, milk, and garlic, emphasizing their central role
+            in most dishes.
+
+            Ingredients such as Parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes,
+            ranging from savory dishes to sweet preparations. The prior filtering of generic terms (salt, water, oil,
+            sugar) allows us to focus on ingredients with true descriptive value.
+
+            This chart complements the textual analysis by offering a synthetic and visual overview of dominant
+            culinary trends.
+            """,
+        )
         # Use cached plot generation
         fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
         st.pyplot(fig)
 
-    # =========================================================================
-    # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
@@ -294,25 +319,36 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         max_value=200,
         value=100,
     )
-    
+
     categories = [
-    ("Most reviewed recipes", "most"),
-    ("Best rated recipes", "best"),
-    ("Worst rated recipes", "worst"),
+        ("Most reviewed recipes", "most"),
+        ("Best rated recipes", "best"),
+        ("Worst rated recipes", "worst"),
     ]
-            
+
     if show_wordclouds:
         # Display word clouds using cached wrappers
         st.subheader("🗣️ WordClouds (6 charts)")
 
         st.markdown(
-            """In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
-        The first method is based on the raw frequency of words, after a rigorous filtering process aimed at removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative such as recipe, thing, or definitely.
-        This approach highlights the most frequent words in the corpus. However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more meaningful words for the analysis.
-        The second method uses TF-IDF (Term Frequency Inverse - Document Frequency), a technique that weights the importance of a word according to its frequency within a document and its rarity across the entire corpus.
-        This weighting helps emphasize discriminative words — those that best characterize specific recipes. In practice, the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF matrix using the TfidfVectorizer function from scikit-learn.
-        Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
-        """,
+            """
+            In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
+
+            **Method 1: Raw Frequency**
+            The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
+            removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
+            such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
+            However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
+            meaningful words for the analysis.
+
+            **Method 2: TF-IDF**
+            The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
+            importance of a word according to its frequency within a document and its rarity across the entire corpus.
+            This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
+            the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
+            matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
+            TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
+            """,
         )
 
         # 2x3 grid for the 6 wordclouds
@@ -342,16 +378,20 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 7: VENN DIAGRAM COMPARISONS
     # =========================================================================
 
-
     if show_comparisons:
         st.subheader("🍳 Venn Diagram Comparisons")
         st.markdown(
-            """ To compare both approaches, Venn diagrams were used.
-            These charts provide a clear visualization of the intersections and differences between the selected word sets.
-            The overlapping areas represent the words identified by both methods, often associated with basic vocabulary used to describe or comment on recipes.
-            The words exclusive to the TF-IDF method reveal rarer or more specific terms, such as distinctive ingredients or particular cooking techniques.
-            A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection highlights divergences in word selection.
-        """,
+            """
+            To compare both approaches, Venn diagrams were used. These charts provide a clear visualization of the
+            intersections and differences between the selected word sets.
+
+            The overlapping areas represent the words identified by both methods, often associated with basic vocabulary
+            used to describe or comment on recipes. The words exclusive to the TF-IDF method reveal rarer or more specific
+            terms, such as distinctive ingredients or particular cooking techniques.
+
+            A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection
+            highlights divergences in word selection.
+            """,
         )
 
         # Display Venn diagrams using cached wrapper

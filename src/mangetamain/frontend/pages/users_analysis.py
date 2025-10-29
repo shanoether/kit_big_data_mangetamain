@@ -47,6 +47,9 @@ def compute_user_stats(_df_interactions: pl.DataFrame) -> pl.DataFrame:
 
 
 st.title("Users Analysis")
+st.markdown(
+    "This page provides an analysis of user behavior on the Mangetamain platform. We will explore the distribution of reviews per user, categorize users based on their activity levels, and examine the relationship between user activity and average ratings.",
+)
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
@@ -63,8 +66,22 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ax=ax,
     )
     sns.despine()
+
     st.pyplot(fig)
     plt.close(fig)  # Free memory fig
+    st.markdown(
+        """
+        This graph shows a highly unbalanced distribution: the majority of recipes have only a small number of reviews,
+        while a minority attract a huge number of comments. This illustrates a "long tail" phenomenon where a handful
+        of very popular recipes generate a large part of the activity, while most remain largely unrated.
+        On a logarithmic scale, this inequality becomes more visible.
+
+        The majority of users leave only one review, indicating many are occasional users. In contrast, a minority of
+        very active users produce a large volume of comments. This reflects a two-tiered community: many passive
+        consumers and a few loyal contributors. We observe that someone has made approximately 7,500 reviews—likely
+        either a bot or an enthusiast.
+        """,
+    )
 
     # User categorization
     st.subheader("User categorization")
@@ -118,6 +135,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     sns.despine()
     st.pyplot(fig)
     plt.close(fig)  # Free memory
+    st.markdown(
+        """
+        **User Categorization by Activity:**
+
+        We observe that "occasional" users dominate, followed by a smaller core of regular and active users.
+        "Super-active" users (>20 reviews) are rare but essential: they drive the platform and generate quality content.
+        This typology allows us to adapt our community engagement strategy accordingly.
+        """,
+    )
 
     # Average rating per user
     st.subheader("Average rating per user")
@@ -134,3 +160,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     sns.despine()
     st.pyplot(fig)
     plt.close(fig)  # Free memory
+    st.markdown(
+        """
+        This scatter plot illustrates the relationship between user activity (number of reviews) and their average rating.
+        We observe that less active users tend to give lower ratings, while more active users show more variability in
+        their ratings. This could suggest that occasional users are less generous or more critical, or only comment when
+        they don't like a recipe. In contrast, frequent reviewers tend to give five-star ratings.
+
+        We can also see some outliers with a very high number of ratings almost set to five stars—we suspect these to be bots.
+        """,
+    )

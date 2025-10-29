@@ -12,6 +12,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 st.title("Rating")
+st.markdown(
+    "This page presents an analysis of user ratings for recipes on the Mangetamain platform. We will explore the distribution of ratings, their evolution over time, and how they relate to recipe characteristics such as preparation time and number of steps.",
+)
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions_nna = st.session_state.df_interactions_nna
@@ -23,7 +26,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.subheader("📊 Data Preview")
 
     # show first 10 rows of dataframe
-    st.write("**Data from session_state:**")
     st.dataframe(df_interactions_nna.head(10))
     st.write(f"Shape: {df_interactions_nna.shape}")
 

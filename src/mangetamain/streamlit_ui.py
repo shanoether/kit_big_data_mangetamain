@@ -69,7 +69,7 @@ def main() -> None:
     home_page = st.Page("frontend/pages/dashboard.py", title="Home", default=True)
     rating_page = st.Page("frontend/pages/rating.py", title="Rating")
     # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
-    overview_page = st.Page("frontend/pages/overview.py", title="Overview")
+    # overview_page = st.Page("frontend/pages/overview.py", title="Overview")
     recipes_analysis_page = st.Page(
         "frontend/pages/recipes_analysis.py",
         title="Recipes Analysis",
@@ -83,7 +83,6 @@ def main() -> None:
     pg = st.navigation(
         [
             home_page,
-            overview_page,
             rating_page,
             trends_page,
             users_analysis_page,
