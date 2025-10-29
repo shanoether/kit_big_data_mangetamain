@@ -1,4 +1,5 @@
 # For HTTPS deployment overwritten by script/setup_https_mangetamain.sh
+
 [server]
 port = 8501
 enableCORS = false
