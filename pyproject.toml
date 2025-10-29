@@ -29,48 +29,29 @@ dependencies = [
     "plotly",
     "polars",
     "streamlit",
-    "watchdog",
-    "mkdocs-section-index>=0.3.10",
-    "mkdocs-gen-files>=0.5.0",
-    "mkdocstrings>=0.30.1",
-    "mkdocstrings-python>=1.18.2",
-    "mkdocs-material>=9.6.20",
-    "mkdocs-literate-nav>=0.6.2",
-    "pre-commit>=4.3.0",
-    "pyment>=0.3.3",
-    "mkdocs-include-markdown-plugin>=7.2.0",
     "spacy>=3.8.7",
     "matplotlib-venn>=1.1.2",
     "wordcloud>=1.9.4",
     "pip",
-    "hatch",
     "streamlit-extras",
-    "coverage>=7.11.0",
-    "pytest-cov>=7.0.0",
     "inflect>=7.5.0",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff", #linter
-    "black", #linter
-    "mypy", #types
-    "pytest", #test
-    "interrogate", #docstring coverage
-    "pydocstyle", #doc
-    "pyment", #Add google like docstring skeleton
+    "ruff>=0.8.4",
+    "mypy>=1.13.0",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "coverage>=7.6.9",
+    "ipykernel>=6.29.5",
     "mkdocs>=1.6.1",
-    "mkdocs-material>=9.6.20",
-    "mkdocstrings>=0.30.1",
-    "isort>=6.0.1",
-    "mkdocstrings-python>=1.18.2",
-    "pymdown-extensions>=10.16.1",
-    "mkdocstrings[python]>=0.30.1",
-    "mkdocs_gen_files",
-    "coverage>=7.11.0",
-    "safety>=3.6.2",
-    "snakeviz>=2.2.2",
-    "py-spy>=0.4.1",
+    "mkdocs-material>=9.5.47",
+    "mkdocstrings[python]>=0.27.0",
+    "mkdocs-autorefs>=1.2.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.3.0",
+    "pre-commit>=4.0.1",
+    "pyment>=0.3.3",
 ]
 
 jupyter = [
