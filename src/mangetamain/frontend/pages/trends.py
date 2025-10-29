@@ -64,7 +64,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # Evolution of average ratings
     st.subheader("Evolution of average ratings per year")
     mean_by_year = compute_yearly_trends(df_interactions)
-    
+
     fig, ax = plt.subplots()
     sns.lineplot(
         data=mean_by_year,
@@ -83,7 +83,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # Number of reviews per month and year
     st.subheader("Number of reviews per month and year")
     monthly_counts = compute_monthly_trends(df_interactions)
-    
+
     fig, ax = plt.subplots()
     sns.lineplot(
         data=monthly_counts,

@@ -72,10 +72,10 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     @st.cache_data
     def categorize_users(_reviews_per_user: pl.DataFrame):
         """Categorize users by number of reviews (cached).
-        
+
         Args:
             _reviews_per_user: DataFrame with nb_reviews column
-            
+
         Returns:
             Series with categorized user counts
         """

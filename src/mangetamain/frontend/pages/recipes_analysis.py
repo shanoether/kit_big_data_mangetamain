@@ -73,11 +73,11 @@ def compute_worst_recipes(
 @st.cache_data(show_spinner="Generating ingredient radar chart...")
 def get_top_ingredients_plot(_recipe_analyzer, ingredient_count: int):
     """Cached wrapper for recipe_analyzer.plot_top_ingredients.
-    
+
     Args:
         _recipe_analyzer: RecipeAnalyzer instance (prefixed with _ to avoid hashing)
         ingredient_count: Number of top ingredients to display
-        
+
     Returns:
         Matplotlib figure with polar plot
     """
@@ -85,15 +85,17 @@ def get_top_ingredients_plot(_recipe_analyzer, ingredient_count: int):
 
 
 @st.cache_data(show_spinner="Generating word clouds...")
-def get_wordcloud_figures(_recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str):
+def get_wordcloud_figures(
+    _recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str
+):
     """Cached wrapper for individual word cloud generation.
-    
+
     Args:
         _recipe_analyzer: RecipeAnalyzer instance
         wordcloud_max_words: Max words in cloud
         filter_type: Type of filter ('most', 'best', 'worst')
         title: Title for the plot
-        
+
     Returns:
         Matplotlib figure with word cloud
     """
@@ -101,15 +103,17 @@ def get_wordcloud_figures(_recipe_analyzer, wordcloud_max_words: int, filter_typ
 
 
 @st.cache_data(show_spinner="Generating TF-IDF word clouds...")
-def get_tfidf_figures(_recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str):
+def get_tfidf_figures(
+    _recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str
+):
     """Cached wrapper for TF-IDF word cloud generation.
-    
+
     Args:
         _recipe_analyzer: RecipeAnalyzer instance
         wordcloud_max_words: Max words in cloud
         filter_type: Type of filter ('most', 'best', 'worst')
         title: Title for the plot
-        
+
     Returns:
         Matplotlib figure with TF-IDF word cloud
     """
@@ -125,14 +129,14 @@ def get_comparison_figures(
     title: str,
 ):
     """Cached wrapper for Venn diagram comparison generation.
-    
+
     Args:
         _recipe_analyzer: RecipeAnalyzer instance
         recipe_count: Number of recipes to analyze
         wordcloud_max_words: Max features for TF-IDF
         filter_type: Type of filter ('most', 'best', 'worst')
         title: Title for the plot
-        
+
     Returns:
         Matplotlib figure with Venn diagram
     """
@@ -199,7 +203,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         key="nb_worst_recipes",
     )
     NB_REVIEW_MIN = 5
-    
+
     # Use cached computation
     worst_recipes = compute_worst_recipes(df_total_nt, nb_worst, NB_REVIEW_MIN)
 
@@ -270,7 +274,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         The second method uses TF-IDF (Term Frequency–Inverse Document Frequency), a technique that weights the importance of a word according to its frequency within a document and its rarity across the entire corpus.
         This weighting helps emphasize discriminative words — those that best characterize specific recipes. In practice, the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF matrix using the TfidfVectorizer function from scikit-learn.
         Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
-        """
+        """,
         )
 
         # Slider for number of recipes to analyze for word clouds
@@ -288,21 +292,21 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             max_value=200,
             value=100,
         )
-        
+
         # Display word clouds using cached wrappers
         st.subheader("🗣️ WordClouds (6 charts)")
-        
+
         categories = [
             ("Most reviewed recipes", "most"),
             ("Best rated recipes", "best"),
             ("Worst rated recipes", "worst"),
         ]
-        
+
         # 2x3 grid for the 6 wordclouds
         for _i, (title, filter_type) in enumerate(categories):
             st.markdown(title)
             cols = st.columns(2)
-            
+
             with cols[0]:
                 fig = get_wordcloud_figures(
                     recipe_analyzer,
@@ -311,7 +315,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                     f"Frequency - {title}",
                 )
                 st.pyplot(fig)
-            
+
             with cols[1]:
                 fig = get_tfidf_figures(
                     recipe_analyzer,
@@ -333,12 +337,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 The overlapping areas represent the words identified by both methods, often associated with basic vocabulary used to describe or comment on recipes.
                 The words exclusive to the TF-IDF method reveal rarer or more specific terms, such as distinctive ingredients or particular cooking techniques.
                 A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection highlights divergences in word selection.
-            """
+            """,
             )
-            
+
             # Display Venn diagrams using cached wrapper
             st.subheader("🔄 Frequency/TF-IDF Comparisons (3 charts)")
-            
+
             for _i, (title, filter_type) in enumerate(categories):
                 st.markdown(title)
                 fig = get_comparison_figures(
