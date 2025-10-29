@@ -854,6 +854,7 @@ class RecipeAnalyzer:
         Returns:
             RecipeAnalyzer: Loaded analyzer instance with spaCy model reloaded.
         """
+        logger.info(f"Loading RecipeAnalyzer from {filepath}...")
         with open(filepath, "rb") as f:
             analyzer: RecipeAnalyzer = pickle.load(f)
         logger.info(f"RecipeAnalyzer loaded from {filepath}")
