@@ -127,6 +127,7 @@ jobs:
 
             # Now pull & restart using the new tag
             echo "ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG}"
+            https://ghcr.io/v2/shanoether/kit_big_data_mangetamain-app/manifests/sha-3752bf8
             docker compose pull
             docker compose up -d --remove-orphans
 
