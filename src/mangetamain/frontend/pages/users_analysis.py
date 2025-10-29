@@ -112,6 +112,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         palette="Blues_r",
         hue=user_categories.index,
     )
+    ax.set_xlabel("User Category")
+    ax.set_ylabel("Number of Users")
     plt.xticks(rotation=25)
     sns.despine()
     st.pyplot(fig)
@@ -127,6 +129,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         y="mean_rating",
         ax=ax,
     )
+    ax.set_xlabel("Number of Reviews")
+    ax.set_ylabel("Average Rating")
     sns.despine()
     st.pyplot(fig)
     plt.close(fig)  # Free memory
