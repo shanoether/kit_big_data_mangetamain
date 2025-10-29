@@ -264,9 +264,30 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # =========================================================================
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
+    # SECTION 6: WORD CLOUDS VISUALIZATION
+    # =========================================================================
+    st.header("🍳 Ingredient Analysis")
 
+    # Slider for number of recipes to analyze for word clouds
+    recipe_count = st.slider(
+        "Number of recipes",
+        min_value=20,
+        max_value=500,
+        value=100,
+    )
+
+    # Slider for maximum words in word clouds
+    wordcloud_max_words = st.slider(
+        "Max words in WordClouds",
+        min_value=30,
+        max_value=200,
+        value=100,
+    )
     if show_wordclouds:
-        st.header("🍳 Ingredient Analysis")
+        
+        # Display word clouds using cached wrappers
+        st.subheader("🗣️ WordClouds (6 charts)")
+
         st.markdown(
             """In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
         The first method is based on the raw frequency of words, after a rigorous filtering process aimed at removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative such as recipe, thing, or definitely.
@@ -276,26 +297,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
         """,
         )
-
-        # Slider for number of recipes to analyze for word clouds
-        recipe_count = st.slider(
-            "Number of recipes",
-            min_value=20,
-            max_value=500,
-            value=100,
-        )
-
-        # Slider for maximum words in word clouds
-        wordcloud_max_words = st.slider(
-            "Max words in WordClouds",
-            min_value=30,
-            max_value=200,
-            value=100,
-        )
-
-        # Display word clouds using cached wrappers
-        st.subheader("🗣️ WordClouds (6 charts)")
-
         categories = [
             ("Most reviewed recipes", "most"),
             ("Best rated recipes", "best"),
@@ -325,34 +326,36 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
-        # =========================================================================
-        # SECTION 7: VENN DIAGRAM COMPARISONS
-        # =========================================================================
+    # =========================================================================
+    # SECTION 7: VENN DIAGRAM COMPARISONS
+    # =========================================================================
 
-        if show_comparisons:
-            st.header("🍳 Venn Diagram Comparisons")
-            st.markdown(
-                """ To compare both approaches, Venn diagrams were used.
-                These charts provide a clear visualization of the intersections and differences between the selected word sets.
-                The overlapping areas represent the words identified by both methods, often associated with basic vocabulary used to describe or comment on recipes.
-                The words exclusive to the TF-IDF method reveal rarer or more specific terms, such as distinctive ingredients or particular cooking techniques.
-                A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection highlights divergences in word selection.
-            """,
+    st.header("🍳 Venn Diagram Comparisons")
+
+    if show_comparisons:
+        
+        st.markdown(
+            """ To compare both approaches, Venn diagrams were used.
+            These charts provide a clear visualization of the intersections and differences between the selected word sets.
+            The overlapping areas represent the words identified by both methods, often associated with basic vocabulary used to describe or comment on recipes.
+            The words exclusive to the TF-IDF method reveal rarer or more specific terms, such as distinctive ingredients or particular cooking techniques.
+            A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection highlights divergences in word selection.
+        """,
+        )
+
+        # Display Venn diagrams using cached wrapper
+        st.subheader("🔄 Frequency/TF-IDF Comparisons (3 charts)")
+
+        for _i, (title, filter_type) in enumerate(categories):
+            st.markdown(title)
+            fig = get_comparison_figures(
+                recipe_analyzer,
+                recipe_count,
+                wordcloud_max_words,
+                filter_type,
+                f"Comparison - {title}",
             )
-
-            # Display Venn diagrams using cached wrapper
-            st.subheader("🔄 Frequency/TF-IDF Comparisons (3 charts)")
-
-            for _i, (title, filter_type) in enumerate(categories):
-                st.markdown(title)
-                fig = get_comparison_figures(
-                    recipe_analyzer,
-                    recipe_count,
-                    wordcloud_max_words,
-                    filter_type,
-                    f"Comparison - {title}",
-                )
-                st.pyplot(fig)
+            st.pyplot(fig)
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
