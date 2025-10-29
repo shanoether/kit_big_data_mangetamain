@@ -30,19 +30,16 @@ def main() -> None:
             logger.info("Application started, loading data.")
             load_data_from_parquet_and_pickle()
 
-    home_page = st.Page("frontend/pages/dashboard.py", title="Home", default=True)
-    rating_page = st.Page("frontend/pages/rating.py", title="Rating")
-    # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
-    overview_page = st.Page("frontend/pages/overview.py", title="Overview")
+    home_page = st.Page("frontend/pages/dashboard.py", title="🏠 Home", default=True)
+    overview_page = st.Page("frontend/pages/overview.py", title="📊 Overview")
     recipes_analysis_page = st.Page(
         "frontend/pages/recipes_analysis.py",
-        title="Recipes Analysis",
+        title="🍳 Recipes",
     )
-    users_analysis_page = st.Page(
-        "frontend/pages/users_analysis.py",
-        title="Users Analysis",
-    )
-    trends_page = st.Page("frontend/pages/trends.py", title="Trends")
+    users_analysis_page = st.Page("frontend/pages/users_analysis.py", title="👥 Users")
+    trends_page = st.Page("frontend/pages/trends.py", title="📈 Trends")
+    rating_page = st.Page("frontend/pages/rating.py", title="⭐ Rating")
+    # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
 
     pg = st.navigation(
         [

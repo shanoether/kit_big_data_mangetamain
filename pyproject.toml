@@ -51,11 +51,13 @@ dev = [
     "mkdocs-autorefs>=1.2.0",
     "mkdocs-git-revision-date-localized-plugin>=1.3.0",
     "mkdocs-include-markdown-plugin>=7.2.0",
-    "mkdocs-gen-files>=0.5.0",  
-    "mkdocs-literate-nav>=0.6.0",  
-    "mkdocs-section-index>=0.3.0", 
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.0",
+    "mkdocs-section-index>=0.3.0",
     "pre-commit>=4.0.1",
     "pyment>=0.3.3",
+    "py-spy>=0.4.1",
+    "interrogate>=1.7.0",
 ]
 
 jupyter = [
@@ -159,6 +161,8 @@ exclude_lines = [
 target-version = "py312"
 src = ["src", "tests", "main.py"]
 line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -183,6 +187,7 @@ select = [
 ]
 
 ignore = [
+    "COM812",
     "E501", # line too long, handled by black
     "B008", # do not perform function calls in argument defaults
     "C901", # too complex
@@ -199,17 +204,19 @@ exclude = [
   "build",
   "dist",
   "notebook",
+  "notebook/*",
+  "notebook/**/*",
   "lib",
   "src/mypkg",
   "src/utils",
   "src/archive",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/**/*" = ["ARG", "S101", "PLR2004", "SLF001"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
 
 [tool.ruff.lint.pydocstyle]

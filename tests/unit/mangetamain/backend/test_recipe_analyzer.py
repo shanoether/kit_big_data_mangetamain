@@ -465,7 +465,7 @@ class TestRecipeAnalyzer:
 
         assert isinstance(fig, Figure)
         assert len(fig.axes) > 0
-        
+
     # def test_to_singular_plural_word(self):
     #     """Test that plural words are converted to singular."""
     #     df_interactions = pl.DataFrame(
@@ -495,7 +495,7 @@ class TestRecipeAnalyzer:
     #     )
 
     #     analyzer = RecipeAnalyzer(df_interactions, df_recipes, df_total)
-                
+
     #     assert analyzer._to_singular("recipes") == "recipe"
     #     assert analyzer._to_singular("tomatoes") == "tomato"
     #     assert analyzer._to_singular("potatoes") == "potato"
@@ -532,14 +532,13 @@ class TestRecipeAnalyzer:
     #     )
 
     #     analyzer = RecipeAnalyzer(df_interactions, df_recipes, df_total)
-                
+
     #     assert analyzer._to_singular("recipe") == "recipe"
     #     assert analyzer._to_singular("tomato") == "tomato"
     #     assert analyzer._to_singular("potato") == "potato"
     #     assert analyzer._to_singular("carrot") == "carrot"
     #     assert analyzer._to_singular("onion") == "onion"
     #     assert analyzer._to_singular("apple") == "apple"
-
 
 
 if __name__ == "__main__":

@@ -7,11 +7,11 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Rating Analysis",
-    page_icon="🍳",
+    page_icon="🍽️",
     layout="centered",
     initial_sidebar_state="expanded",
 )
-st.title("Rating")
+st.title("⭐ Rating")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions_nna = st.session_state.df_interactions_nna

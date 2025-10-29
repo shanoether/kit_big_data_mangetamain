@@ -8,17 +8,29 @@ logger = get_logger()
 
 st.set_page_config(
     page_title="Mangetamain Analysis App",
-    page_icon="🍳",
+    page_icon="🍽️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
-st.sidebar.success("Select a page to navigate.")
+st.markdown(
+    """
+    <style>
+    p { font-size: 1.2rem !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-st.title("Mangetamain 🏠 v1.6")
+st.sidebar.success("📂 Select a page to navigate.")
 
-st.write("Welcome to the main page!")
-st.write("Use the sidebar to navigate to different sections of the app.")
-st.write("Below is the information about the project")
+st.title("🏠 Mangetamain v1.6")
+
+st.markdown("""
+Welcome to **MangeTaMain**!
+
+Use the sidebar to navigate through different sections of the app.
+Below is a quick summary of your currently loaded data.
+""")
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions

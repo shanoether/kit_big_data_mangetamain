@@ -1,58 +1,64 @@
 # Profiling Guide
+This guide explains how to profile the performance of your Streamlit application using two different methods:
 
-## How to use
+- cProfile — for generating detailed profiling reports and visualizing them with Snakeviz
 
-### Profiling using cProfile
+- py-spy — for real-time profiling or for generating an interactive flamegraph in SVG format
 
-- run
+## 1️⃣ Profiling using cProfile
+
+🔧 How to run
+
+1. Run the Streamlit app with profiling enabled:
 
     ```bash
     streamlit run src/mangetamain/streamlit_ui.py profile
     ```
 
-- after starting application, test the web as you wish and stop after finish
+2. Interact with your app as usual — all function calls and timings will be recorded.
 
-- visualize
+3. After you finish testing, stop the app and visualize the profile using Snakeviz:
 
     ```bash
     snakeviz docs/streamlit_profile.prof
     ```
 
-- open the visualization using this [link](http://127.0.0.1:8080/snakeviz/streamlit_profile.prof)
+4. Open the visualization in your browser: [link](http://127.0.0.1:8080/snakeviz/streamlit_profile.prof)
 
 
-### Profiling in realtime
+## 2️⃣ Profiling in realtime
 
-- run the application first
+🔧 How to run
+
+1. Start your Streamlit application:
+
     ```bash
     streamlit run src/mangetamain/streamlit_ui.py
     ```
 
-- find the pid of the running process
+2. Find the process ID (PID) of the running Streamlit process:
 
     ```bash
     ps aux | grep "[s]treamlit run src/mangetamain/streamlit_ui.py" | awk '{print $2}'
     ```
 
-- if want to run realtime profiling
+3. To view real-time profiling in a new terminal:
 
     ```bash
     py-spy top --pid <PID>
     ```
 
-- if want to save and visualize instead
+4. To record and visualize the performance data:
 
     ```bash
     py-spy record -o profile.svg --pid <PID>
     ```
 
-- add sudo env "PATH=$PATH" if has errors:
+5. If you encounter permission errors (e.g., when accessing another user’s process), use:
 
     ```bash
     sudo env "PATH=$PATH" py-spy top --pid <PID>
     sudo env "PATH=$PATH" py-spy record -o docs/streamlit_profile.svg --pid <PID>
     ```
 
-- test the application before quitting
-
-- the result of visualization will be saved to streamlit_profile.svg
+6. Interact with the app while profiling, then stop the process when finished. You can then open streamlit_profile.svg in your browser to explore the flamegraph.

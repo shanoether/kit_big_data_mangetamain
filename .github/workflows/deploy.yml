@@ -133,7 +133,7 @@ jobs:
             # Verify manifest exists
             IMAGE_NAME="ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG}"
             echo "Checking manifest for: ${IMAGE_NAME}"
-            
+
             if docker manifest inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
               echo "✅ Manifest found"
             else
@@ -172,7 +172,7 @@ jobs:
             fi
             ok=1
             #for i in $(seq 1 18); do
-            #ok=1;    
+            #ok=1;
             ##if docker inspect --format='{{.State.Health.Status}}' "$STREAMLIT_CID" 2>/dev/null | grep -q healthy; then
             #        ok=1; break
             #    fi
