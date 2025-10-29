@@ -156,21 +156,8 @@ jobs:
 
             echo "ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG}"
             docker manifest inspect ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG} >/dev/null && echo OK || echo MISSING
-            
-            echo "architecture"
-            docker manifest inspect ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG} | jq '.manifests[].platform'
 
-
-            docker compose pull --no-parallel || echo "⚠️ Some images failed to pull, continuing anyway..."
             echo "----- Restarting containers -----"
-            docker compose up -d --remove-orphans
-
-            echo '55555'
-            # Pull & restart
-            echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
-            echo '66666'
-            docker compose pull
-            echo '77777'
             docker compose up -d --remove-orphans
 
             # probe health check
