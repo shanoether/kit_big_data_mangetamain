@@ -64,7 +64,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     )
     sns.despine()
     st.pyplot(fig)
-    plt.close(fig)  # Free memory
+    plt.close(fig)  # Free memory fig
 
     # User categorization
     st.subheader("User categorization")
