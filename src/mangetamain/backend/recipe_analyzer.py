@@ -78,27 +78,32 @@ class RecipeAnalyzer:
             df_total: Combined DataFrame with all recipe and interaction data
         """
         # Store dataframes
-        self.df_recipe = df_recipes
-        self.df_interaction = df_interactions
-        self.df_total = df_total
+        logger.info("Setting up attributes")
 
         # Load spaCy model (disable unused components for speed)
+        logger.info("Loading spaCy model")
         self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
 
         # Initialize stop words
+        logger.info("Initializing stop words")
         self.stop_words = set(spacy.lang.en.STOP_WORDS)
         self._extend_stop_words()
 
         # Pre-compute top ingredients
-        self.top_ingredients = self._compute_top_ingredients()
+        logger.info("Computing top ingredients")
+        self.top_ingredients = self._compute_top_ingredients(df_recipes)
 
         # Cache for preprocessed data and figures
         self._cache: dict[str, Any] = {}
 
         # Pre-process the most common review sets for performance
-        self._preprocessed_500_best_reviews()
-        self._preprocessed_500_worst_reviews()
-        self._preprocessed_500_most_reviews()
+        logger.info("Preprocessed 500 best reviews")
+        self._preprocessed_500_best_reviews(df_interactions)
+        logger.info("Preprocessed 500 worst reviews")
+        self._preprocessed_500_worst_reviews(df_interactions)
+        logger.info("Preprocessed 500 most reviews")
+        self._preprocessed_500_most_reviews(df_total)
+        logger.info("Preprocessed word cloud")
         self._preprocess_word_cloud(100)
         self._preprocess_comparisons(100, 100)
 
@@ -132,6 +137,7 @@ class RecipeAnalyzer:
             "would",
             "one",
         ]
+
         self.stop_words.update(extra_stop_words)
 
     @lru_cache(maxsize=128)  # noqa: B019
@@ -212,8 +218,9 @@ class RecipeAnalyzer:
             all_tokens.extend(tokens)
 
         return all_tokens
+    
 
-    def _compute_top_ingredients(self) -> pl.DataFrame:
+    def _compute_top_ingredients(self, df_recipe: pl.DataFrame) -> pl.DataFrame:
         """Compute the most frequently used ingredients across all recipes.
 
         Cleans ingredient strings, filters out common non-informative ingredients
@@ -253,11 +260,10 @@ class RecipeAnalyzer:
         MIN_LEN = 2
 
         # Initialize inflect engine for singularization
-        p = inflect.engine()
 
         # Clean ingredient strings and split into individual items
         ingredients_cleaned = (
-            self.df_recipe.with_columns(
+            df_recipe.with_columns(
                 # Remove brackets and quotes from ingredient list strings
                 pl.col("ingredients").str.replace_all(r"[\[\]']", "").alias("cleaned"),
             )
@@ -271,17 +277,8 @@ class RecipeAnalyzer:
                 & (pl.col("ingredients") != "")
                 & (pl.col("ingredients").str.len_chars() > MIN_LEN),
             )
-            .with_columns(
-                # Convert each ingredient to lowercase and singular form
-                pl.col("ingredients")
-                .str.to_lowercase()
-                .map_elements(
-                    lambda x: p.singular_noun(x) if p.singular_noun(x) else x,
-                    return_dtype=pl.String,
-                )
-                .alias("ingredients_singular"),
-            )
         )
+    
 
         # Count occurrences and sort by frequency
         ingredients_counts = (
@@ -292,7 +289,7 @@ class RecipeAnalyzer:
 
         return ingredients_counts
 
-    def _preprocessed_500_most_reviews(self) -> None:
+    def _preprocessed_500_most_reviews(self, df_total: pl.DataFrame) -> None:
         """Pre-process ingredients from the 500 most-reviewed recipes.
 
         Identifies recipes with the most reviews, extracts their ingredients,
@@ -307,7 +304,7 @@ class RecipeAnalyzer:
 
         # Find the 500 recipes with most reviews
         most_reviewed_ids = (
-            self.df_total.group_by("recipe_id")
+            df_total.group_by("recipe_id")
             .agg(pl.len().alias("nb_reviews"))
             .sort("nb_reviews", descending=True)
             .head(500)
@@ -315,7 +312,7 @@ class RecipeAnalyzer:
 
         # Join with ingredients data - use unique() to avoid duplicates
         most_reviews_with_ing = most_reviewed_ids.join(
-            self.df_total.select(["recipe_id", "ingredients"]).unique("recipe_id"),
+            df_total.select(["recipe_id", "ingredients"]).unique("recipe_id"),
             on="recipe_id",
             how="left",
         ).drop_nulls("ingredients")
@@ -328,7 +325,7 @@ class RecipeAnalyzer:
         logger.info(f"Most reviews cleaned: {cleaned_reviews[:5]}")
         self._cache[cache_key] = cleaned_reviews
 
-    def _preprocessed_500_best_reviews(self) -> None:
+    def _preprocessed_500_best_reviews(self, df_interaction: pl.DataFrame) -> None:
         """Preprocess review text from the 500 highest-rated recipe reviews.
 
         Extracts review text from the top 500 reviews sorted by rating score (5.0 being best).
@@ -339,7 +336,7 @@ class RecipeAnalyzer:
         cache_key = "preprocessed_500_best_reviews"
 
         best_reviews = (
-            self.df_interaction.sort("rating", descending=True)
+            df_interaction.sort("rating", descending=True)
             .head(500)
             .select("review")
             .to_series()
@@ -350,7 +347,7 @@ class RecipeAnalyzer:
         cleaned_reviews = self._clean_texts_batch(best_reviews)
         self._cache[cache_key] = cleaned_reviews
 
-    def _preprocessed_500_worst_reviews(self) -> None:
+    def _preprocessed_500_worst_reviews(self,df_interaction: pl.DataFrame) -> None:
         """Preprocess review text from the 500 lowest-rated recipe reviews.
 
         Extracts review text from the bottom 500 reviews sorted by rating score (1.0 being worst).
@@ -361,7 +358,7 @@ class RecipeAnalyzer:
         cache_key = "preprocessed_500_worst_reviews"
         # if cache_key not in self._cache:
         worst_reviews = (
-            self.df_interaction.sort("rating", descending=False)
+            df_interaction.sort("rating", descending=False)
             .head(500)
             .select("review")
             .to_series()
@@ -421,26 +418,26 @@ class RecipeAnalyzer:
         return recipe_ids
 
     # could use  df_total
-    def get_reviews_for_recipes(self, recipe_ids: list[int]) -> list[str]:
-        """Retrieve all review texts for specified recipe IDs.
+    # def get_reviews_for_recipes(self, recipe_ids: list[int], df_interaction: pl.DataFrame) -> list[str]:
+    #     """Retrieve all review texts for specified recipe IDs.
 
-        Args:
-            recipe_ids: List of recipe IDs to fetch reviews for.
+    #     Args:
+    #         recipe_ids: List of recipe IDs to fetch reviews for.
 
-        Returns:
-            list[str]: List of review texts matching the provided recipe IDs.
-                       Results are cached for repeated queries.
-        """
-        cache_key = f"reviews_{recipe_ids[:3]!s}_{len(recipe_ids)}"
-        if cache_key not in self._cache:
-            self._cache[cache_key] = (
-                self.df_interaction.filter(pl.col("recipe_id").is_in(recipe_ids))
-                .select("review")
-                .to_series()
-                .to_list()
-            )
-        recipe_review = list(self._cache[cache_key])
-        return recipe_review
+    #     Returns:
+    #         list[str]: List of review texts matching the provided recipe IDs.
+    #                    Results are cached for repeated queries.
+    #     """
+    #     cache_key = f"reviews_{recipe_ids[:3]!s}_{len(recipe_ids)}"
+    #     if cache_key not in self._cache:
+    #         self._cache[cache_key] = (
+    #             df_interaction.filter(pl.col("recipe_id").is_in(recipe_ids))
+    #             .select("review")
+    #             .to_series()
+    #             .to_list()
+    #         )
+    #     recipe_review = list(self._cache[cache_key])
+    #     return recipe_review
 
     def plot_word_cloud(
         self,
@@ -857,6 +854,7 @@ class RecipeAnalyzer:
         Returns:
             RecipeAnalyzer: Loaded analyzer instance with spaCy model reloaded.
         """
+        logger.info(f"Loading RecipeAnalyzer from {filepath}...")
         with open(filepath, "rb") as f:
             analyzer: RecipeAnalyzer = pickle.load(f)
         logger.info(f"RecipeAnalyzer loaded from {filepath}")

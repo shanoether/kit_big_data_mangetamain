@@ -8,12 +8,17 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
     # environment:
       # - PYTHONPATH=/app/src
+    mem_limit: 4g              # Hard limit (container killed if exceeded)
+    mem_reservation: 2g        # Soft limit (guaranteed minimum)
+    memswap_limit: 4g          # Total memory + swap limit
+
 
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
     command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py"]
-    #depends_on:
-    #  preprocess
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:
           test: ["CMD","curl","-fsS","https://mangetamain.duckdns.org:443/health"]
@@ -28,7 +33,11 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /opt/app/.streamlit/config.docker.toml:/app/.streamlit/config.toml:ro # HTTPS production
-
     environment:
       - PORT=8501
       #- PYTHONPATH=/app/src
+    mem_limit: 4g              # Hard limit (container killed if exceeded)
+    mem_reservation: 2g        # Soft limit (guaranteed minimum)
+    memswap_limit: 4g          # Total memory + swap limit
+
+
