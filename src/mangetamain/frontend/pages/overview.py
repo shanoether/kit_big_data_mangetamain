@@ -15,7 +15,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_recipes = st.session_state.df_recipes
 
     st.markdown("---")
-    st.write("**Taille des datasets :**")
+    st.write("**Dataset sizes:**")
 
     col1, col2 = st.columns(2)
     col1.metric("Interactions", len(df_interactions))

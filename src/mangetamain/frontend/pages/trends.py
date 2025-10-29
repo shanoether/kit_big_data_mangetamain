@@ -24,8 +24,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ],
     )
 
-    # Évolution des notes moyennes
-    st.subheader("Évolution des notes moyennes par année")
+    # Evolution of average ratings
+    st.subheader("Evolution of average ratings per year")
     mean_by_year = (
         df_interaction.group_by("year")
         .agg(pl.col("rating").mean().alias("mean_rating"))
@@ -45,8 +45,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     sns.despine()
     st.pyplot(fig)
 
-    # Nombre de reviews par mois et année
-    st.subheader("Nombre de reviews par mois et année")
+    # Number of reviews per month and year
+    st.subheader("Number of reviews per month and year")
     monthly_counts = (
         df_interaction.group_by(["year", "month"])
         .agg(pl.len().alias("nb_reviews"))

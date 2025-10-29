@@ -1,4 +1,4 @@
-"""Users Analysis for the Stremalit app."""
+"""Users Analysis for the Streamlit app."""
 
 import matplotlib.pyplot as plt
 import polars as pl
@@ -16,8 +16,8 @@ st.title("Users Analysis")
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
 
-    # Distribution du nombre de reviews par utilisateur
-    st.subheader("Distribution du nombre de reviews par utilisateur")
+    # Distribution of number of reviews per user
+    st.subheader("Distribution of number of reviews per user")
     reviews_per_user = df_interactions.group_by("user_id").agg(
         pl.len().alias("nb_reviews"),
     )
@@ -32,8 +32,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     sns.despine()
     st.pyplot(fig)
 
-    # Catégorisation
-    st.subheader("Catégorisation des utilisateurs")
+    # User categorization
+    st.subheader("User categorization")
 
     reviews_per_user_pd = reviews_per_user.to_pandas()
 
@@ -72,8 +72,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     sns.despine()
     st.pyplot(fig)
 
-    # Moyenne des notes par utilisateur
-    st.subheader("Moyenne des notes par utilisateur")
+    # Average rating per user
+    st.subheader("Average rating per user")
     df_user_stats = df_interactions.group_by("user_id").agg(
         [
             pl.len().alias("nb_reviews"),

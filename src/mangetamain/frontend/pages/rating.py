@@ -65,7 +65,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 """,
         )
 
-    # Visualisation distribution des recettes par review
+    # Visualization of recipe distribution by review
     with st.spinner("Generating rating distribution by review..."):
         reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(
             pl.len().alias("review_count"),

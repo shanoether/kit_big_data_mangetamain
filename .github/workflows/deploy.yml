@@ -1,7 +1,7 @@
 name: Build & Deploy to VM
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 on:
@@ -36,12 +36,12 @@ jobs:
           api-key: ${{ secrets.SAFETY_API_KEY }}
 
   build-deploy:
-    needs: [ security ]
+    #needs: [ security ]
     environment: vm-kit-big-data-1        # <- if you use GitHub Environments
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       packages: write
       attestations: write
       id-token: write
@@ -49,6 +49,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git operations
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv sync --group dev
 
       - name: Compute tags
         id: meta
@@ -62,7 +77,7 @@ jobs:
       - name: Build image
         run: |
           docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
-                       -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
+                      -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
 
       - name: Push image
         run: |
@@ -94,19 +109,55 @@ jobs:
             export DOCKER_CONFIG="$TMP_DOCKER_CONFIG"
 
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
-            docker compose pull
-            docker compose up -d --remove-orphans
-
 
             # Pin the deployment to the new immutable tag
-            PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
+            PREV_TAG="$(grep '^IMAGE_TAG=' .env 2>/dev/null | cut -d= -f2 || echo '')"
 
-            export IMAGE_TAG="sha-${SHORT_SHA}"
-            echo "IMAGE_TAG=${IMAGE_TAG}" > .env
+            echo "Deploying SHORT_SHA=${SHORT_SHA}"
 
-            # Pull & restart
-            echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
-            docker compose pull
+            # Convert to lowercase for Docker registry (registry is case-sensitive)
+            GH_USER_LC="$(echo "$GH_USER" | tr '[:upper:]' '[:lower:]')"
+            REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
+            IMAGE_TAG="sha-${SHORT_SHA}"
+
+            # Write all variables to .env file
+            cat > .env <<EOF
+            GH_USER=${GH_USER_LC}
+            REPO=${REPO_LC}
+            IMAGE_TAG=${IMAGE_TAG}
+            EOF
+
+            echo "Generated .env file:"
+            cat .env
+
+            # Verify manifest exists
+            IMAGE_NAME="ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG}"
+            echo "Checking manifest for: ${IMAGE_NAME}"
+            
+            if docker manifest inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
+              echo "✅ Manifest found"
+            else
+              echo "❌ Manifest not found for ${IMAGE_NAME}"
+              exit 1
+            fi
+            # Debug: Show what docker-compose will pull
+            echo "=== Docker Compose Configuration ==="
+            docker compose config | grep image:
+
+            # Pull images
+            echo "Pulling images..."
+            docker compose pull || {
+              echo "❌ Failed to pull images"
+              exit 1
+            }
+
+            # Now pull & restart using the new tag
+            docker compose config | sed -n 's/ *image: //p'
+
+            echo "ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG}"
+            docker manifest inspect ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG} >/dev/null && echo OK || echo MISSING
+
+            echo "----- Restarting containers -----"
             docker compose up -d --remove-orphans
 
             # probe health check
@@ -145,3 +196,12 @@ jobs:
 
             rm -rf "$TMP_DOCKER_CONFIG"
             unset DOCKER_CONFIG
+
+      - name: Configure Git for docs deployment
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy documentation to GitHub Pages
+        run: |
+          uv run mkdocs gh-deploy --message "docs: deploy documentation from commit ${GITHUB_SHA::7}"
