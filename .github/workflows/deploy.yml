@@ -129,6 +129,7 @@ jobs:
             echo "ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG}"
             docker manifest inspect ghcr.io/shanoether/kit_big_data_mangetamain-app:sha-3752bf8 >/dev/null && echo OK || echo MISSING
             docker compose pull
+            echo "----- Restarting containers -----"
             docker compose up -d --remove-orphans
 
             echo '55555'
