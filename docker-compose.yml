@@ -8,12 +8,9 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
     # environment:
       # - PYTHONPATH=/app/src
-    deploy:
-    resources:
-      limits:
-        memory: 4G  # Increase from default (usually 2G)
-      reservations:
-        memory: 2G  # Guarantee at least 2G
+    mem_limit: 4g              # Hard limit (container killed if exceeded)
+    mem_reservation: 2g        # Soft limit (guaranteed minimum)
+    memswap_limit: 4g          # Total memory + swap limit
 
 
   streamlit:
@@ -39,10 +36,8 @@ services:
     environment:
       - PORT=8501
       #- PYTHONPATH=/app/src
-    deploy:
-    resources:
-      limits:
-        memory: 4G  # Increase from default (usually 2G)
-      reservations:
-        memory: 2G  # Guarantee at least 2G
+    mem_limit: 4g              # Hard limit (container killed if exceeded)
+    mem_reservation: 2g        # Soft limit (guaranteed minimum)
+    memswap_limit: 4g          # Total memory + swap limit
+
 
