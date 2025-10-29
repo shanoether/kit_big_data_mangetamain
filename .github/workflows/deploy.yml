@@ -119,24 +119,45 @@ jobs:
             echo '111111'
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
 
-            echo '444444'
             # Pin the deployment to the new immutable tag
-            PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
+            PREV_TAG="$(grep '^IMAGE_TAG=' .env 2>/dev/null | cut -d= -f2 || echo '')"
 
-            echo "Deploying SHORT_SHA=${{ steps.meta.outputs.SHORT_SHA }}"
+            echo "Deploying SHORT_SHA=${SHORT_SHA}"
 
+            # Convert to lowercase for Docker registry (registry is case-sensitive)
             GH_USER_LC="$(echo "$GH_USER" | tr '[:upper:]' '[:lower:]')"
             REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
             IMAGE_TAG="sha-${SHORT_SHA}"
 
-            export IMAGE_TAG="sha-${SHORT_SHA}"
 
             # Write all variables to .env file
-            {
-              echo "GH_USER=${GH_USER_LC}"
-              echo "REPO=${REPO}"
-              echo "IMAGE_TAG=${IMAGE_TAG}"
-            } > .env
+            cat > .env <<EOF
+            GH_USER=${GH_USER_LC}
+            REPO=${REPO_LC}
+            IMAGE_TAG=${IMAGE_TAG}
+            EOF
+
+            echo "Generated .env file:"
+            cat .env
+
+            # Verify manifest exists
+            IMAGE_NAME="ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG}"
+            echo "Checking manifest for: ${IMAGE_NAME}"
+            
+            if docker manifest inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
+              echo "✅ Manifest found"
+              docker manifest inspect "${IMAGE_NAME}" | jq -r '.manifests[].platform | "\(.os)/\(.architecture)"'
+            else
+              echo "❌ Manifest not found for ${IMAGE_NAME}"
+              exit 1
+            fi
+
+            # Pull images
+            echo "Pulling images..."
+            docker compose pull || {
+              echo "❌ Failed to pull images"
+              exit 1
+            }
 
             # Now pull & restart using the new tag
             docker compose config | sed -n 's/ *image: //p'
