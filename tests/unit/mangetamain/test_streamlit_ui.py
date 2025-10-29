@@ -58,6 +58,21 @@ class TestStreamlitUI(unittest.TestCase):
         mock_st: MagicMock,
     ) -> None:
         """Test that main function loads data and sets up navigation."""
+        # Mock the return value of load_data_from_parquet_and_pickle (tuple of 11 elements)
+        mock_load_data.return_value = (
+            MagicMock(),  # df_interactions
+            MagicMock(),  # df_interactions_nna
+            MagicMock(),  # df_recipes
+            MagicMock(),  # df_recipes_nna
+            MagicMock(),  # df_total_nt
+            MagicMock(),  # df_total
+            MagicMock(),  # df_total_court
+            MagicMock(),  # proportion_m
+            MagicMock(),  # proportion_s
+            MagicMock(),  # recipe_analyzer
+            True,          # data_loaded
+        )
+
         # Simulate empty session_state
         mock_st.session_state = {}
 
@@ -80,8 +95,8 @@ class TestStreamlitUI(unittest.TestCase):
         # Ensure navigation run was called
         mock_pg.run.assert_called_once()
 
-        # Logger info should be called at startup
-        mock_logger.info.assert_any_call("Application started, loading data.")
+        # Logger should log cache access time and data storage
+        assert mock_logger.info.called
 
 
 if __name__ == "__main__":

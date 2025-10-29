@@ -170,14 +170,14 @@ jobs:
                 echo "streamlit container not found"
                 exit 1
             fi
-            ok=1
-            #for i in $(seq 1 18); do
-            #ok=1;
-            ##if docker inspect --format='{{.State.Health.Status}}' "$STREAMLIT_CID" 2>/dev/null | grep -q healthy; then
-            #        ok=1; break
-            #    fi
-            #    sleep 5
-            #done
+            #ok=1
+            for i in $(seq 1 18); do
+            ok=1;
+            if docker inspect --format='{{.State.Health.Status}}' "$STREAMLIT_CID" 2>/dev/null | grep -q healthy; then
+                    ok=1; break
+                fi
+                sleep 5
+            done
 
             if [ "$ok" -ne 1 ]; then
                 echo "❌ New version unhealthy, rolling back to ${PREV_TAG:-<none>}"

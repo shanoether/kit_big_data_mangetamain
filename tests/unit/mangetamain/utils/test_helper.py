@@ -74,10 +74,25 @@ class TestHelper(unittest.TestCase):
         result = load_data_from_parquet_and_pickle()
 
         # Assert
-        assert result is True
-        assert st.session_state.data_loaded is True
-        assert st.session_state.df_interactions.equals(mock_df)
-        assert st.session_state.recipe_analyzer == mock_analyzer
+        assert isinstance(result, tuple)
+        assert len(result) == 11
+        (
+            df_interactions,
+            df_interactions_nna,
+            df_recipes,
+            df_recipes_nna,
+            df_total_nt,
+            df_total,
+            df_total_court,
+            proportion_m,
+            proportion_s,
+            recipe_analyzer,
+            data_loaded,
+        ) = result
+        
+        assert data_loaded is True
+        assert df_interactions.equals(mock_df)
+        assert recipe_analyzer == mock_analyzer
         assert mock_load_parquet.call_count == 9
         mock_recipe_analyzer_load.assert_called_once_with(
             "data/processed/recipe_analyzer.pkl",
@@ -96,30 +111,28 @@ class TestHelper(unittest.TestCase):
         # Arrange: Simulate missing file
         mock_load_parquet.side_effect = FileNotFoundError("File not found")
 
-        # Clear session state
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-
         # Act
         result = load_data_from_parquet_and_pickle()
 
         # Assert
-        assert result is False
-        assert st.session_state.data_loaded is False
+        assert isinstance(result, tuple)
+        assert len(result) == 11
+        data_loaded = result[10]  # Last element is data_loaded flag
+        assert data_loaded is False
         mock_logger.error.assert_called_once()
         assert "Error loading data" in str(mock_logger.error.call_args)
         mock_st_error.assert_called_once()
         assert "Error loading data" in str(mock_st_error.call_args)
 
     @patch("mangetamain.utils.helper.load_parquet_with_progress")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("mangetamain.backend.recipe_analyzer.RecipeAnalyzer.load")
     @patch("mangetamain.utils.helper.logger")
     @patch("streamlit.error")
     def test_load_data_pickle_load_error(
         self,
         mock_st_error: MagicMock,
         mock_logger: MagicMock,
-        mock_file_open: MagicMock,
+        mock_recipe_analyzer_load: MagicMock,
         mock_load_parquet: MagicMock,
     ) -> None:
         """Test that pickle loading errors are handled gracefully."""
@@ -139,19 +152,17 @@ class TestHelper(unittest.TestCase):
             pl.DataFrame({"proportion_s": mock_series}),
         ]
 
-        # Make open() raise an exception when reading pickle
-        mock_file_open.side_effect = OSError("Cannot read pickle file")
-
-        # Clear session state
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
+        # Make RecipeAnalyzer.load raise an exception
+        mock_recipe_analyzer_load.side_effect = OSError("Cannot read pickle file")
 
         # Act
         result = load_data_from_parquet_and_pickle()
 
         # Assert
-        assert result is False
-        assert st.session_state.data_loaded is False
+        assert isinstance(result, tuple)
+        assert len(result) == 11
+        data_loaded = result[10]
+        assert data_loaded is False
         mock_logger.error.assert_called_once()
         assert "Cannot read pickle file" in str(mock_logger.error.call_args)
         mock_st_error.assert_called_once()
@@ -169,21 +180,19 @@ class TestHelper(unittest.TestCase):
         # Arrange: Simulate unexpected error
         mock_load_parquet.side_effect = RuntimeError("Unexpected error occurred")
 
-        # Clear session state
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
+        # Act
+        result = load_data_from_parquet_and_pickle()
 
-            # Act
-            result = load_data_from_parquet_and_pickle()
-
-            # Assert
-            assert result is False
-            assert st.session_state.data_loaded is False
-            mock_logger.error.assert_called_once()
-            error_msg = str(mock_logger.error.call_args)
-            assert "Unexpected error occurred" in error_msg
-            assert "please run backend/dataprocessor first" in error_msg.lower()
-            mock_st_error.assert_called_once()
+        # Assert
+        assert isinstance(result, tuple)
+        assert len(result) == 11
+        data_loaded = result[10]
+        assert data_loaded is False
+        mock_logger.error.assert_called_once()
+        error_msg = str(mock_logger.error.call_args)
+        assert "Unexpected error occurred" in error_msg
+        assert "please run backend/dataprocessor first" in error_msg.lower()
+        mock_st_error.assert_called_once()
 
     # Tests for custom_exception_handler function
     @patch("streamlit.error")
