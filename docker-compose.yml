@@ -16,7 +16,7 @@ services:
     #  preprocess
     restart: unless-stopped
     healthcheck:
-          test: ["CMD","curl","-fsS","http://localhost:8501/health"]
+          test: ["CMD","curl","-fsS","https://localhost:443/health"]
           interval: 15s
           timeout: 5s
           retries: 8
