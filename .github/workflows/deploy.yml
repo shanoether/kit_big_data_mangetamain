@@ -108,7 +108,6 @@ jobs:
             TMP_DOCKER_CONFIG="$(mktemp -d)"
             export DOCKER_CONFIG="$TMP_DOCKER_CONFIG"
 
-            echo '111111'
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
 
             # Pin the deployment to the new immutable tag
@@ -120,7 +119,6 @@ jobs:
             GH_USER_LC="$(echo "$GH_USER" | tr '[:upper:]' '[:lower:]')"
             REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
             IMAGE_TAG="sha-${SHORT_SHA}"
-
 
             # Write all variables to .env file
             cat > .env <<EOF
