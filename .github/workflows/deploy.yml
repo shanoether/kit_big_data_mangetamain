@@ -138,7 +138,6 @@ jobs:
             
             if docker manifest inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
               echo "✅ Manifest found"
-              docker manifest inspect "${IMAGE_NAME}" | jq -r '.manifests[].platform | "\(.os)/\(.architecture)"'
             else
               echo "❌ Manifest not found for ${IMAGE_NAME}"
               exit 1
