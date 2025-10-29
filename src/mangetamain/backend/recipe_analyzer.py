@@ -137,6 +137,7 @@ class RecipeAnalyzer:
             "would",
             "one",
         ]
+
         self.stop_words.update(extra_stop_words)
 
     @lru_cache(maxsize=128)  # noqa: B019
