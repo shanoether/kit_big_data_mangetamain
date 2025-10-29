@@ -64,10 +64,6 @@ COPY --from=builder /app/README.md ./
 # Copy source code
 # COPY . .
 
-
-
-
-
 #RUN uv sync
 
 # Expose port
