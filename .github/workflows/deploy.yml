@@ -108,8 +108,14 @@ jobs:
             TMP_DOCKER_CONFIG="$(mktemp -d)"
             export DOCKER_CONFIG="$TMP_DOCKER_CONFIG"
 
+            echo '111111'
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+            echo '222222'
+            docker compose pull
+            echo '333333'
+            docker compose up -d --remove-orphans
 
+            echo '444444'
             # Pin the deployment to the new immutable tag
             PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
 
@@ -117,12 +123,13 @@ jobs:
             
             # Write all variables to .env file
             echo "GH_USER=${GH_USER}" > .env
-            echo "REPO=${REPO}" >> .env
-            echo "IMAGE_TAG=${IMAGE_TAG}" >> .env
 
+            echo '55555'
             # Pull & restart
             echo ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
+            echo '66666'
             docker compose pull
+            echo '77777'
             docker compose up -d --remove-orphans
 
             # probe health check
