@@ -142,6 +142,9 @@ jobs:
               echo "❌ Manifest not found for ${IMAGE_NAME}"
               exit 1
             fi
+            # Debug: Show what docker-compose will pull
+            echo "=== Docker Compose Configuration ==="
+            docker compose config | grep image:
 
             # Pull images
             echo "Pulling images..."
