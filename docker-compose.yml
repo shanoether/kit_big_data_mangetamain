@@ -31,4 +31,4 @@ services:
 
     environment:
       - PORT=8501
-      # - PYTHONPATH=/app/src
+      #- PYTHONPATH=/app/src
