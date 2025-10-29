@@ -8,6 +8,13 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
     # environment:
       # - PYTHONPATH=/app/src
+    deploy:
+    resources:
+      limits:
+        memory: 4G  # Increase from default (usually 2G)
+      reservations:
+        memory: 2G  # Guarantee at least 2G
+
 
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
@@ -29,7 +36,13 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /opt/app/.streamlit/config.docker.toml:/app/.streamlit/config.toml:ro # HTTPS production
-
     environment:
       - PORT=8501
       #- PYTHONPATH=/app/src
+    deploy:
+    resources:
+      limits:
+        memory: 4G  # Increase from default (usually 2G)
+      reservations:
+        memory: 2G  # Guarantee at least 2G
+
