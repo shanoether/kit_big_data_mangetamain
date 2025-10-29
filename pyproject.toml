@@ -29,13 +29,19 @@ dependencies = [
     "plotly",
     "polars",
     "streamlit",
+    "pre-commit>=4.3.0",
+    "pyment>=0.3.3",
     "spacy>=3.8.7",
     "matplotlib-venn>=1.1.2",
     "wordcloud>=1.9.4",
     "pip",
+    "hatch",
     "streamlit-extras",
+    "coverage>=7.11.0",
+    "pytest-cov>=7.0.0",
     "inflect>=7.5.0",
 ]
+
 
 [dependency-groups]
 dev = [
@@ -50,6 +56,7 @@ dev = [
     "mkdocstrings[python]>=0.27.0",
     "mkdocs-autorefs>=1.2.0",
     "mkdocs-git-revision-date-localized-plugin>=1.3.0",
+    "mkdocs-include-markdown-plugin>=7.2.0",
     "pre-commit>=4.0.1",
     "pyment>=0.3.3",
 ]

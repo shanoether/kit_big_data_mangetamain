@@ -133,7 +133,7 @@ jobs:
             # Verify manifest exists
             IMAGE_NAME="ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG}"
             echo "Checking manifest for: ${IMAGE_NAME}"
-            
+
             if docker manifest inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
               echo "✅ Manifest found"
             else
@@ -172,7 +172,7 @@ jobs:
             fi
             ok=1
             #for i in $(seq 1 18); do
-            #ok=1;    
+            #ok=1;
             ##if docker inspect --format='{{.State.Health.Status}}' "$STREAMLIT_CID" 2>/dev/null | grep -q healthy; then
             #        ok=1; break
             #    fi
@@ -206,3 +206,40 @@ jobs:
       - name: Build and deploy documentation to GitHub Pages
         run: |
           uv run mkdocs gh-deploy --message "docs: deploy documentation from commit ${GITHUB_SHA::7}"
+
+      - name: Cleanup Docker resources
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -euo pipefail
+
+            echo "🧹 Cleaning up Docker resources..."
+
+            # Remove stopped containers
+            echo "Removing stopped containers..."
+            docker container prune -f || true
+
+            # Remove unused images (keep images from last 2h)
+            echo "Removing unused images..."
+            docker image prune -a -f --filter "until=2h" || true
+
+            # Remove unused volumes (be careful - only removes truly unused ones)
+            echo "Removing unused volumes..."
+            docker volume prune -f || true
+
+            # Remove unused networks
+            echo "Removing unused networks..."
+            docker network prune -f || true
+
+            # Remove build cache
+            echo "Removing build cache..."
+            docker builder prune -f || true
+
+            # Show disk usage after cleanup
+            echo "📊 Docker disk usage after cleanup:"
+            docker system df
+
+            echo "✅ Cleanup complete!"
