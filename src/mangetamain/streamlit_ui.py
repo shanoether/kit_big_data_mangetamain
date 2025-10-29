@@ -3,6 +3,7 @@
 import cProfile
 import pstats
 import sys
+import time
 
 import streamlit as st
 from streamlit_extras.exception_handler import set_global_exception_handler
@@ -29,8 +30,6 @@ def main() -> None:
     - First user: ~90s to load all data
     - All subsequent users: <0.01s (instant cache hit)
     """
-    import time
-
     # Always call the cached function (it returns instantly after first call)
     cache_start = time.time()
     (
@@ -88,7 +87,7 @@ def main() -> None:
             rating_page,
             trends_page,
             users_analysis_page,
-            recipes_analysis_page
+            recipes_analysis_page,
         ],
     )
 

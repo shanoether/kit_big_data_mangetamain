@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 import streamlit as st
+from matplotlib.figure import Figure
 
+from mangetamain.backend.recipe_analyzer import RecipeAnalyzer
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
@@ -21,7 +23,7 @@ st.set_page_config(
 )
 
 
-@st.cache_data(show_spinner="Computing top recipes...")
+@st.cache_data(show_spinner="Computing top recipes...")  # type: ignore[misc]
 def compute_top_recipes(_df_total_nt: pl.DataFrame, nb_recipes: int) -> pl.DataFrame:
     """Compute most reviewed recipes (cached by nb_recipes).
 
@@ -40,7 +42,7 @@ def compute_top_recipes(_df_total_nt: pl.DataFrame, nb_recipes: int) -> pl.DataF
     )
 
 
-@st.cache_data(show_spinner="Computing lowest rated recipes...")
+@st.cache_data(show_spinner="Computing lowest rated recipes...")  # type: ignore[misc]
 def compute_worst_recipes(
     _df_total_nt: pl.DataFrame,
     nb_worst: int,
@@ -70,8 +72,11 @@ def compute_worst_recipes(
     )
 
 
-@st.cache_data(show_spinner="Generating ingredient radar chart...")
-def get_top_ingredients_plot(_recipe_analyzer, ingredient_count: int):
+@st.cache_data(show_spinner="Generating ingredient radar chart...")  # type: ignore[misc]
+def get_top_ingredients_plot(
+    _recipe_analyzer: RecipeAnalyzer,
+    ingredient_count: int,
+) -> Figure:
     """Cached wrapper for recipe_analyzer.plot_top_ingredients.
 
     Args:
@@ -84,10 +89,13 @@ def get_top_ingredients_plot(_recipe_analyzer, ingredient_count: int):
     return _recipe_analyzer.plot_top_ingredients(ingredient_count)
 
 
-@st.cache_data(show_spinner="Generating word clouds...")
+@st.cache_data(show_spinner="Generating word clouds...")  # type: ignore[misc]
 def get_wordcloud_figures(
-    _recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str
-):
+    _recipe_analyzer: RecipeAnalyzer,
+    wordcloud_max_words: int,
+    filter_type: str,
+    title: str,
+) -> Figure:
     """Cached wrapper for individual word cloud generation.
 
     Args:
@@ -102,10 +110,13 @@ def get_wordcloud_figures(
     return _recipe_analyzer.plot_word_cloud(wordcloud_max_words, filter_type, title)
 
 
-@st.cache_data(show_spinner="Generating TF-IDF word clouds...")
+@st.cache_data(show_spinner="Generating TF-IDF word clouds...")  # type: ignore[misc]
 def get_tfidf_figures(
-    _recipe_analyzer, wordcloud_max_words: int, filter_type: str, title: str
-):
+    _recipe_analyzer: RecipeAnalyzer,
+    wordcloud_max_words: int,
+    filter_type: str,
+    title: str,
+) -> Figure:
     """Cached wrapper for TF-IDF word cloud generation.
 
     Args:
@@ -120,14 +131,14 @@ def get_tfidf_figures(
     return _recipe_analyzer.plot_tfidf(wordcloud_max_words, filter_type, title)
 
 
-@st.cache_data(show_spinner="Generating Venn comparisons...")
+@st.cache_data(show_spinner="Generating Venn comparisons...")  # type: ignore[misc]
 def get_comparison_figures(
-    _recipe_analyzer,
+    _recipe_analyzer: RecipeAnalyzer,
     recipe_count: int,
     wordcloud_max_words: int,
     filter_type: str,
     title: str,
-):
+) -> Figure:
     """Cached wrapper for Venn diagram comparison generation.
 
     Args:
@@ -284,7 +295,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         value=100,
     )
     if show_wordclouds:
-        
         # Display word clouds using cached wrappers
         st.subheader("🗣️ WordClouds (6 charts)")
 
@@ -292,7 +302,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
         The first method is based on the raw frequency of words, after a rigorous filtering process aimed at removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative such as recipe, thing, or definitely.
         This approach highlights the most frequent words in the corpus. However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more meaningful words for the analysis.
-        The second method uses TF-IDF (Term Frequency–Inverse Document Frequency), a technique that weights the importance of a word according to its frequency within a document and its rarity across the entire corpus.
+        The second method uses TF-IDF (Term Frequency Inverse - Document Frequency), a technique that weights the importance of a word according to its frequency within a document and its rarity across the entire corpus.
         This weighting helps emphasize discriminative words — those that best characterize specific recipes. In practice, the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF matrix using the TfidfVectorizer function from scikit-learn.
         Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
         """,
@@ -333,7 +343,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     st.header("🍳 Venn Diagram Comparisons")
 
     if show_comparisons:
-        
         st.markdown(
             """ To compare both approaches, Venn diagrams were used.
             These charts provide a clear visualization of the intersections and differences between the selected word sets.

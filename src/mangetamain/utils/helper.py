@@ -6,8 +6,8 @@ datasets. All functions use Polars for efficient DataFrame operations and
 integrate with Streamlit's caching and UI feedback mechanisms.
 """
 
+import gc
 import time
-from typing import Tuple
 
 import polars as pl
 import streamlit as st
@@ -55,8 +55,9 @@ def load_parquet_with_progress(file_path: str) -> pl.DataFrame:
     logger.info(f"✅ {file_path} loaded in {elapsed:.2f}s - Shape: {df.shape}")
     return df
 
+
 @st.cache_resource(show_spinner=False)  # type: ignore[misc]
-def load_data_from_parquet_and_pickle() -> Tuple[
+def load_data_from_parquet_and_pickle() -> tuple[
     pl.DataFrame,
     pl.DataFrame,
     pl.DataFrame,
@@ -66,7 +67,7 @@ def load_data_from_parquet_and_pickle() -> Tuple[
     pl.DataFrame,
     pl.Series,
     pl.Series,
-    RecipeAnalyzer,
+    RecipeAnalyzer | None,
     bool,
 ]:
     """Load ALL application data ONCE and cache it globally across all users.
@@ -104,8 +105,6 @@ def load_data_from_parquet_and_pickle() -> Tuple[
         - recipe_analyzer: RecipeAnalyzer instance
         - data_loaded: Success flag
     """
-    import gc
-
     logger.info("🔄 Starting data load (this happens ONCE globally)...")
     start_time = time.time()
 
@@ -199,7 +198,7 @@ def load_data_from_parquet_and_pickle() -> Tuple[
         df_total_court = pl.DataFrame()
         proportion_m = pl.Series()
         proportion_s = pl.Series()
-        recipe_analyzer = None  # type: ignore[assignment]
+        recipe_analyzer = None
 
     return (
         df_interactions,

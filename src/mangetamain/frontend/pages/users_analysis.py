@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 
-@st.cache_data(show_spinner="Computing user statistics...")
+@st.cache_data(show_spinner="Computing user statistics...")  # type: ignore[misc]
 def compute_reviews_per_user(_df_interactions: pl.DataFrame) -> pl.DataFrame:
     """Compute number of reviews per user (cached).
 
@@ -28,7 +28,7 @@ def compute_reviews_per_user(_df_interactions: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-@st.cache_data(show_spinner="Computing user ratings...")
+@st.cache_data(show_spinner="Computing user ratings...")  # type: ignore[misc]
 def compute_user_stats(_df_interactions: pl.DataFrame) -> pl.DataFrame:
     """Compute user statistics including mean rating (cached).
 
@@ -69,8 +69,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # User categorization
     st.subheader("User categorization")
 
-    @st.cache_data
-    def categorize_users(_reviews_per_user: pl.DataFrame):
+    @st.cache_data  # type: ignore[misc]
+    def categorize_users(_reviews_per_user: pl.DataFrame) -> pl.Series:
         """Categorize users by number of reviews (cached).
 
         Args:

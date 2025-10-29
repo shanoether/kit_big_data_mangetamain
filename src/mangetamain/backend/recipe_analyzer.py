@@ -31,7 +31,6 @@ from collections import Counter
 from functools import lru_cache
 from typing import Any
 
-import inflect
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
@@ -218,7 +217,6 @@ class RecipeAnalyzer:
             all_tokens.extend(tokens)
 
         return all_tokens
-    
 
     def _compute_top_ingredients(self, df_recipe: pl.DataFrame) -> pl.DataFrame:
         """Compute the most frequently used ingredients across all recipes.
@@ -278,7 +276,6 @@ class RecipeAnalyzer:
                 & (pl.col("ingredients").str.len_chars() > MIN_LEN),
             )
         )
-    
 
         # Count occurrences and sort by frequency
         ingredients_counts = (
@@ -347,7 +344,7 @@ class RecipeAnalyzer:
         cleaned_reviews = self._clean_texts_batch(best_reviews)
         self._cache[cache_key] = cleaned_reviews
 
-    def _preprocessed_500_worst_reviews(self,df_interaction: pl.DataFrame) -> None:
+    def _preprocessed_500_worst_reviews(self, df_interaction: pl.DataFrame) -> None:
         """Preprocess review text from the 500 lowest-rated recipe reviews.
 
         Extracts review text from the bottom 500 reviews sorted by rating score (1.0 being worst).
@@ -829,7 +826,7 @@ class RecipeAnalyzer:
         self.__dict__.update(state)
         # Reload the spaCy model with same configuration as __init__
 
-        self.nlp = None #spacy.load("en_core_web_sm", disable=["parser", "ner"])
+        self.nlp = None  # spacy.load("en_core_web_sm", disable=["parser", "ner"])
 
     def save(self, filepath: str) -> None:
         """Save the RecipeAnalyzer instance to disk using pickle.
