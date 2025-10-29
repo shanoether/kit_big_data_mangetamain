@@ -74,15 +74,23 @@ jobs:
       - name: Login to GHCR (push)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build image
+      - name: Build & push (multi-arch)
         run: |
-          docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
-                       -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
-
-      - name: Push image
-        run: |
-          docker push ${{ steps.meta.outputs.IMAGE }}:latest
-          docker push ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }}
+          docker buildx create --use || true
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ steps.meta.outputs.IMAGE }}:latest \
+            -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} \
+            --push .
+      #- name: Build image
+      #  run: |
+      #    docker build --pull -t ${{ steps.meta.outputs.IMAGE }}:latest \
+      #                 -t ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }} .
+#
+      #- name: Push image
+      #  run: |
+      #    docker push ${{ steps.meta.outputs.IMAGE }}:latest
+      #    docker push ${{ steps.meta.outputs.IMAGE }}:sha-${{ steps.meta.outputs.SHORT_SHA }}
 
       - name: Deploy on VM
         uses: appleboy/ssh-action@v1.1.0
@@ -115,7 +123,12 @@ jobs:
             # Pin the deployment to the new immutable tag
             PREV_TAG="$(sed -n 's/^IMAGE_TAG=//p' .env || true)"
 
+            echo "Deploying SHORT_SHA=${{ steps.meta.outputs.SHORT_SHA }}"
+
             GH_USER_LC="$(echo "$GH_USER" | tr '[:upper:]' '[:lower:]')"
+            REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
+            IMAGE_TAG="sha-${SHORT_SHA}"
+
             export IMAGE_TAG="sha-${SHORT_SHA}"
 
             # Write all variables to .env file
@@ -126,9 +139,16 @@ jobs:
             } > .env
 
             # Now pull & restart using the new tag
+            docker compose config | sed -n 's/ *image: //p'
+
             echo "ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG}"
-            docker manifest inspect ghcr.io/shanoether/kit_big_data_mangetamain-app:sha-3752bf8 >/dev/null && echo OK || echo MISSING
-            docker compose pull
+            docker manifest inspect ghcr.io/${GH_USER_LC}/${REPO}-app:${IMAGE_TAG} >/dev/null && echo OK || echo MISSING
+            
+            echo "architecture"
+            docker manifest inspect ghcr.io/${GH_USER_LC}/${REPO_LC}-app:${IMAGE_TAG} | jq '.manifests[].platform'
+
+
+            docker compose pull --no-parallel || echo "⚠️ Some images failed to pull, continuing anyway..."
             echo "----- Restarting containers -----"
             docker compose up -d --remove-orphans
 
