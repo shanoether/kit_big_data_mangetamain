@@ -587,9 +587,11 @@ class RecipeAnalyzer:
         if cache_key not in self._cache:
             cleaned = self._cache[self.switch_filter(rating_filter)]
             if not cleaned:
-                fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
+                fig, ax = plt.subplots(figsize=(8, 8), dpi=100)
                 ax.text(0.5, 0.5, "No text available", ha="center", va="center")
                 ax.set_title(title)
+                plt.tight_layout(rect=[0, 0, 1, 0.95])
+
                 self._cache[cache_key] = fig
                 return fig
 
@@ -605,7 +607,7 @@ class RecipeAnalyzer:
             vectorizer.fit_transform(cleaned)
             tfidf_top = set(vectorizer.get_feature_names_out()[:VENN_NBR])
 
-            fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
+            fig, ax = plt.subplots(figsize=(8, 8), dpi=100)
             venn2(
                 [freq_top, tfidf_top],
                 set_labels=("Raw Frequency", "TF-IDF"),
@@ -627,7 +629,8 @@ class RecipeAnalyzer:
             )
             ax.text(0.5, -0.15, legend_text, ha="center", transform=ax.transAxes)
 
-            plt.tight_layout()
+            plt.tight_layout(rect=[0, 0, 1, 0.95])
+            fig.set_size_inches(10, 6)
             logger.info(fig.get_tightbbox())
             logger.info(fig.axes[0].get_position() if fig.axes else "No axes")
             self._cache[cache_key] = fig
@@ -717,15 +720,37 @@ class RecipeAnalyzer:
         ]
 
         # 2x3 grid for the 6 wordclouds
-        for title, filter_type in categories:
-            st.markdown(
-                f'<h4 style="text-align:center;">⭐⭐⭐ {title} ⭐⭐⭐</h4>',
-                unsafe_allow_html=True,
-            )
-            col1, _, col2 = st.columns([1, 0.05, 1])
+        # for title, filter_type in categories:
+        #     st.markdown(
+        #         f'<h4 style="text-align:center;">⭐⭐⭐ {title} ⭐⭐⭐</h4>',
+        #         unsafe_allow_html=True,
+        #     )
+        #     col1, _, col2 = st.columns([1, 0.05, 1])
+
+        #     with (
+        #         col1,
+        #         st.spinner(f"Generating WordCloud (Frequency) for {title}..."),
+        #     ):
+        #         fig = self.plot_word_cloud(
+        #             wordcloud_nbr_word,
+        #             filter_type,
+        #             f"Frequency - {title}",
+        #         )
+        #         st.pyplot(fig)
+
+        #     with col2, st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
+        #         fig = self.plot_tfidf(
+        #             wordcloud_nbr_word,
+        #             filter_type,
+        #             f"TF-IDF - {title}",
+        #         )
+        #         st.pyplot(fig)
+        for _i, (title, filter_type) in enumerate(categories):
+            st.markdown(title)
+            cols = st.columns(2)
 
             with (
-                col1,
+                cols[0],
                 st.spinner(f"Generating WordCloud (Frequency) for {title}..."),
             ):
                 fig = self.plot_word_cloud(
@@ -735,7 +760,7 @@ class RecipeAnalyzer:
                 )
                 st.pyplot(fig)
 
-            with col2, st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
+            with cols[1], st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
                 fig = self.plot_tfidf(
                     wordcloud_nbr_word,
                     filter_type,
@@ -799,28 +824,37 @@ class RecipeAnalyzer:
         ]
 
         # 1x3 grid for the 3 comparisons
-        col1, _, col2, _, col3 = st.columns([1, 0.05, 1, 0.05, 1])
+        # col1, _, col2, _, col3 = st.columns([1, 0.05, 1, 0.05, 1])
 
-        columns = [col1, col2, col3]
+        # columns = [col1, col2, col3]
 
-        for i, (title, filter_type) in enumerate(categories):
-            with columns[i], st.spinner(f"Comparison for {title}..."):
-                st.markdown(
-                    f'<h4 style="text-align:center;">{title}</h4>',
-                    unsafe_allow_html=True,
-                )
+        # for i, (title, filter_type) in enumerate(categories):
+        #     with columns[i], st.spinner(f"Comparison for {title}..."):
+        #         st.markdown(
+        #             f'<h4 style="text-align:center;">{title}</h4>',
+        #             unsafe_allow_html=True,
+        #         )
+        #         fig = self.compare_frequency_and_tfidf(
+        #             recipe_count,
+        #             wordcloud_nbr_word,
+        #             filter_type,
+        #             f"Comparison - {title}",
+        #         )
+        #         # with st.expander(f"Debug Info - {title}"):
+        #         #     st.write(f"Figure size: {fig.get_size_inches()}")
+        #         #     st.write(f"Bounding box: {fig.get_tightbbox()}")
+        #         #     st.write(
+        #         #         f"Axes position: {fig.axes[0].get_position() if fig.axes else 'No axes'}"
+        #         #     )
+        #         st.pyplot(fig)
+        for _i, (title, filter_type) in enumerate(categories):
+            with st.spinner(f"Comparison for {title}..."):
                 fig = self.compare_frequency_and_tfidf(
                     recipe_count,
                     wordcloud_nbr_word,
                     filter_type,
                     f"Comparison - {title}",
                 )
-                with st.expander(f"Debug Info - {title}"):
-                    st.write(f"Figure size: {fig.get_size_inches()}")
-                    st.write(f"Bounding box: {fig.get_tightbbox()}")
-                    st.write(
-                        f"Axes position: {fig.axes[0].get_position() if fig.axes else 'No axes'}"
-                    )
                 st.pyplot(fig)
 
     def __getstate__(self) -> dict[str, Any]:

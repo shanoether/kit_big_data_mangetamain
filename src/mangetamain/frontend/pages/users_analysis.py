@@ -22,10 +22,8 @@ st.markdown(
 
 st.title("👥 Users Analysis")
 st.markdown("""
-This page provides an analysis of user behavior based on the interactions dataset.
-You can explore the distribution of reviews per user, categorize users based on their activity,
-and analyze average ratings given by users.
-""")
+            User behavior patterns and engagement metrics
+            """)
 
 
 @st.cache_data(show_spinner="Computing user statistics...")  # type: ignore[misc]
@@ -61,93 +59,97 @@ def compute_user_stats(_df_interactions: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-st.title("Users Analysis")
+@st.cache_data  # type: ignore[misc]
+def categorize_users(_reviews_per_user: pl.DataFrame) -> pl.Series:
+    """Categorize users by number of reviews (cached).
+
+    Args:
+        _reviews_per_user: DataFrame with nb_reviews column
+
+    Returns:
+        Series with categorized user counts
+    """
+    reviews_per_user_pd = _reviews_per_user.to_pandas()
+
+    def categorize_user(n: int) -> str:
+        """Simple categorization of users based on number of reviews.
+
+        Args:
+            n: number of review per user.
+
+        """
+        OCC = 1
+        REGULAR = 5
+        ACTIVE = 20
+        if n == OCC:
+            return "Occasionnel (1 review)"
+        elif n <= REGULAR:
+            return "Régulier (2-5 reviews)"
+        elif n <= ACTIVE:
+            return "Actif (6-20 reviews)"
+        else:
+            return "Super-actif (>20 reviews)"
+
+    return reviews_per_user_pd["nb_reviews"].apply(categorize_user).value_counts()
+
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
 
     # Distribution of number of reviews per user
     st.markdown("---")
-    st.subheader("Distribution of number of reviews per user")
-    reviews_per_user = compute_reviews_per_user(df_interactions)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.subheader("Distribution of reviews per user")
+        reviews_per_user = compute_reviews_per_user(df_interactions)
 
-    fig, ax = plt.subplots()
-    sns.histplot(
-        reviews_per_user["nb_reviews"].to_pandas(),
-        bins=30,
-        log_scale=(False, True),
-        ax=ax,
-    )
-    sns.despine()
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory fig
+        fig, ax = plt.subplots()
+        sns.histplot(
+            reviews_per_user["nb_reviews"].to_pandas(),
+            bins=30,
+            log_scale=(False, True),
+            ax=ax,
+        )
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory fig
 
     with col2:
-        # User categorization
         st.subheader("User categorization")
 
-    @st.cache_data  # type: ignore[misc]
-    def categorize_users(_reviews_per_user: pl.DataFrame) -> pl.Series:
-        """Categorize users by number of reviews (cached).
+        user_categories = categorize_users(reviews_per_user)
 
-        Args:
-            _reviews_per_user: DataFrame with nb_reviews column
+        fig, ax = plt.subplots()
+        sns.barplot(
+            x=user_categories.index,
+            y=user_categories.values,
+            ax=ax,
+            palette="Blues_r",
+            hue=user_categories.index,
+        )
+        ax.set_xlabel("User Category")
+        ax.set_ylabel("Number of Users")
+        plt.xticks(rotation=25)
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory
 
-        Returns:
-            Series with categorized user counts
-        """
-        reviews_per_user_pd = _reviews_per_user.to_pandas()
-
-        def categorize_user(n: int) -> str:
-            """Simple categorization of users based on number of reviews.
-
-            Args:
-                n: number of review per user.
-
-            """
-            OCC = 1
-            REGULAR = 5
-            ACTIVE = 20
-            if n == OCC:
-                return "Occasionnel (1 review)"
-            elif n <= REGULAR:
-                return "Régulier (2-5 reviews)"
-            elif n <= ACTIVE:
-                return "Actif (6-20 reviews)"
-            else:
-                return "Super-actif (>20 reviews)"
-
-        return reviews_per_user_pd["nb_reviews"].apply(categorize_user).value_counts()
-
-    user_categories = categorize_users(reviews_per_user)
-
-    fig, ax = plt.subplots()
-    sns.barplot(
-        x=user_categories.index,
-        y=user_categories.values,
-        ax=ax,
-        palette="Blues_r",
-        hue=user_categories.index,
-    )
-    ax.set_xlabel("User Category")
-    ax.set_ylabel("Number of Users")
-    plt.xticks(rotation=25)
-    sns.despine()
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory
-
-    # Average rating per user
-    st.subheader("Average rating per user")
-    df_user_stats = compute_user_stats(df_interactions)
-    fig, ax = plt.subplots()
-    sns.scatterplot(
-        data=df_user_stats.to_pandas(),
-        x="nb_reviews",
-        y="mean_rating",
-        ax=ax,
-    )
-    ax.set_xlabel("Number of Reviews")
-    ax.set_ylabel("Average Rating")
-    sns.despine()
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory
+    with col3:
+        # Average rating per user
+        st.subheader("Average rating per user")
+        df_user_stats = compute_user_stats(df_interactions)
+        fig, ax = plt.subplots()
+        sns.scatterplot(
+            data=df_user_stats.to_pandas(),
+            x="nb_reviews",
+            y="mean_rating",
+            ax=ax,
+        )
+        ax.set_xlabel("Number of Reviews")
+        ax.set_ylabel("Average Rating")
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory

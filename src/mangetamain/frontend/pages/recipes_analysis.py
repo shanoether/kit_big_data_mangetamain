@@ -31,9 +31,7 @@ st.markdown(
 )
 
 st.title("🍳 Recipes Analysis")
-st.markdown("""
-            Deep dive into recipe characteristics and ingredients.
-            Explore popular recipes, ratings, and ingredient trends.
+st.markdown("""Deep dive into recipe characteristics and ingredients
             """)
 
 st.markdown("""---""")
@@ -174,6 +172,7 @@ def get_comparison_figures(
         title,
     )
 
+
 # =============================================================================
 # DATA LOADING AND VALIDATION
 # =============================================================================
@@ -287,8 +286,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             value=20,
         )
         with st.spinner("Computing top ingredients..."):
-
-
             col_text, col_chart = st.columns([2, 1.5])
 
             with col_text:
@@ -382,11 +379,19 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         # Generate word clouds from recipe reviews
         # recipe_analyzer.display_wordclouds(wordcloud_max_words)
         # 2x3 grid for the 6 wordclouds
-        for _i, (title, filter_type) in enumerate(categories):
-            st.markdown(title)
-            cols = st.columns(2)
+        st.subheader("☁️ WordClouds (6 charts)")
 
-            with cols[0]:
+        for title, filter_type in categories:
+            st.markdown(
+                f'<h4 style="text-align:center;">⭐⭐⭐ {title} ⭐⭐⭐</h4>',
+                unsafe_allow_html=True,
+            )
+            col1, _, col2 = st.columns([1, 0.05, 1])
+
+            with (
+                col1,
+                st.spinner(f"Generating WordCloud (Frequency) for {title}..."),
+            ):
                 fig = get_wordcloud_figures(
                     recipe_analyzer,
                     wordcloud_max_words,
@@ -395,7 +400,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
-            with cols[1]:
+            with col2, st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
                 fig = get_tfidf_figures(
                     recipe_analyzer,
                     wordcloud_max_words,
@@ -403,6 +408,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                     f"TF-IDF - {title}",
                 )
                 st.pyplot(fig)
+
         st.markdown("""---""")
 
         # =========================================================================
@@ -436,8 +442,18 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             #     recipe_count,
             #     wordcloud_max_words,
             # )
+            st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
+
+            categories = [
+                ("Most reviewed recipes", "most"),
+                ("Best rated recipes", "best"),
+                ("Worst rated recipes", "worst"),
+            ]
             for _i, (title, filter_type) in enumerate(categories):
-                st.markdown(title)
+                st.markdown(
+                    f'<h4 style="text-align:center;">{title}</h4>',
+                    unsafe_allow_html=True,
+                )
                 fig = get_comparison_figures(
                     recipe_analyzer,
                     recipe_count,
@@ -445,8 +461,11 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                     filter_type,
                     f"Comparison - {title}",
                 )
-            st.pyplot(fig)
+                col1, col2, col3 = st.columns([1, 2, 1])
 
+                with col2:
+                    st.pyplot(fig)
+                plt.close(fig)  # Free memory
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY

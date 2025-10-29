@@ -67,7 +67,7 @@ def main() -> None:
             logger.info("✅ Data available in session_state for this user.")
 
     home_page = st.Page("frontend/pages/dashboard.py", title="🏠 Home", default=True)
-    overview_page = st.Page("frontend/pages/overview.py", title="📊 Overview")
+    # overview_page = st.Page("frontend/pages/overview.py", title="📊 Overview")
     recipes_analysis_page = st.Page(
         "frontend/pages/recipes_analysis.py",
         title="🍳 Recipes",
@@ -80,7 +80,7 @@ def main() -> None:
     pg = st.navigation(
         [
             home_page,
-            overview_page,
+            # overview_page,
             rating_page,
             trends_page,
             users_analysis_page,

@@ -21,7 +21,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.sidebar.success("📂 Select a page to navigate.")
+st.sidebar.success("📂 Select a page to navigate")
 
 st.title("🏠 Mangetamain v1.6")
 
@@ -30,6 +30,8 @@ Welcome to **MangeTaMain**!
 
 Use the sidebar to navigate through different sections of the app.
 Below is a quick summary of your currently loaded data.
+Click the zoom button at the top-right corner
+of each image to view it more clearly.
 """)
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
@@ -42,16 +44,22 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_recipes = st.session_state.df_recipes
 
     st.markdown("---")
-    st.write("**Dataset sizes:**")
+    st.subheader("📦 Dataset Summary")
 
-    col1, col2 = st.columns(2)
-    col1.metric("Interactions", len(df_interactions))
-    col2.metric("Recipes", len(df_recipes))
+    col1, spacer, col2 = st.columns([1, 0.1, 1])
+    col1.metric("User Interactions", f"{len(df_interactions):,}")
+    col2.metric("Recipes", f"{len(df_recipes):,}")
+    col1.markdown("---")
+    col2.markdown("---")
 
-    st.subheader("Interactions (reviews)")
-    st.write(df_interactions.head(10).to_pandas())
+    # st.markdown("---")
+    col1, spacer, col2 = st.columns([1, 0.1, 1])
+    with col1:
+        st.subheader("👥 Interactions (reviews) Sample")
+        st.write(df_interactions.head(10).to_pandas())
 
-    st.subheader("Recipes")
-    st.write(df_recipes.head(10).to_pandas())
+    with col2:
+        st.subheader("🍳 Recipes Sample")
+        st.write(df_recipes.head(10).to_pandas())
 else:
     st.error("❌ Data not loaded properly. Please refresh the page.")

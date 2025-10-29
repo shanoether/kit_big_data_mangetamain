@@ -216,7 +216,7 @@ Our Docker deployment uses a **sequential container orchestration** pattern:
 - **Separation of Concerns**
   - Backend handles computationally expensive ETL operations
   - Frontend focuses solely on visualization and user interaction
-- **Improved Stability**: 
+- **Improved Stability**:
   - Frontend never performs heavy preprocessing
   - No risk of UI crashes during data processing
   - Graceful failure isolation
@@ -493,7 +493,7 @@ We're continuously working to improve *Mangetamain*. Here are planned enhancemen
 
 - 🔍 **Recipe Clustering**: ML-based similarity analysis to discover recipe patterns and group similar recipes
 - 📊 **Advanced Visualizations**:
-  
+
   - Network graphs for recipe ingredient relationships
   - Heatmaps for user behavior patterns
 - ⚙️ **Enhanced CI/CD Pipeline**:

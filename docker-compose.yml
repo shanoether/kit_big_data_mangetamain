@@ -39,5 +39,3 @@ services:
     mem_limit: 7g              # Hard limit (container killed if exceeded)
     mem_reservation: 2g        # Soft limit (guaranteed minimum)
     memswap_limit: 7g          # Total memory + swap limit
-
-
