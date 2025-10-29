@@ -29,13 +29,19 @@ dependencies = [
     "plotly",
     "polars",
     "streamlit",
+    "pre-commit>=4.3.0",
+    "pyment>=0.3.3",
     "spacy>=3.8.7",
     "matplotlib-venn>=1.1.2",
     "wordcloud>=1.9.4",
     "pip",
+    "hatch",
     "streamlit-extras",
+    "coverage>=7.11.0",
+    "pytest-cov>=7.0.0",
     "inflect>=7.5.0",
 ]
+
 
 [dependency-groups]
 dev = [
@@ -130,7 +136,6 @@ markers = [
 
 # Configuration coverage
 [tool.coverage.run]
-fail_under = 90
 source = ["src"]
 omit = [
     "*/tests/*",
@@ -155,6 +160,8 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+fail_under = 90
+
 
 # Configuration ruff
 [tool.ruff]

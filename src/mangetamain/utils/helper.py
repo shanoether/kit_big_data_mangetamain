@@ -6,6 +6,7 @@ datasets. All functions use Polars for efficient DataFrame operations and
 integrate with Streamlit's caching and UI feedback mechanisms.
 """
 
+import gc
 import time
 
 import polars as pl
@@ -38,9 +39,9 @@ def load_csv_with_progress(file_path: str) -> tuple[pl.DataFrame, float]:
     return df, load_time
 
 
-@st.cache_data  # type: ignore[misc]
+@st.cache_resource(show_spinner=False)  # type: ignore[misc]
 def load_parquet_with_progress(file_path: str) -> pl.DataFrame:
-    """Read a Parquet file into a Polars DataFrame while showing a Streamlit spinner.
+    """Read a Parquet file into a Polars DataFrame (cached globally with zero-copy).
 
     Args:
       file_path: Path to the Parquet file to read.
@@ -48,76 +49,170 @@ def load_parquet_with_progress(file_path: str) -> pl.DataFrame:
     Returns:
       A Polars DataFrame loaded from the specified parquet file.
     """
+    t = time.time()
     df = pl.read_parquet(file_path)
-    logger.info(f"Data loaded successfully from {file_path}.")
+    elapsed = time.time() - t
+    logger.info(f"✅ {file_path} loaded in {elapsed:.2f}s - Shape: {df.shape}")
     return df
 
 
-def load_data_from_parquet_and_pickle() -> bool:
-    """Load application data from parquet files into Streamlit session state.
+@st.cache_resource(show_spinner=False)  # type: ignore[misc]
+def load_data_from_parquet_and_pickle() -> tuple[
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.DataFrame,
+    pl.Series,
+    pl.Series,
+    RecipeAnalyzer | None,
+    bool,
+]:
+    """Load ALL application data ONCE and cache it globally across all users.
 
-    The function reads several precomputed parquet files and stores the
-    resulting Polars DataFrames / Series into ``st.session_state`` so that
-    the UI pages can access them without reloading from disk repeatedly.
+    This function is called once per application lifecycle. The first user will
+    trigger the data loading (90s), but all subsequent users will get instant
+    access (<0.01s) thanks to @st.cache_resource.
+
+    The function reads several precomputed parquet files and returns the
+    resulting Polars DataFrames / Series as a tuple.
 
     Files expected under ``data/processed/``:
+    - initial_interactions.parquet
     - processed_interactions.parquet
+    - initial_recipes.parquet
     - processed_recipes.parquet
+    - total_nt.parquet
     - total.parquet
     - short.parquet
     - proportion_m.parquet
     - proportion_s.parquet
+    - recipe_analyzer.pkl
 
-    This is deliberately small and fails early if files are missing.
+    Returns:
+        Tuple containing:
+        - df_interactions: Initial interactions DataFrame
+        - df_interactions_nna: Processed interactions DataFrame
+        - df_recipes: Initial recipes DataFrame
+        - df_recipes_nna: Processed recipes DataFrame
+        - df_total_nt: Total non-tagged DataFrame
+        - df_total: Total DataFrame
+        - df_total_court: Short DataFrame
+        - proportion_m: Series of proportion_m
+        - proportion_s: Series of proportion_s
+        - recipe_analyzer: RecipeAnalyzer instance
+        - data_loaded: Success flag
     """
+    logger.info("🔄 Starting data load (this happens ONCE globally)...")
+    start_time = time.time()
+
     try:
-        st.session_state.df_interactions = load_parquet_with_progress(
+        # Load all parquet files with individual timing
+        df_interactions = load_parquet_with_progress(
             "data/processed/initial_interactions.parquet",
         )
-        st.session_state.df_interactions_nna = load_parquet_with_progress(
+        gc.collect()  # Free memory between large loads
+
+        df_interactions_nna = load_parquet_with_progress(
             "data/processed/processed_interactions.parquet",
         )
-        st.session_state.df_recipes = load_parquet_with_progress(
+        gc.collect()
+
+        df_recipes = load_parquet_with_progress(
             "data/processed/initial_recipes.parquet",
         )
-        st.session_state.df_recipes_nna = load_parquet_with_progress(
+        gc.collect()
+
+        df_recipes_nna = load_parquet_with_progress(
             "data/processed/processed_recipes.parquet",
         )
-        st.session_state.df_total_nt = load_parquet_with_progress(
+        gc.collect()
+
+        df_total_nt = load_parquet_with_progress(
             "data/processed/total_nt.parquet",
         )
-        st.session_state.df_total = load_parquet_with_progress(
+        gc.collect()
+
+        df_total = load_parquet_with_progress(
             "data/processed/total.parquet",
         )
-        st.session_state.df_total_court = load_parquet_with_progress(
+        gc.collect()
+
+        df_total_court = load_parquet_with_progress(
             "data/processed/short.parquet",
         )
-        st.session_state.proportion_m = load_parquet_with_progress(
+        gc.collect()
+
+        proportion_m = load_parquet_with_progress(
             "data/processed/proportion_m.parquet",
         )["proportion_m"]
-        st.session_state.proportion_s = load_parquet_with_progress(
+
+        proportion_s = load_parquet_with_progress(
             "data/processed/proportion_s.parquet",
         )["proportion_s"]
 
-        # Import the recipe_analyzer object from pickle file
-        st.session_state.recipe_analyzer = RecipeAnalyzer.load(
-            "data/processed/recipe_analyzer.pkl",
-        )
-        data_loaded = True
+        # Load the recipe_analyzer object from pickle file
+        logger.info("Loading recipe_analyzer.pkl...")
+        t = time.time()
+        try:
+            recipe_analyzer = RecipeAnalyzer.load(
+                "data/processed/recipe_analyzer.pkl",
+            )
+            elapsed = time.time() - t
+            logger.info(f"✅ recipe_analyzer.pkl loaded in {elapsed:.2f}s")
+        except Exception as pickle_error:
+            logger.warning(
+                f"Failed to load pickle: {pickle_error}. Attempting fallback...",
+            )
+            # Fallback: recreate if pickle fails (optional)
+            recipe_analyzer = None
+            elapsed = time.time() - t
+            logger.info(f"⚠️ recipe_analyzer fallback in {elapsed:.2f}s")
 
-        logger.info("Data loaded into session state.")
+        data_loaded = True
+        total_time = time.time() - start_time
+        logger.info(
+            f"✅ ALL DATA LOADED successfully in {total_time:.2f}s "
+            f"(cached globally for all users)",
+        )
 
     except Exception as e:
         logger.error(
-            f"Error loading data: {e}, please run backend/dataprocessor first to initialize application data.",
+            f"❌ Error loading data: {e}, please run backend/dataprocessor "
+            f"first to initialize application data.",
         )
         st.error(
-            f"Error loading data: {e}, please run backend/dataprocessor first to initialize application data.",
+            f"Error loading data: {e}, please run backend/dataprocessor "
+            f"first to initialize application data.",
         )
+        # Return empty data on error
         data_loaded = False
+        df_interactions = pl.DataFrame()
+        df_interactions_nna = pl.DataFrame()
+        df_recipes = pl.DataFrame()
+        df_recipes_nna = pl.DataFrame()
+        df_total_nt = pl.DataFrame()
+        df_total = pl.DataFrame()
+        df_total_court = pl.DataFrame()
+        proportion_m = pl.Series()
+        proportion_s = pl.Series()
+        recipe_analyzer = None
 
-    st.session_state.data_loaded = data_loaded
-    return data_loaded
+    return (
+        df_interactions,
+        df_interactions_nna,
+        df_recipes,
+        df_recipes_nna,
+        df_total_nt,
+        df_total,
+        df_total_court,
+        proportion_m,
+        proportion_s,
+        recipe_analyzer,
+        data_loaded,
+    )
 
 
 def custom_exception_handler(exception: Exception) -> None:

@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 import streamlit as st
+from matplotlib.figure import Figure
 
+from mangetamain.backend.recipe_analyzer import RecipeAnalyzer
 from mangetamain.utils.logger import get_logger
 
 logger = get_logger()
@@ -36,6 +38,142 @@ st.markdown("""
 
 st.markdown("""---""")
 
+
+@st.cache_data(show_spinner="Computing top recipes...")  # type: ignore[misc]
+def compute_top_recipes(_df_total_nt: pl.DataFrame, nb_recipes: int) -> pl.DataFrame:
+    """Compute most reviewed recipes (cached by nb_recipes).
+
+    Args:
+        _df_total_nt: DataFrame with recipe interactions
+        nb_recipes: Number of top recipes to return
+
+    Returns:
+        DataFrame with name and nb_reviews columns
+    """
+    return (
+        _df_total_nt.group_by("name")
+        .agg(pl.len().alias("nb_reviews"))
+        .sort("nb_reviews", descending=True)
+        .head(nb_recipes)
+    )
+
+
+@st.cache_data(show_spinner="Computing lowest rated recipes...")  # type: ignore[misc]
+def compute_worst_recipes(
+    _df_total_nt: pl.DataFrame,
+    nb_worst: int,
+    min_reviews: int = 5,
+) -> pl.DataFrame:
+    """Compute lowest rated recipes (cached by nb_worst).
+
+    Args:
+        _df_total_nt: DataFrame with recipe interactions
+        nb_worst: Number of worst recipes to return
+        min_reviews: Minimum number of reviews required
+
+    Returns:
+        DataFrame with name, mean_rating, and nb_reviews columns
+    """
+    return (
+        _df_total_nt.group_by("name")
+        .agg(
+            [
+                pl.col("rating").mean().alias("mean_rating"),
+                pl.len().alias("nb_reviews"),
+            ],
+        )
+        .filter(pl.col("nb_reviews") >= min_reviews)
+        .sort("mean_rating")
+        .head(nb_worst)
+    )
+
+
+@st.cache_data(show_spinner="Generating ingredient radar chart...")  # type: ignore[misc]
+def get_top_ingredients_plot(
+    _recipe_analyzer: RecipeAnalyzer,
+    ingredient_count: int,
+) -> Figure:
+    """Cached wrapper for recipe_analyzer.plot_top_ingredients.
+
+    Args:
+        _recipe_analyzer: RecipeAnalyzer instance (prefixed with _ to avoid hashing)
+        ingredient_count: Number of top ingredients to display
+
+    Returns:
+        Matplotlib figure with polar plot
+    """
+    return _recipe_analyzer.plot_top_ingredients(ingredient_count)
+
+
+@st.cache_data(show_spinner="Generating word clouds...")  # type: ignore[misc]
+def get_wordcloud_figures(
+    _recipe_analyzer: RecipeAnalyzer,
+    wordcloud_max_words: int,
+    filter_type: str,
+    title: str,
+) -> Figure:
+    """Cached wrapper for individual word cloud generation.
+
+    Args:
+        _recipe_analyzer: RecipeAnalyzer instance
+        wordcloud_max_words: Max words in cloud
+        filter_type: Type of filter ('most', 'best', 'worst')
+        title: Title for the plot
+
+    Returns:
+        Matplotlib figure with word cloud
+    """
+    return _recipe_analyzer.plot_word_cloud(wordcloud_max_words, filter_type, title)
+
+
+@st.cache_data(show_spinner="Generating TF-IDF word clouds...")  # type: ignore[misc]
+def get_tfidf_figures(
+    _recipe_analyzer: RecipeAnalyzer,
+    wordcloud_max_words: int,
+    filter_type: str,
+    title: str,
+) -> Figure:
+    """Cached wrapper for TF-IDF word cloud generation.
+
+    Args:
+        _recipe_analyzer: RecipeAnalyzer instance
+        wordcloud_max_words: Max words in cloud
+        filter_type: Type of filter ('most', 'best', 'worst')
+        title: Title for the plot
+
+    Returns:
+        Matplotlib figure with TF-IDF word cloud
+    """
+    return _recipe_analyzer.plot_tfidf(wordcloud_max_words, filter_type, title)
+
+
+@st.cache_data(show_spinner="Generating Venn comparisons...")  # type: ignore[misc]
+def get_comparison_figures(
+    _recipe_analyzer: RecipeAnalyzer,
+    recipe_count: int,
+    wordcloud_max_words: int,
+    filter_type: str,
+    title: str,
+) -> Figure:
+    """Cached wrapper for Venn diagram comparison generation.
+
+    Args:
+        _recipe_analyzer: RecipeAnalyzer instance
+        recipe_count: Number of recipes to analyze
+        wordcloud_max_words: Max features for TF-IDF
+        filter_type: Type of filter ('most', 'best', 'worst')
+        title: Title for the plot
+
+    Returns:
+        Matplotlib figure with Venn diagram
+    """
+    return _recipe_analyzer.compare_frequency_and_tfidf(
+        recipe_count,
+        wordcloud_max_words,
+        filter_type,
+        title,
+    )
+
 # =============================================================================
 # DATA LOADING AND VALIDATION
 # =============================================================================
@@ -57,16 +195,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
         # User input: number of recipes to display
         nb_recipes = st.slider("Number of recipes to display", 5, 30, 30)
+
+        # Use cached computation
+
         with st.spinner("Generating chart..."):
             # Aggregate reviews by recipe_id, count them, and join with recipe names
-            top_recipes = (
-                df_total_nt.group_by("name")
-                .agg(
-                    pl.len().alias("nb_reviews"),
-                )
-                .sort("nb_reviews", descending=True)
-                .head(nb_recipes)
-            )
+            top_recipes = compute_top_recipes(df_total_nt, nb_recipes)
 
             # Display horizontal bar chart of most reviewed recipes
             fig, ax = plt.subplots(figsize=(10, 8))
@@ -103,18 +237,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             key="nb_worst_recipes",
         )
         with st.spinner("Generating chart..."):
-            worst_recipes = (
-                df_total_nt.group_by("name")
-                .agg(
-                    [
-                        pl.col("rating").mean().alias("mean_rating"),
-                        pl.len().alias("nb_reviews"),
-                    ],
-                )
-                .filter(pl.col("nb_reviews") >= MIN_REVIEWS)
-                .sort("mean_rating")
-                .head(nb_worst)
-            )
+            # Use cached computation
+            worst_recipes = compute_worst_recipes(df_total_nt, nb_worst, MIN_REVIEWS)
 
             # Display horizontal bar chart of lowest rated recipes
             fig, ax = plt.subplots(figsize=(10, 8))
@@ -163,13 +287,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             value=20,
         )
         with st.spinner("Computing top ingredients..."):
-            # st.markdown(""" In addition, a radar chart was created to visualize the most common ingredients in the recipes.
-            # It shows a strong presence of fundamental elements such as onion, eggs, milk, and garlic, emphasizing their central role in most dishes.
-            # Ingredients such as parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes, ranging from savory dishes to sweet preparations.
-            # The prior filtering of generic terms (salt, water, oil, sugar) makes it possible to focus on ingredients with true descriptive value.
-            # This chart complements the textual analysis by offering a synthetic and visual overview of dominant culinary trends.
-            # """)
-            # Generate radar chart showing most common ingredients
+
 
             col_text, col_chart = st.columns([2, 1.5])
 
@@ -195,7 +313,8 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
 
             with col_chart:
-                fig = recipe_analyzer.plot_top_ingredients(ingredient_count)
+                # Use cached computation
+                fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
                 st.pyplot(fig)
 
         st.markdown("""---""")
@@ -235,7 +354,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """,
             unsafe_allow_html=True,
         )
-
+        # SECTION 6: WORD CLOUDS VISUALIZATION
+        # =========================================================================
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
         # Slider for number of recipes to analyze for word clouds
         col1, space, col2 = st.columns([1, 0.05, 1])
         with col1:
@@ -255,7 +380,29 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             )
 
         # Generate word clouds from recipe reviews
-        recipe_analyzer.display_wordclouds(wordcloud_max_words)
+        # recipe_analyzer.display_wordclouds(wordcloud_max_words)
+        # 2x3 grid for the 6 wordclouds
+        for _i, (title, filter_type) in enumerate(categories):
+            st.markdown(title)
+            cols = st.columns(2)
+
+            with cols[0]:
+                fig = get_wordcloud_figures(
+                    recipe_analyzer,
+                    wordcloud_max_words,
+                    filter_type,
+                    f"Frequency - {title}",
+                )
+                st.pyplot(fig)
+
+            with cols[1]:
+                fig = get_tfidf_figures(
+                    recipe_analyzer,
+                    wordcloud_max_words,
+                    filter_type,
+                    f"TF-IDF - {title}",
+                )
+                st.pyplot(fig)
         st.markdown("""---""")
 
         # =========================================================================
@@ -285,10 +432,21 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 unsafe_allow_html=True,
             )
             # Compare frequency-based vs TF-IDF word extraction
-            recipe_analyzer.display_comparisons(
-                recipe_count,
-                wordcloud_max_words,
-            )
+            # recipe_analyzer.display_comparisons(
+            #     recipe_count,
+            #     wordcloud_max_words,
+            # )
+            for _i, (title, filter_type) in enumerate(categories):
+                st.markdown(title)
+                fig = get_comparison_figures(
+                    recipe_analyzer,
+                    recipe_count,
+                    wordcloud_max_words,
+                    filter_type,
+                    f"Comparison - {title}",
+                )
+            st.pyplot(fig)
+
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
