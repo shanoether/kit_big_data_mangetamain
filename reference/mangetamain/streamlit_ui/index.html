@@ -732,8 +732,7 @@ starting the page navigation.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/streamlit_ui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -805,8 +804,7 @@ starting the page navigation.</p>
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for the Streamlit front-end application.</span>
 
 <span class="sd">    This function prepares the navigation pages and ensures the</span>
@@ -817,8 +815,6 @@ starting the page navigation.</p>
 <span class="sd">    - First user: ~90s to load all data</span>
 <span class="sd">    - All subsequent users: &lt;0.01s (instant cache hit)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-
     <span class="c1"># Always call the cached function (it returns instantly after first call)</span>
     <span class="n">cache_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="p">(</span>
@@ -876,7 +872,7 @@ starting the page navigation.</p>
             <span class="n">rating_page</span><span class="p">,</span>
             <span class="n">trends_page</span><span class="p">,</span>
             <span class="n">users_analysis_page</span><span class="p">,</span>
-            <span class="n">recipes_analysis_page</span>
+            <span class="n">recipes_analysis_page</span><span class="p">,</span>
         <span class="p">],</span>
     <span class="p">)</span>
 

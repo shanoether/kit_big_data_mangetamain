@@ -824,7 +824,8 @@ the raw Python traceback.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/utils/helper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
+<span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
@@ -840,8 +841,7 @@ the raw Python traceback.</p>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_exception_handler</span><span class="p">(</span><span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">custom_exception_handler</span><span class="p">(</span><span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle exceptions with logging and user-friendly Streamlit display.</span>
 
 <span class="sd">    Args:</span>
@@ -1139,7 +1139,7 @@ resulting Polars DataFrames / Series as a tuple.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="RecipeAnalyzer (mangetamain.backend.recipe_analyzer.RecipeAnalyzer)" href="../../backend/recipe_analyzer/#mangetamain.backend.recipe_analyzer.RecipeAnalyzer">RecipeAnalyzer</a></code>
+                  <code><a class="autorefs autorefs-internal" title="RecipeAnalyzer (mangetamain.backend.recipe_analyzer.RecipeAnalyzer)" href="../../backend/recipe_analyzer/#mangetamain.backend.recipe_analyzer.RecipeAnalyzer">RecipeAnalyzer</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1163,7 +1163,7 @@ resulting Polars DataFrames / Series as a tuple.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.Tuple">Tuple</span>[<span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.Series">Series</span>, <span title="polars.Series">Series</span>, <a class="autorefs autorefs-internal" title="RecipeAnalyzer (mangetamain.backend.recipe_analyzer.RecipeAnalyzer)" href="../../backend/recipe_analyzer/#mangetamain.backend.recipe_analyzer.RecipeAnalyzer">RecipeAnalyzer</a>, <span title="bool">bool</span>]</code>
+                  <code><span title="tuple">tuple</span>[<span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.DataFrame">DataFrame</span>, <span title="polars.Series">Series</span>, <span title="polars.Series">Series</span>, <a class="autorefs autorefs-internal" title="RecipeAnalyzer (mangetamain.backend.recipe_analyzer.RecipeAnalyzer)" href="../../backend/recipe_analyzer/#mangetamain.backend.recipe_analyzer.RecipeAnalyzer">RecipeAnalyzer</a> | None, <span title="bool">bool</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1179,8 +1179,7 @@ resulting Polars DataFrames / Series as a tuple.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/utils/helper.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 58</span>
-<span class="normal"> 59</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
 <span class="normal"> 60</span>
 <span class="normal"> 61</span>
 <span class="normal"> 62</span>
@@ -1336,9 +1335,8 @@ resulting Polars DataFrames / Series as a tuple.</p>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@st</span><span class="o">.</span><span class="n">cache_resource</span><span class="p">(</span><span class="n">show_spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_data_from_parquet_and_pickle</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
+<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@st</span><span class="o">.</span><span class="n">cache_resource</span><span class="p">(</span><span class="n">show_spinner</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_data_from_parquet_and_pickle</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
     <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -1348,7 +1346,7 @@ resulting Polars DataFrames / Series as a tuple.</p>
     <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-    <span class="n">RecipeAnalyzer</span><span class="p">,</span>
+    <span class="n">RecipeAnalyzer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">bool</span><span class="p">,</span>
 <span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load ALL application data ONCE and cache it globally across all users.</span>
@@ -1386,8 +1384,6 @@ resulting Polars DataFrames / Series as a tuple.</p>
 <span class="sd">        - recipe_analyzer: RecipeAnalyzer instance</span>
 <span class="sd">        - data_loaded: Success flag</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
-
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;🔄 Starting data load (this happens ONCE globally)...&quot;</span><span class="p">)</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -1481,7 +1477,7 @@ resulting Polars DataFrames / Series as a tuple.</p>
         <span class="n">df_total_court</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="n">proportion_m</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
         <span class="n">proportion_s</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
-        <span class="n">recipe_analyzer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="n">recipe_analyzer</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">df_interactions</span><span class="p">,</span>
