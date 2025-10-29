@@ -27,7 +27,7 @@ services:
       - /opt/app/data:/app/data     # map local data folder
       - /opt/app/logs:/app/logs     # map logs folder
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /opt/app/.streamlit/config.docker.toml:/app/.streamlit/config.toml:ro # for HTTPS on production
+      - /opt/app/.streamlit/config.docker.toml:/app/.streamlit/config.toml:ro # for HTTPS in production
 
     environment:
       - PORT=8501
