@@ -22,8 +22,11 @@ st.markdown(
 
 st.title("⭐ Rating")
 st.markdown("""
-         Rating distributions and popularity analysis
-         """)
+    This page presents an analysis of user ratings for recipes on the Mangetamain platform.
+    We will explore the distribution of ratings,
+    their evolution over time, and how they relate to recipe characteristics
+    such as preparation time and number of steps.",
+    """)
 
 icon = "👉"
 

@@ -28,7 +28,9 @@ st.markdown("""---""")
 
 
 @st.cache_data(show_spinner="Computing trends...")  # type: ignore[misc]
-def compute_yearly_trends(_df_interactions: pl.DataFrame) -> pl.DataFrame:
+def compute_yearly_trends(
+    _df_interactions: pl.DataFrame,
+) -> pl.DataFrame:  # ignorore[misc]
     """Compute average ratings per year (cached).
 
     Args:
@@ -48,7 +50,9 @@ def compute_yearly_trends(_df_interactions: pl.DataFrame) -> pl.DataFrame:
 
 
 @st.cache_data(show_spinner="Computing monthly trends...")  # type: ignore[misc]
-def compute_monthly_trends(_df_interactions: pl.DataFrame) -> pl.DataFrame:
+def compute_monthly_trends(
+    _df_interactions: pl.DataFrame,
+) -> pl.DataFrame:  # ignore[misc]
     """Compute number of reviews per month and year (cached).
 
     Args:
@@ -69,6 +73,13 @@ def compute_monthly_trends(_df_interactions: pl.DataFrame) -> pl.DataFrame:
         .sort(["year", "month"])
     )
 
+
+st.markdown(
+    """
+    This page analyzes trends in user ratings and review activity over time on the Mangetamain platform.
+    We will examine how average ratings have evolved year by year,
+    as well as the monthly distribution of reviews to identify any seasonal patterns or shifts in user engagement."""
+)
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
@@ -122,3 +133,20 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         plt.tight_layout(rect=[0, 0, 1, 0.95])
         st.pyplot(fig)
         plt.close(fig)  # Free memory
+        st.markdown(
+            """
+        **Change in Average Score per Year:**
+
+        The average recipe rating rose steadily between 2000 and 2006, from around 3.9 to 4.6, reflecting a very
+        positive initial phase in which users generously rated the most popular recipes. From 2007 onwards, the trend
+        reversed: ratings gradually declined to around 3.4 in 2017, which may reflect a diversification of content,
+        a broader audience, or a more critical assessment of recipes over time.
+
+        **Number of Reviews per Month and per Year:**
+
+        The number of reviews does not show any marked seasonal peaks, suggesting relatively stable activity throughout
+        the year. However, there was a gradual decline in the volume of reviews between 2002 and 2017, indicating a
+        decline in community engagement over time—possibly linked to a loss of interest in the platform or competition
+        from other recipe-sharing sites.
+        """
+        )

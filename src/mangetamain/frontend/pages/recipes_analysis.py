@@ -31,8 +31,12 @@ st.markdown(
 )
 
 st.title("🍳 Recipes Analysis")
-st.markdown("""Deep dive into recipe characteristics and ingredients
-            """)
+st.markdown(
+    """This page provides an in-depth analysis of recipes on the Mangetamain platform.
+    We will explore the most reviewed and lowest rated recipes, analyze ingredient usage,
+    and visualize key terms through word clouds and comparisons.
+    """
+)
 
 st.markdown("""---""")
 
@@ -216,7 +220,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             ax.set_ylabel("")
             sns.despine()
             st.pyplot(fig)
-
+            st.markdown(
+                """
+                This graph highlights the platform's most engaging recipes. These recipes, often simple, universal, or viral
+                (such as the "best banana bread"), generate significant interest and interaction. Identifying these recipes
+                helps us understand what types of dishes appeal most to the community.
+                """,
+            )
     # =========================================================================
     # SECTION 3: LOWEST RATED RECIPES
     # =========================================================================
@@ -239,22 +249,30 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             # Use cached computation
             worst_recipes = compute_worst_recipes(df_total_nt, nb_worst, MIN_REVIEWS)
 
-            # Display horizontal bar chart of lowest rated recipes
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.barplot(
-                data=worst_recipes,
-                x="mean_rating",
-                y="name",
-                ax=ax,
-                palette="viridis",
-                hue="name",
-                legend=False,
-            )
-            ax.set_xlabel("Average Rating")
-            ax.set_ylabel("")
-            sns.despine()
-            st.pyplot(fig)
+    # Display horizontal bar chart of lowest rated recipes
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.barplot(
+        data=worst_recipes,
+        x="mean_rating",
+        y="name",
+        ax=ax,
+        palette="viridis",
+        hue="name",
+        legend=False,
+    )
+    ax.set_xlabel("Average Rating")
+    ax.set_ylabel("")
+    sns.despine()
+    st.pyplot(fig)
+    st.markdown(
+        """
+        **Least Popular Recipes:**
 
+        These recipes have received poor ratings despite several reviews. This may indicate problems with the recipe
+        (incorrect measurements, cooking time, or unclear instructions) or unmet expectations. These extreme cases
+        are useful for analyzing areas for improvement or identifying common mistakes.
+        """,
+    )
     st.markdown("""---""")
 
     # =========================================================================
@@ -322,30 +340,47 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     if show_wordclouds:
         st.header(f"{icon} Ingredient Analysis")
+        # st.markdown(
+        #     """
+        #     In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
+
+        #     **Method 1: Raw Frequency**
+        #     The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
+        #     removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
+        #     such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
+        #     However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
+        #     meaningful words for the analysis.
+
+        #     **Method 2: TF-IDF**
+        #     The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
+        #     importance of a word according to its frequency within a document and its rarity across the entire corpus.
+        #     This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
+        #     the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
+        #     matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
+        #     TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
+        #     """,
+        # )
+
         st.markdown(
             """
             <div style="text-align: justify;">
             <p>
             In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
 
-            - The first method is based on the **raw frequency of words**,
-            after a rigorous filtering process aimed at removing English stop words (the, and, of), verbs,
-            as well as certain terms considered uninformative such as *recipe*, *thing*, or *definitely*.
-            This approach highlights the most frequent words in the corpus.
-            However, it has the disadvantage of overrepresenting generic terms,
-            often at the expense of rarer but more meaningful words for the analysis.
+            **Method 1: Raw Frequency**
+            The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
+            removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
+            such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
+            However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
+            meaningful words for the analysis.
 
-            - The second method uses **TF-IDF (Term Frequency-Inverse Document Frequency)**,
-            a technique that weights the importance of a word according to its frequency
-            within a document and its rarity across the entire corpus.
-            This weighting helps emphasize discriminative words -
-            those that best characterize specific recipes.
-
-            In practice, the texts are cleaned to remove punctuation, verbs, and
-            stop words before being transformed into a TF-IDF matrix using
-            the **TfidfVectorizer** function from scikit-learn.
-            Only the words with the highest cumulative TF-IDF scores are retained for word cloud
-            generation, ensuring a visual representation of the most relevant terms.
+            **Method 2: TF-IDF**
+            The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
+            importance of a word according to its frequency within a document and its rarity across the entire corpus.
+            This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
+            the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
+            matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
+            TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
             </p>
             </div>
             """,

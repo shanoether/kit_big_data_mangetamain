@@ -493,7 +493,6 @@ We're continuously working to improve *Mangetamain*. Here are planned enhancemen
 
 - 🔍 **Recipe Clustering**: ML-based similarity analysis to discover recipe patterns and group similar recipes
 - 📊 **Advanced Visualizations**:
-
   - Network graphs for recipe ingredient relationships
   - Heatmaps for user behavior patterns
 - ⚙️ **Enhanced CI/CD Pipeline**:
