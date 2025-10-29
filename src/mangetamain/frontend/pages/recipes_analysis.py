@@ -294,6 +294,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         max_value=200,
         value=100,
     )
+    
+    categories = [
+    ("Most reviewed recipes", "most"),
+    ("Best rated recipes", "best"),
+    ("Worst rated recipes", "worst"),
+    ]
+            
     if show_wordclouds:
         # Display word clouds using cached wrappers
         st.subheader("🗣️ WordClouds (6 charts)")
@@ -307,11 +314,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         Only the words with the highest cumulative TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
         """,
         )
-        categories = [
-            ("Most reviewed recipes", "most"),
-            ("Best rated recipes", "best"),
-            ("Worst rated recipes", "worst"),
-        ]
 
         # 2x3 grid for the 6 wordclouds
         for _i, (title, filter_type) in enumerate(categories):
@@ -340,9 +342,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 7: VENN DIAGRAM COMPARISONS
     # =========================================================================
 
-    st.header("🍳 Venn Diagram Comparisons")
 
     if show_comparisons:
+        st.subheader("🍳 Venn Diagram Comparisons")
         st.markdown(
             """ To compare both approaches, Venn diagrams were used.
             These charts provide a clear visualization of the intersections and differences between the selected word sets.

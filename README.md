@@ -55,62 +55,46 @@ Once the application is running, you can access multiple analytical pages:
 - [UV](https://docs.astral.sh/uv/) package manager
 - Docker (optional, for containerized deployment)
 
-### 📦 Option 1: Local Installation
+### Local Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/shanoether/kit_big_data_mangetamain.git
-   cd kit_big_data_mangetamain
-   ```
+```bash
+# Clone repository
+git clone https://github.com/shanoether/kit_big_data_mangetamain.git
+cd kit_big_data_mangetamain
 
-2. **Set up the environment**
-   ```bash
-   # Install dependencies
-   uv sync
+# Install dependencies
+uv sync
 
-   # Install development dependencies (optional)
-   uv sync --group dev
-   ```
+# Download spaCy model
+uv run python -m spacy download en_core_web_sm
+```
 
-3. **Download spaCy language model**
-   ```bash
-   uv run hatch run dev:download-spacy
-   ```
+### Data Preparation
 
-4. **Download the dataset**
+1. Download [Food.com dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data)
+2. Place `RAW_interactions.csv` and `RAW_recipes.csv` in `data/raw/`
+3. Run preprocessing:
 
-   Download from [Kaggle Food.com dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data):
-   - `RAW_interactions.csv`
-   - `RAW_recipes.csv`
+```bash
+uv run python src/mangetamain/backend/data_processor.py
+```
 
-   Place both files in `/data/raw/`
+This generates optimized `.parquet` files and a cached `recipe_analyzer.pkl` in `data/processed/`.
 
-5. **Run data preprocessing**
-   ```bash
-   uv run python src/mangetamain/backend/data_processor.py
-   ```
+### Launch Application
 
-   This will generate processed `.parquet` and `.pkl` files in `data/processed/`
+```bash
+uv run streamlit run src/mangetamain/streamlit_ui.py
+```
 
-6. **Launch the Streamlit application**
-   ```bash
-   uv run streamlit run src/mangetamain/streamlit_ui.py
-   ```
+Access at `http://localhost:8501`
 
-7. **Access the application**
-
-   Open your browser at: `http://localhost:8501`
-
-### 🐳 Option 2: Docker Installation
-
-Build and run using Docker Compose:
+### Docker Deployment
 
 ```bash
 # Build and start all services
 docker-compose -f docker-compose-local.yml up
-
 # Access the application at http://localhost:8501
-
 # Stop the services
 docker-compose -f docker-compose-local.yml down
 ```
@@ -126,68 +110,29 @@ This will:
 
 ```
 kit_big_data_mangetamain/
-├── 📂 .github/
-│   └── workflows/
-│       └── deploy.yml              # CI/CD pipeline for automated deployment
-├── 📂 config/                       # Configuration files
-├── 📂 data/
-│   ├── processed/                   # Processed data (.parquet, .pkl)
-│   │   ├── processed_interactions.parquet
-│   │   ├── processed_recipes.parquet
-│   │   └── recipe_analyzer.pkl
-│   └── raw/                         # Raw CSV data from Kaggle
-│       ├── RAW_interactions.csv
-│       └── RAW_recipes.csv
-├── 📂 docs/                         # MkDocs documentation and playbooks
-│   ├── index.md
-│   ├── playbook-env.md             # Environment setup guide
-│   ├── playbook-precommit.md       # Pre-commit workflow guide
-│   ├── playbook-troubleshooting.md # Troubleshooting tips
-│   ├── playbook-deployment-gcloud.md # GCP deployment guide
-│   └── reference/                   # Auto-generated API docs
-├── 📂 issue_template/               # GitHub issue templates
-│   ├── bug_report.md
-│   └── feature_request.md
-├── 📂 logs/                         # Application logs
-│   └── app/
-├── 📂 notebook/                     # Jupyter notebooks for exploration
-├── 📂 scripts/                      # Utility scripts
-│   ├── pre-commit.sh               # Pre-commit checks
-│   ├── build_docker.sh             # Docker build script
-│   └── gloud-setup.sh              # GCP setup script
-├── 📂 src/mangetamain/              # Main application code
-│   ├── __init__.py
-│   ├── streamlit_ui.py             # Main Streamlit application
-│   ├── 📂 backend/
-│   │   ├── data_processor.py       # ETL pipeline (DataProcessor class)
-│   │   ├── recipe_analyzer.py      # NLP analysis (RecipeAnalyzer class)
-│   │   └── helper.py               # Helper functions
-│   ├── 📂 frontend/pages/          # Streamlit page modules
-│   │   ├── dashboard.py            # Ratings dashboard
-│   │   ├── overview.py             # Overview page
-│   │   ├── recipes_analysis.py     # Recipe analysis page
-│   │   ├── trends.py               # Trends page
-│   │   └── users_analysis.py       # User analysis page
-│   └── 📂 utils/
-│       ├── logger.py               # Custom logging utility
-│       └── helper.py               # General utilities
-├── 📂 tests/                        # Test suite
-│   └── unit/
-│       └── mangetamain/
-│           ├── backend/
-│           │   ├── test_data_processor.py
-│           │   ├── test_recipe_analyzer.py
-│           │   └── test_helper.py
-│           ├── utils/
-│           │   └── test_logger.py
-│           └── test_streamlit_ui.py
-├── 📄 .pre-commit-config.yaml       # Pre-commit hooks configuration
-├── 📄 docker-compose.yml            # Production Docker Compose
-├── 📄 docker-compose-local.yml      # Local Docker Compose
-├── 📄 Dockerfile                    # Multi-stage Docker build
-├── 📄 mkdocs.yml                    # MkDocs configuration
-├── 📄 pyproject.toml                # Project metadata & dependencies
-└── 📄 README.md                     # This file
+├── src/mangetamain/
+│   ├── streamlit_ui.py              # Main application entry
+│   ├── backend/
+│   │   ├── data_processor.py        # ETL pipeline
+│   │   └── recipe_analyzer.py       # NLP analysis
+│   ├── frontend/pages/              # Streamlit pages
+│   │   ├── overview.py
+│   │   ├── recipes_analysis.py
+│   │   ├── users_analysis.py
+│   │   ├── trends.py
+│   │   └── dashboard.py
+│   └── utils/
+│       ├── logger.py                # Custom logging
+│       └── helper.py                # Data loading utilities
+├── tests/unit/                      # Unit tests
+├── data/
+│   ├── raw/                         # CSV input files
+│   └── processed/                   # Parquet & pickle outputs
+├── docs/                            # MkDocs documentation
+├── .github/workflows/deploy.yml     # CI/CD pipeline
+├── docker-compose.yml               # Production deployment
+├── Dockerfile                       # Multi-stage build
+└── pyproject.toml                   # Dependencies & config
 ```
 
 ---
@@ -196,7 +141,7 @@ kit_big_data_mangetamain/
 
 ### 🎯 Object-Oriented Programming (OOP)
 
-The project follows **OOP best practices** with a clean, modular architecture. However the object oriented approach is very basic as `Streamlit`implements its onw logic and is not made to be run into different classes.
+The project follows **OOP best practices** with a clean, modular architecture. However, the object-oriented approach is very basic as `Streamlit` implements its own logic and is not made to be run into different classes.
 
 #### Core Classes
 
@@ -268,24 +213,22 @@ Our Docker deployment uses a **sequential container orchestration** pattern:
 
 #### Architecture Benefits
 
-✅ **Separation of Concerns**:
-- Backend handles computationally expensive ETL operations
-- Frontend focuses solely on visualization and user interaction
+- **Separation of Concerns**
+  - Backend handles computationally expensive ETL operations
+  - Frontend focuses solely on visualization and user interaction
+- **Improved Stability**: 
+  - Frontend never performs heavy preprocessing
+  - No risk of UI crashes during data processing
+  - Graceful failure isolation
 
-✅ **Improved Stability**:
-- Frontend never performs heavy preprocessing
-- No risk of UI crashes during data processing
-- Graceful failure isolation
-
-✅ **Resource Efficiency**:
-- Backend container only runs when data updates are needed
-- Frontend container remains lightweight and responsive
-- Optimized resource allocation per workload type
-
-✅ **Faster Startup**:
-- Frontend launches instantly with preprocessed data
-- No waiting for data processing on application start
-- Better user experience
+- **Resource Efficiency**:
+  - Backend container only runs when data updates are needed
+  - Frontend container remains lightweight and responsive
+  - Optimized resource allocation per workload type
+- **Faster Startup**:
+  - Frontend launches instantly with preprocessed data
+  - No waiting for data processing on application start
+  - Better user experience
 
 ---
 
@@ -315,31 +258,24 @@ Our `.pre-commit-config.yaml` includes:
 #### Running Pre-Commit Checks
 
 ```bash
-# Install pre-commit hooks (one-time setup)
+# Pre-commit checks
 uv run pre-commit install
 
 # Run on all files manually
 uv run pre-commit run --all-files
 
-# Run specific hooks
+# Linting & formatting
 uv run ruff check .
 uv run ruff format .
-uv run mypy src
-uv run pytest
-```
 
-#### Complete Pre-Commit Workflow
+# Type checking
+uv run mypy src
+```
 
 For detailed pre-commit procedures, see our comprehensive guide:
 
 📖 **[Pre-Commit Workflow Playbook](docs/playbook-precommit.md)**
 
-This playbook covers:
-- Code documentation with Pyment
-- Linting and formatting commands
-- Testing and coverage
-- Documentation generation with MkDocs
-- Full pre-commit checklist
 
 ---
 
@@ -349,6 +285,7 @@ We use **MkDocs** with the **Material theme** for comprehensive documentation.
 
 #### Documentation Structure
 
+- [Available on GitHub](https://shanoether.github.io/kit_big_data_mangetamain/): Documentation is automatically updated during deployment and published on GitHub Pages.
 - **API Reference**: Auto-generated from docstrings using `mkdocstrings`
 - **Playbooks**: Step-by-step guides for common tasks
   - Environment setup
@@ -443,14 +380,6 @@ Our `.github/workflows/deploy.yml` implements a **two-stage pipeline**:
 - **Trigger**: Every push to `main` branch
 - **Action**: Fails pipeline if vulnerabilities found
 
-```yaml
-security:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: pyupio/safety-action@v1
-      with:
-        api-key: ${{ secrets.SAFETY_API_KEY }}
-```
 
 ##### Stage 2: Build & Deploy
 
@@ -501,7 +430,7 @@ We maintain **comprehensive test coverage** across all modules.
 
 #### Test Coverage
 
-- **Overall Coverage**: ~97%+ across core modules
+- **Overall Coverage**: ~90%+ across core modules
 - **Backend**: 100% coverage on `DataProcessor` and `RecipeAnalyzer`
 - **Utils**: 100% coverage on `logger` and helper functions
 - **Frontend**: Core Streamlit functions tested with mocking
@@ -512,243 +441,59 @@ We maintain **comprehensive test coverage** across all modules.
 # Run all tests
 uv run pytest
 
-# Run with coverage report
-uv run coverage run -m pytest
-uv run coverage report -m
+# With coverage
+uv run pytest --cov=src --cov-report=html
 
-# Run specific test file
+# Specific test
 uv run pytest tests/unit/mangetamain/backend/test_recipe_analyzer.py
-
-# Run specific test class
-uv run pytest tests/unit/mangetamain/backend/test_recipe_analyzer.py::TestRecipeAnalyzer
-
-# Run specific test method
-uv run pytest tests/unit/mangetamain/backend/test_recipe_analyzer.py::TestRecipeAnalyzer::test_preprocess_text
 ```
-
-Test folder structur mirrors the structure of `src/mangetamain`
-
-#### Testing Tools
-
-- **pytest**: Test framework
-- **pytest-cov**: Coverage reporting
-- **unittest.mock**: Mocking framework for isolating tests
-- **MagicMock**: Mock objects with type hints
-
-#### Coverage Requirements
-
-- **Minimum**: 90% overall coverage (configured in `pyproject.toml`)
-- **Target**: 95%+ for production code
-- **Docstring Coverage**: 80% minimum (enforced by `interrogate`)
 
 ---
 
-### 🔒 Security
+## 🔒 Security
 
-Security is a **top priority** in our deployment and development process.
-
-#### Security Measures Implemented
-
-##### 1. Dependency Scanning
-
-- **Tool**: [Safety CLI](https://pyup.io/safety/)
-- **Frequency**: Every commit to `main` branch
-- **Action**: Automated scan of all Python dependencies
-- **Result**: Pipeline fails if vulnerabilities detected
-
-```yaml
-# From .github/workflows/deploy.yml
-- name: Run Safety CLI to check for vulnerabilities
-  uses: pyupio/safety-action@v1
-  with:
-    api-key: ${{ secrets.SAFETY_API_KEY }}
-```
-
-##### 2. VM Security
-
-**Firewall Configuration**:
-- Only port 8501 (Streamlit) exposed to public internet
-- All other ports blocked by default
-
-**SSH Key Authentication**:
-- Password authentication disabled
-- Only ED25519 SSH key authentication allowed
-- Separate deployment keys for CI/CD
-
-**VM Hardening**:
-```bash
-# SSH configuration
-PermitRootLogin no
-PasswordAuthentication no
-PubkeyAuthentication yes
-```
-
-##### 3. Secrets Management
-
-- **GitHub Secrets**: All sensitive credentials stored securely
-- **Environment Variables**: No hardcoded secrets in code
-- `.env` files in `.gitignore`
-
-##### 4. Docker Security
-
-- **Non-root user**: Container runs as non-privileged user
-- **Multi-stage build**: Minimizes attack surface
-- **Minimal base image**: Debian slim for smaller footprint
-- **No secrets in images**: All secrets mounted at runtime
-
-##### 5. Code Security
-
-- **Type checking**: `mypy` enforces type safety
-- **Input validation**: All user inputs validated
-- **SQL injection prevention**: Uses Polars DataFrames (no raw SQL)
-- **XSS prevention**: Streamlit handles output sanitization
-
-#### Security Audit Results
-
-Latest security scan (generated with Safety CLI):
-
-- TODO
-
-#### Reporting Security Issues
-
-Found a security vulnerability? Please report it responsibly:
-
-1. **DO NOT** open a public GitHub issue
-2. Email: gardelautrepourdemain@mangetamain.ai
-3. Include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Suggested fix (if any)
-
+- **Dependency Scanning**: Automated Safety CLI checks on every commit
+- **Firewall**: Only port 443 exposed
+- **SSH**: Key-based authentication only, no passwords
+- **Docker**: Non-root user, minimal base image
+- **Secrets**: GitHub Secrets for credentials, no hardcoded values
+- **Errors Page**: Users do not get exposed to precise error messages but generic ones to avoid exploitation.
+- **HTTPS Connection**: Secure connection through HTTPS with certificate generated with `letsencrypt`.
 ---
 
-### ⚡ Performance
+## ⚡ Performance
 
-We've optimized the application for **fast data processing and rendering**.
+We currently have some unresolved performance issues. The loading of different pages is slow despite the various techniques we set up to reduce lagging.
 
-#### Performance Optimizations
+**Optimizations:**
+- **Polars**: 10-30x faster than Pandas for large datasets
+- **Batch Processing**: spaCy processes 100 texts at a time
+- **Caching**: `@st.cache_data` for data, `@st.cache_resource` for models
+- **Lazy Loading**: Data loaded only when needed
 
-##### 1. Data Processing
-
-**Polars instead of Pandas**:
-- **10-30x faster** for large datasets
-- Lazy evaluation for query optimization
-- Parallel processing by default
-- Lower memory footprint
-
-##### 2. NLP Processing
-
-**Batch Processing with spaCy**:
-- Process texts in batches of 100 for **5-10x speedup**
-- Pipeline optimization (`disable=["parser", "ner"]`)
-- Only lemmatization and POS tagging enabled
-
-```python
-# Batch processing in RecipeAnalyzer
-for doc in nlp.pipe(texts, batch_size=100, disable=["parser", "ner"]):
-    # Process...
-```
-
-##### 3. Caching Strategy
-
-**LRU Cache for Expensive Operations**:
-- `@lru_cache` on figure generation methods
-- Cached preprocessing results
-- Memoized word clouds and plots
-
-```python
-@lru_cache(maxsize=128)
-def frequency_wordcloud(self, recipe_count: int, ...) -> Figure:
-    # Expensive operation cached
-```
-
-**Streamlit Cache**:
-- `@st.cache_data` for data loading
-- `@st.cache_resource` for model loading
-- Persistent cache across user sessions
-
-##### 4. Lazy Loading
-
-- Data loaded only when needed
-- Progressive rendering of dashboards
-- Deferred visualization generation
-
-#### Profiling
-
-We use multiple tools for performance profiling:
-
+**Profiling:**
 ```bash
-# Install profiling tools
-uv sync --group dev
-
-# Profile with py-spy (sampling profiler)
 uv run py-spy record -o profile.svg -- python src/mangetamain/backend/data_processor.py
-
-# Profile with snakeviz (visualizer)
-uv run python -m cProfile -o output.prof src/mangetamain/backend/data_processor.py
-uv run snakeviz output.prof
-```
-
-Profiling results available in `docs/profiling.md`.
-
-#### Performance Monitoring
-
-- **Application logs**: Track processing times
-- **Streamlit metrics**: Monitor page load times
-- **Docker stats**: Monitor container resource usage
-
-```bash
-# Monitor container performance
-docker stats mangetamain
 ```
 
 ---
-
 
 ## 🧑‍💻 Contributing
 
-We welcome contributions! Please follow our contribution guidelines to maintain code quality and consistency.
+Use our issue templates for bug reports or feature requests:
 
-### 📋 Using Issue Templates
-
-Before starting work, please create an issue using one of our templates:
-
-#### 🐛 Bug Report
-
-Found a bug? Use our **[Bug Report Template](issue_template/bug_report.md)**:
-
-1. Go to **Issues** → **New Issue**
-2. Select **Bug report** template
-3. Fill in:
-   - **Description**: Clear description of the bug
-   - **To Reproduce**: Step-by-step reproduction steps
-   - **Expected behavior**: What should happen
-   - **Environment**: OS, browser, version
-   - **Screenshots**: If applicable
-
-#### ✨ Feature Request
-
-Have an idea? Use our **[Feature Request Template](issue_template/feature_request.md)**:
-
-1. Go to **Issues** → **New Issue**
-2. Select **Feature request** template
-3. Fill in:
-   - **Problem description**: What problem does this solve?
-   - **Proposed solution**: How should it work?
-   - **Alternatives considered**: Other approaches
-   - **Additional context**: Screenshots, mockups, etc.
+- **Bug Report**: [`issue_template/bug_report.md`](issue_template/bug_report.md)
+- **Feature Request**: [`issue_template/feature_request.md`](issue_template/feature_request.md)
 
 ---
 
 ## 🌱 Future Improvements
 
-We're continuously working to improve Mangetamain. Here are planned enhancements:
+We're continuously working to improve *Mangetamain*. Here are planned enhancements:
 
 - 🔍 **Recipe Clustering**: ML-based similarity analysis to discover recipe patterns and group similar recipes
-- 📄 **PDF Export**: Export dashboards and analysis reports to PDF for offline viewing
 - 📊 **Advanced Visualizations**:
-  - Interactive 3D plots for multi-dimensional analysis
+  
   - Network graphs for recipe ingredient relationships
   - Heatmaps for user behavior patterns
 - ⚙️ **Enhanced CI/CD Pipeline**:
@@ -759,7 +504,7 @@ We're continuously working to improve Mangetamain. Here are planned enhancements
   - Sentiment analysis on user reviews
   - Anomaly detection for unusual rating patterns
 - 🗄️ **Database Migration**:
-  - Move from CSV to PostgreSQL for better scalability
+  - Move from Parquet to PostgreSQL for better scalability with an API endpoint for the frontend to connect to
   - Implement data versioning
   - Add data backup and recovery procedures
 
@@ -767,11 +512,10 @@ We're continuously working to improve Mangetamain. Here are planned enhancements
 
 ## 📊 Project Metrics
 
-- **Test Coverage**: 97%+
-- **Number of Tests**: 80+
-- **Dependencies**: 40+
-- **Supported Python Version**: 3.12+
-- **Docker Image Size**: ~850MB (optimized)
+- **Test Coverage**: 90%+
+- **Python Version**: 3.12+
+- **Docker Image**: ~1.5GB (multi-stage optimized)
+- **Lines of Code**: ~5,000
 
 ---
 
@@ -796,13 +540,12 @@ We're continuously working to improve Mangetamain. Here are planned enhancements
 
 ## 📝 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Contact & Support
+## 📞 Contact
 
-- 🐛 **Bug Reports and Feature Request**: [GitHub Issues](https://github.com/shanoether/kit_big_data_mangetamain/issues)
-
-- 📧 **Email**: gardelautrepourdemain@mangetamain.ai
-- 🌐 **Live App**: [http://34.1.14.43:8501/](http://34.1.14.43:8501/)
+- **Issues**: [GitHub Issues](https://github.com/shanoether/kit_big_data_mangetamain/issues)
+- **Email**: gardelautrepourdemain@mangetamain.ai
+- **Live App**: [https://mangetamain.duckdns.org/](https://mangetamain.duckdns.org/)
