@@ -520,15 +520,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_reviews_for_recipes" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_reviews_for_recipes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_top_recipe_ids" class="md-nav__link">
     <span class="md-ellipsis">
       get_top_recipe_ids
@@ -848,15 +839,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_reviews_for_recipes" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_reviews_for_recipes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_top_recipe_ids" class="md-nav__link">
     <span class="md-ellipsis">
       get_top_recipe_ids
@@ -1120,8 +1102,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 49</span>
-<span class="normal"> 50</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 50</span>
 <span class="normal"> 51</span>
 <span class="normal"> 52</span>
 <span class="normal"> 53</span>
@@ -1919,7 +1900,20 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="normal">845</span>
 <span class="normal">846</span>
 <span class="normal">847</span>
-<span class="normal">848</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RecipeAnalyzer</span><span class="p">:</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RecipeAnalyzer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyzer for recipe data with NLP and visualization capabilities.</span>
 
 <span class="sd">    This class provides methods to analyze recipe reviews, extract ingredients,</span>
@@ -1950,27 +1944,32 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="sd">            df_total: Combined DataFrame with all recipe and interaction data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Store dataframes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_recipe</span> <span class="o">=</span> <span class="n">df_recipes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span> <span class="o">=</span> <span class="n">df_interactions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_total</span> <span class="o">=</span> <span class="n">df_total</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting up attributes&quot;</span><span class="p">)</span>
 
         <span class="c1"># Load spaCy model (disable unused components for speed)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading spaCy model&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;en_core_web_sm&quot;</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;parser&quot;</span><span class="p">,</span> <span class="s2">&quot;ner&quot;</span><span class="p">])</span>
 
         <span class="c1"># Initialize stop words</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initializing stop words&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">spacy</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">STOP_WORDS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_extend_stop_words</span><span class="p">()</span>
 
         <span class="c1"># Pre-compute top ingredients</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">top_ingredients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_top_ingredients</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing top ingredients&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_ingredients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_top_ingredients</span><span class="p">(</span><span class="n">df_recipes</span><span class="p">)</span>
 
         <span class="c1"># Cache for preprocessed data and figures</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Pre-process the most common review sets for performance</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_best_reviews</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_worst_reviews</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_most_reviews</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 best reviews&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_best_reviews</span><span class="p">(</span><span class="n">df_interactions</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 worst reviews&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_worst_reviews</span><span class="p">(</span><span class="n">df_interactions</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 most reviews&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_most_reviews</span><span class="p">(</span><span class="n">df_total</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed word cloud&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_word_cloud</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_comparisons</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
@@ -2004,6 +2003,7 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="s2">&quot;would&quot;</span><span class="p">,</span>
             <span class="s2">&quot;one&quot;</span><span class="p">,</span>
         <span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_stop_words</span><span class="p">)</span>
 
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>  <span class="c1"># noqa: B019</span>
@@ -2085,7 +2085,8 @@ analysis techniques (frequency vs TF-IDF).</p>
 
         <span class="k">return</span> <span class="n">all_tokens</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_recipe</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the most frequently used ingredients across all recipes.</span>
 
 <span class="sd">        Cleans ingredient strings, filters out common non-informative ingredients</span>
@@ -2123,9 +2124,12 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="s2">&quot;black pepper&quot;</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">MIN_LEN</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="c1"># Initialize inflect engine for singularization</span>
+
         <span class="c1"># Clean ingredient strings and split into individual items</span>
         <span class="n">ingredients_cleaned</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_recipe</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span>
+            <span class="n">df_recipe</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span>
                 <span class="c1"># Remove brackets and quotes from ingredient list strings</span>
                 <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;ingredients&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace_all</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\[\]&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;cleaned&quot;</span><span class="p">),</span>
             <span class="p">)</span>
@@ -2141,6 +2145,7 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="p">)</span>
         <span class="p">)</span>
 
+
         <span class="c1"># Count occurrences and sort by frequency</span>
         <span class="n">ingredients_counts</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">ingredients_cleaned</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">&quot;ingredients&quot;</span><span class="p">)</span>
@@ -2150,7 +2155,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 
         <span class="k">return</span> <span class="n">ingredients_counts</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_most_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_most_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_total</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-process ingredients from the 500 most-reviewed recipes.</span>
 
 <span class="sd">        Identifies recipes with the most reviews, extracts their ingredients,</span>
@@ -2165,7 +2170,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 
         <span class="c1"># Find the 500 recipes with most reviews</span>
         <span class="n">most_reviewed_ids</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_total</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">)</span>
+            <span class="n">df_total</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;nb_reviews&quot;</span><span class="p">))</span>
             <span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;nb_reviews&quot;</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
@@ -2173,7 +2178,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 
         <span class="c1"># Join with ingredients data - use unique() to avoid duplicates</span>
         <span class="n">most_reviews_with_ing</span> <span class="o">=</span> <span class="n">most_reviewed_ids</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_total</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">,</span> <span class="s2">&quot;ingredients&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">),</span>
+            <span class="n">df_total</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">,</span> <span class="s2">&quot;ingredients&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">),</span>
             <span class="n">on</span><span class="o">=</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">,</span>
             <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">drop_nulls</span><span class="p">(</span><span class="s2">&quot;ingredients&quot;</span><span class="p">)</span>
@@ -2186,7 +2191,7 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Most reviews cleaned: </span><span class="si">{</span><span class="n">cleaned_reviews</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cleaned_reviews</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_best_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_best_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_interaction</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess review text from the 500 highest-rated recipe reviews.</span>
 
 <span class="sd">        Extracts review text from the top 500 reviews sorted by rating score (5.0 being best).</span>
@@ -2197,7 +2202,7 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="n">cache_key</span> <span class="o">=</span> <span class="s2">&quot;preprocessed_500_best_reviews&quot;</span>
 
         <span class="n">best_reviews</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">df_interaction</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
             <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">to_series</span><span class="p">()</span>
@@ -2208,7 +2213,7 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="n">cleaned_reviews</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_texts_batch</span><span class="p">(</span><span class="n">best_reviews</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cleaned_reviews</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_worst_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocessed_500_worst_reviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">df_interaction</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess review text from the 500 lowest-rated recipe reviews.</span>
 
 <span class="sd">        Extracts review text from the bottom 500 reviews sorted by rating score (1.0 being worst).</span>
@@ -2219,7 +2224,7 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="n">cache_key</span> <span class="o">=</span> <span class="s2">&quot;preprocessed_500_worst_reviews&quot;</span>
         <span class="c1"># if cache_key not in self._cache:</span>
         <span class="n">worst_reviews</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">df_interaction</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
             <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">to_series</span><span class="p">()</span>
@@ -2279,26 +2284,26 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="k">return</span> <span class="n">recipe_ids</span>
 
     <span class="c1"># could use  df_total</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_reviews_for_recipes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipe_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve all review texts for specified recipe IDs.</span>
+    <span class="c1"># def get_reviews_for_recipes(self, recipe_ids: list[int], df_interaction: pl.DataFrame) -&gt; list[str]:</span>
+    <span class="c1">#     &quot;&quot;&quot;Retrieve all review texts for specified recipe IDs.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            recipe_ids: List of recipe IDs to fetch reviews for.</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         recipe_ids: List of recipe IDs to fetch reviews for.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            list[str]: List of review texts matching the provided recipe IDs.</span>
-<span class="sd">                       Results are cached for repeated queries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cache_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;reviews_</span><span class="si">{</span><span class="n">recipe_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">!s}</span><span class="s2">_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">recipe_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_in</span><span class="p">(</span><span class="n">recipe_ids</span><span class="p">))</span>
-                <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">to_series</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-            <span class="p">)</span>
-        <span class="n">recipe_review</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">recipe_review</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         list[str]: List of review texts matching the provided recipe IDs.</span>
+    <span class="c1">#                    Results are cached for repeated queries.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     cache_key = f&quot;reviews_{recipe_ids[:3]!s}_{len(recipe_ids)}&quot;</span>
+    <span class="c1">#     if cache_key not in self._cache:</span>
+    <span class="c1">#         self._cache[cache_key] = (</span>
+    <span class="c1">#             df_interaction.filter(pl.col(&quot;recipe_id&quot;).is_in(recipe_ids))</span>
+    <span class="c1">#             .select(&quot;review&quot;)</span>
+    <span class="c1">#             .to_series()</span>
+    <span class="c1">#             .to_list()</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     recipe_review = list(self._cache[cache_key])</span>
+    <span class="c1">#     return recipe_review</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_word_cloud</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2715,6 +2720,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            RecipeAnalyzer: Loaded analyzer instance with spaCy model reloaded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading RecipeAnalyzer from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">analyzer</span><span class="p">:</span> <span class="n">RecipeAnalyzer</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RecipeAnalyzer loaded from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2778,18 +2784,18 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">798</span>
-<span class="normal">799</span>
-<span class="normal">800</span>
-<span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span>
-<span class="normal">805</span>
-<span class="normal">806</span>
-<span class="normal">807</span>
-<span class="normal">808</span>
-<span class="normal">809</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare object for pickling - exclude spaCy model.</span>
 
 <span class="sd">    The spaCy NLP model cannot be pickled directly, so we exclude it</span>
@@ -2888,8 +2894,7 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 66</span>
-<span class="normal"> 67</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 67</span>
 <span class="normal"> 68</span>
 <span class="normal"> 69</span>
 <span class="normal"> 70</span>
@@ -2924,7 +2929,13 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">df_interactions</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">df_recipes</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -2938,27 +2949,32 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 <span class="sd">        df_total: Combined DataFrame with all recipe and interaction data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Store dataframes</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_recipe</span> <span class="o">=</span> <span class="n">df_recipes</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span> <span class="o">=</span> <span class="n">df_interactions</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">df_total</span> <span class="o">=</span> <span class="n">df_total</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting up attributes&quot;</span><span class="p">)</span>
 
     <span class="c1"># Load spaCy model (disable unused components for speed)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading spaCy model&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;en_core_web_sm&quot;</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;parser&quot;</span><span class="p">,</span> <span class="s2">&quot;ner&quot;</span><span class="p">])</span>
 
     <span class="c1"># Initialize stop words</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initializing stop words&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">spacy</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">STOP_WORDS</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_extend_stop_words</span><span class="p">()</span>
 
     <span class="c1"># Pre-compute top ingredients</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">top_ingredients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_top_ingredients</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing top ingredients&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">top_ingredients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_top_ingredients</span><span class="p">(</span><span class="n">df_recipes</span><span class="p">)</span>
 
     <span class="c1"># Cache for preprocessed data and figures</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Pre-process the most common review sets for performance</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_best_reviews</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_worst_reviews</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_most_reviews</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 best reviews&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_best_reviews</span><span class="p">(</span><span class="n">df_interactions</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 worst reviews&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_worst_reviews</span><span class="p">(</span><span class="n">df_interactions</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed 500 most reviews&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessed_500_most_reviews</span><span class="p">(</span><span class="n">df_total</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed word cloud&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_word_cloud</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_comparisons</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3016,16 +3032,16 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
-<span class="normal">816</span>
-<span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore object after unpickling - reload spaCy model.</span>
 
 <span class="sd">    Args:</span>
@@ -3167,19 +3183,7 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
 <span class="normal">567</span>
@@ -3238,7 +3242,19 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
 <span class="normal">620</span>
 <span class="normal">621</span>
 <span class="normal">622</span>
-<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compare_frequency_and_tfidf</span><span class="p">(</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compare_frequency_and_tfidf</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">recipe_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -3387,19 +3403,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">772</span>
 <span class="normal">773</span>
 <span class="normal">774</span>
 <span class="normal">775</span>
@@ -3423,7 +3427,19 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="normal">793</span>
 <span class="normal">794</span>
 <span class="normal">795</span>
-<span class="normal">796</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_comparisons</span><span class="p">(</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_comparisons</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">recipe_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -3520,19 +3536,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">687</span>
-<span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span>
-<span class="normal">692</span>
-<span class="normal">693</span>
-<span class="normal">694</span>
-<span class="normal">695</span>
-<span class="normal">696</span>
-<span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">699</span>
 <span class="normal">700</span>
 <span class="normal">701</span>
 <span class="normal">702</span>
@@ -3563,7 +3567,19 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="normal">727</span>
 <span class="normal">728</span>
 <span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_wordclouds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_wordclouds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a Streamlit UI with 6 word cloud visualizations.</span>
 
 <span class="sd">    Creates a 2x3 grid showing frequency-based and TF-IDF word clouds for:</span>
@@ -3607,124 +3623,6 @@ or only TF-IDF. All plots are cached for instant display.</p>
                 <span class="sa">f</span><span class="s2">&quot;TF-IDF - </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">st</span><span class="o">.</span><span class="n">pyplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_reviews_for_recipes" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">get_reviews_for_recipes</span>
-
-
-<a href="#mangetamain.backend.recipe_analyzer.RecipeAnalyzer.get_reviews_for_recipes" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_reviews_for_recipes</span><span class="p">(</span><span class="n">recipe_ids</span><span class="p">)</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Retrieve all review texts for specified recipe IDs.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>recipe_ids</code>
-            </td>
-            <td>
-                  <code><span title="list">list</span>[<span title="int">int</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>List of recipe IDs to fetch reviews for.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>list[str]: List of review texts matching the provided recipe IDs.
-       Results are cached for repeated queries.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reviews_for_recipes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipe_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve all review texts for specified recipe IDs.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        recipe_ids: List of recipe IDs to fetch reviews for.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        list[str]: List of review texts matching the provided recipe IDs.</span>
-<span class="sd">                   Results are cached for repeated queries.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cache_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;reviews_</span><span class="si">{</span><span class="n">recipe_ids</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">!s}</span><span class="s2">_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">recipe_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_interaction</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;recipe_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_in</span><span class="p">(</span><span class="n">recipe_ids</span><span class="p">))</span>
-            <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">to_series</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-        <span class="p">)</span>
-    <span class="n">recipe_review</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">recipe_review</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3820,24 +3718,24 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_top_recipe_ids</span><span class="p">(</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_top_recipe_ids</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="n">rating_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3937,20 +3835,21 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">835</span>
-<span class="normal">836</span>
-<span class="normal">837</span>
-<span class="normal">838</span>
-<span class="normal">839</span>
-<span class="normal">840</span>
-<span class="normal">841</span>
-<span class="normal">842</span>
-<span class="normal">843</span>
-<span class="normal">844</span>
-<span class="normal">845</span>
-<span class="normal">846</span>
-<span class="normal">847</span>
-<span class="normal">848</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RecipeAnalyzer&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a RecipeAnalyzer instance from disk.</span>
 
@@ -3960,6 +3859,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        RecipeAnalyzer: Loaded analyzer instance with spaCy model reloaded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading RecipeAnalyzer from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">analyzer</span><span class="p">:</span> <span class="n">RecipeAnalyzer</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RecipeAnalyzer loaded from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -4083,19 +3983,7 @@ rather than just most frequent.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
-<span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
 <span class="normal">496</span>
@@ -4152,7 +4040,19 @@ rather than just most frequent.</p>
 <span class="normal">547</span>
 <span class="normal">548</span>
 <span class="normal">549</span>
-<span class="normal">550</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_tfidf</span><span class="p">(</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_tfidf</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">rating_filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -4303,19 +4203,7 @@ The radial distance represents the count of recipes using each ingredient.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
@@ -4345,7 +4233,19 @@ The radial distance represents the count of recipes using each ingredient.</p>
 <span class="normal">664</span>
 <span class="normal">665</span>
 <span class="normal">666</span>
-<span class="normal">667</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a polar plot showing the most common ingredients.</span>
 
 <span class="sd">    Creates a radar/polar chart visualizing ingredient frequency across recipes.</span>
@@ -4501,19 +4401,7 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
@@ -4550,7 +4438,19 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
-<span class="normal">479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_word_cloud</span><span class="p">(</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_word_cloud</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">rating_filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -4660,18 +4560,18 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">822</span>
-<span class="normal">823</span>
-<span class="normal">824</span>
-<span class="normal">825</span>
-<span class="normal">826</span>
-<span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the RecipeAnalyzer instance to disk using pickle.</span>
 
 <span class="sd">    Args:</span>
@@ -4762,19 +4662,7 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
@@ -4788,7 +4676,19 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">switch_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rating_filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">switch_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rating_filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select appropriate preprocessed data cache based on rating filter.</span>
 
 <span class="sd">    Args:</span>

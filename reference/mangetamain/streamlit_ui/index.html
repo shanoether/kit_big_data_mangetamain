@@ -725,6 +725,9 @@
 <p>This function prepares the navigation pages and ensures the
 application data is loaded into the Streamlit session state before
 starting the page navigation.</p>
+<p>The data loading is optimized with @st.cache_resource:
+- First user: ~90s to load all data
+- All subsequent users: &lt;0.01s (instant cache hit)</p>
 
 
             <details class="quote">
@@ -766,17 +769,91 @@ starting the page navigation.</p>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for the Streamlit front-end application.</span>
 
 <span class="sd">    This function prepares the navigation pages and ensures the</span>
 <span class="sd">    application data is loaded into the Streamlit session state before</span>
 <span class="sd">    starting the page navigation.</span>
+
+<span class="sd">    The data loading is optimized with @st.cache_resource:</span>
+<span class="sd">    - First user: ~90s to load all data</span>
+<span class="sd">    - All subsequent users: &lt;0.01s (instant cache hit)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+    <span class="c1"># Always call the cached function (it returns instantly after first call)</span>
+    <span class="n">cache_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="p">(</span>
+        <span class="n">df_interactions</span><span class="p">,</span>
+        <span class="n">df_interactions_nna</span><span class="p">,</span>
+        <span class="n">df_recipes</span><span class="p">,</span>
+        <span class="n">df_recipes_nna</span><span class="p">,</span>
+        <span class="n">df_total_nt</span><span class="p">,</span>
+        <span class="n">df_total</span><span class="p">,</span>
+        <span class="n">df_total_court</span><span class="p">,</span>
+        <span class="n">proportion_m</span><span class="p">,</span>
+        <span class="n">proportion_s</span><span class="p">,</span>
+        <span class="n">recipe_analyzer</span><span class="p">,</span>
+        <span class="n">data_loaded</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">load_data_from_parquet_and_pickle</span><span class="p">()</span>
+    <span class="n">cache_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">cache_start</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚡ Cache access took </span><span class="si">{</span><span class="n">cache_time</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Store in session_state ONCE per user for convenience</span>
     <span class="k">if</span> <span class="s2">&quot;data_loaded&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="s2">&quot;🔄 Loading application data...&quot;</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Application started, loading data.&quot;</span><span class="p">)</span>
-            <span class="n">load_data_from_parquet_and_pickle</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Storing data in session_state for this user.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_interactions</span> <span class="o">=</span> <span class="n">df_interactions</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_interactions_nna</span> <span class="o">=</span> <span class="n">df_interactions_nna</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_recipes</span> <span class="o">=</span> <span class="n">df_recipes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_recipes_nna</span> <span class="o">=</span> <span class="n">df_recipes_nna</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total_nt</span> <span class="o">=</span> <span class="n">df_total_nt</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total</span> <span class="o">=</span> <span class="n">df_total</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total_court</span> <span class="o">=</span> <span class="n">df_total_court</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">proportion_m</span> <span class="o">=</span> <span class="n">proportion_m</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">proportion_s</span> <span class="o">=</span> <span class="n">proportion_s</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">recipe_analyzer</span> <span class="o">=</span> <span class="n">recipe_analyzer</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">data_loaded</span> <span class="o">=</span> <span class="n">data_loaded</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;✅ Data available in session_state for this user.&quot;</span><span class="p">)</span>
 
     <span class="n">home_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/dashboard.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">rating_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/rating.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Rating&quot;</span><span class="p">)</span>
@@ -796,10 +873,10 @@ starting the page navigation.</p>
         <span class="p">[</span>
             <span class="n">home_page</span><span class="p">,</span>
             <span class="n">overview_page</span><span class="p">,</span>
-            <span class="n">recipes_analysis_page</span><span class="p">,</span>
-            <span class="n">users_analysis_page</span><span class="p">,</span>
-            <span class="n">trends_page</span><span class="p">,</span>
             <span class="n">rating_page</span><span class="p">,</span>
+            <span class="n">trends_page</span><span class="p">,</span>
+            <span class="n">users_analysis_page</span><span class="p">,</span>
+            <span class="n">recipes_analysis_page</span>
         <span class="p">],</span>
     <span class="p">)</span>
 

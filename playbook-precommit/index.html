@@ -883,11 +883,35 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pre-commit-configyaml" class="md-nav__link">
+  <a href="#install-pre-commit-hook" class="md-nav__link">
     <span class="md-ellipsis">
-      .pre-commit-config.yaml
+      Install pre-commit hook
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Install pre-commit hook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#then-install-the-precommit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Then install the precommit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avoid-precommit-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      avoid precommit with
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1190,22 +1214,36 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <span class="n">testpaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tests&quot;</span><span class="p">]</span>
 <span class="n">python_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;test_*.py&quot;</span><span class="p">]</span>
 </code></pre></div>
-<h3 id="pre-commit-configyaml">.pre-commit-config.yaml<a class="headerlink" href="#pre-commit-configyaml" title="Permanent link">&para;</a></h3>
-<p>Example pre-commit configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">repos</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/astral-sh/ruff-pre-commit</span>
-<span class="w">    </span><span class="nt">rev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v0.1.0</span>
-<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ruff</span>
-<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">--fix</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ruff-format</span>
+<h3 id="install-pre-commit-hook">Install pre-commit hook<a class="headerlink" href="#install-pre-commit-hook" title="Permanent link">&para;</a></h3>
+<h4 id="then-install-the-precommit">Then install the precommit<a class="headerlink" href="#then-install-the-precommit" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>uv install pre-commit
+uv add pre-commit
+pre-commit install
+pre-commit run --all-files
+</code></pre></div>
+<h4 id="avoid-precommit-with">avoid precommit with<a class="headerlink" href="#avoid-precommit-with" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>git commit -nm &#39;my message&#39;
+````
 
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/pre-commit/pre-commit-hooks</span>
-<span class="w">    </span><span class="nt">rev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v4.5.0</span>
-<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trailing-whitespace</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end-of-file-fixer</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">check-yaml</span>
+### .pre-commit-config.yaml
+
+Example pre-commit configuration:
+
+```yaml
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
 </code></pre></div>
 <hr />
 <h2 id="tips-and-best-practices">Tips and Best Practices<a class="headerlink" href="#tips-and-best-practices" title="Permanent link">&para;</a></h2>

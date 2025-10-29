@@ -2,62 +2,66 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>http://34.1.14.43:8501/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/playbook-deployment-gcloud/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/playbook-env/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
+    </url>
+    <url>
+         <loc>http://34.1.14.43:8501/playbook-https-setup/</loc>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/playbook-precommit/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/playbook-troubleshooting/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/profiling/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/SUMMARY/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/__init__/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/streamlit_ui/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/backend/__init__/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/backend/data_processor/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/backend/recipe_analyzer/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/utils/__init__/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/utils/helper/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
     <url>
          <loc>http://34.1.14.43:8501/reference/mangetamain/utils/logger/</loc>
-         <lastmod>2025-10-28</lastmod>
+         <lastmod>2025-10-29</lastmod>
     </url>
 </urlset>
