@@ -78,27 +78,35 @@ class RecipeAnalyzer:
             df_total: Combined DataFrame with all recipe and interaction data
         """
         # Store dataframes
+        logger.info("Setting up attributes")
         self.df_recipe = df_recipes
         self.df_interaction = df_interactions
         self.df_total = df_total
 
         # Load spaCy model (disable unused components for speed)
+        logger.info("Loading spaCy model")
         self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
 
         # Initialize stop words
+        logger.info("Initializing stop words")
         self.stop_words = set(spacy.lang.en.STOP_WORDS)
         self._extend_stop_words()
 
         # Pre-compute top ingredients
+        logger.info("Computing top ingredients")
         self.top_ingredients = self._compute_top_ingredients()
 
         # Cache for preprocessed data and figures
         self._cache: dict[str, Any] = {}
 
         # Pre-process the most common review sets for performance
+        logger.info("Preprocessed 500 best reviews")
         self._preprocessed_500_best_reviews()
+        logger.info("Preprocessed 500 worst reviews")
         self._preprocessed_500_worst_reviews()
+        logger.info("Preprocessed 500 most reviews")
         self._preprocessed_500_most_reviews()
+        logger.info("Preprocessed word cloud")
         self._preprocess_word_cloud(100)
         self._preprocess_comparisons(100, 100)
 
@@ -212,6 +220,7 @@ class RecipeAnalyzer:
             all_tokens.extend(tokens)
 
         return all_tokens
+    
 
     def _compute_top_ingredients(self) -> pl.DataFrame:
         """Compute the most frequently used ingredients across all recipes.
@@ -253,7 +262,6 @@ class RecipeAnalyzer:
         MIN_LEN = 2
 
         # Initialize inflect engine for singularization
-        p = inflect.engine()
 
         # Clean ingredient strings and split into individual items
         ingredients_cleaned = (
@@ -271,17 +279,8 @@ class RecipeAnalyzer:
                 & (pl.col("ingredients") != "")
                 & (pl.col("ingredients").str.len_chars() > MIN_LEN),
             )
-            .with_columns(
-                # Convert each ingredient to lowercase and singular form
-                pl.col("ingredients")
-                .str.to_lowercase()
-                .map_elements(
-                    lambda x: p.singular_noun(x) if p.singular_noun(x) else x,
-                    return_dtype=pl.String,
-                )
-                .alias("ingredients_singular"),
-            )
         )
+    
 
         # Count occurrences and sort by frequency
         ingredients_counts = (

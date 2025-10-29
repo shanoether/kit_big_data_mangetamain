@@ -465,6 +465,81 @@ class TestRecipeAnalyzer:
 
         assert isinstance(fig, Figure)
         assert len(fig.axes) > 0
+        
+    # def test_to_singular_plural_word(self):
+    #     """Test that plural words are converted to singular."""
+    #     df_interactions = pl.DataFrame(
+    #         schema={
+    #             "user_id": pl.Int64,
+    #             "recipe_id": pl.Int64,
+    #             "rating": pl.Float64,
+    #             "review": pl.String,
+    #             "date": pl.String,
+    #         },
+    #     )
+    #     df_recipes = pl.DataFrame(
+    #         schema={
+    #             "id": pl.Int64,
+    #             "name": pl.String,
+    #             "minutes": pl.Int64,
+    #             "n_steps": pl.Int64,
+    #             "ingredients": pl.String,
+    #             "submitted": pl.String,
+    #         },
+    #     )
+    #     df_total = df_interactions.join(
+    #         df_recipes,
+    #         left_on="recipe_id",
+    #         right_on="id",
+    #         how="left",
+    #     )
+
+    #     analyzer = RecipeAnalyzer(df_interactions, df_recipes, df_total)
+                
+    #     assert analyzer._to_singular("recipes") == "recipe"
+    #     assert analyzer._to_singular("tomatoes") == "tomato"
+    #     assert analyzer._to_singular("potatoes") == "potato"
+    #     assert analyzer._to_singular("carrots") == "carrot"
+    #     assert analyzer._to_singular("onions") == "onion"
+    #     assert analyzer._to_singular("apples") == "apple"
+
+    # def test_to_singular_already_singular(self):
+    #     """Test that singular words remain unchanged."""
+    #     df_interactions = pl.DataFrame(
+    #         schema={
+    #             "user_id": pl.Int64,
+    #             "recipe_id": pl.Int64,
+    #             "rating": pl.Float64,
+    #             "review": pl.String,
+    #             "date": pl.String,
+    #         },
+    #     )
+    #     df_recipes = pl.DataFrame(
+    #         schema={
+    #             "id": pl.Int64,
+    #             "name": pl.String,
+    #             "minutes": pl.Int64,
+    #             "n_steps": pl.Int64,
+    #             "ingredients": pl.String,
+    #             "submitted": pl.String,
+    #         },
+    #     )
+    #     df_total = df_interactions.join(
+    #         df_recipes,
+    #         left_on="recipe_id",
+    #         right_on="id",
+    #         how="left",
+    #     )
+
+    #     analyzer = RecipeAnalyzer(df_interactions, df_recipes, df_total)
+                
+    #     assert analyzer._to_singular("recipe") == "recipe"
+    #     assert analyzer._to_singular("tomato") == "tomato"
+    #     assert analyzer._to_singular("potato") == "potato"
+    #     assert analyzer._to_singular("carrot") == "carrot"
+    #     assert analyzer._to_singular("onion") == "onion"
+    #     assert analyzer._to_singular("apple") == "apple"
+
 
 
 if __name__ == "__main__":

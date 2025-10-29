@@ -12,8 +12,9 @@ services:
   streamlit:
     image: ghcr.io/${GH_USER}/${REPO}-app:${IMAGE_TAG}
     command: ["uv", "run", "streamlit", "run", "src/mangetamain/streamlit_ui.py"]
-    #depends_on:
-    #  preprocess
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:
           test: ["CMD","curl","-fsS","https://mangetamain.duckdns.org:443/health"]
