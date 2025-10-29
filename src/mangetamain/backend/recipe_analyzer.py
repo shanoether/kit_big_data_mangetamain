@@ -829,7 +829,7 @@ class RecipeAnalyzer:
         self.__dict__.update(state)
         # Reload the spaCy model with same configuration as __init__
 
-        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+        self.nlp = None #spacy.load("en_core_web_sm", disable=["parser", "ner"])
 
     def save(self, filepath: str) -> None:
         """Save the RecipeAnalyzer instance to disk using pickle.
