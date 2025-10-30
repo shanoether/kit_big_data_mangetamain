@@ -504,8 +504,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Current Parameters:**")
-    st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
-    st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
+    if show_wordclouds or show_comparisons:
+        st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
+        st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
     st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
 
     # =========================================================================
