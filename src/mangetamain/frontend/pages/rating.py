@@ -110,7 +110,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Visualization of recipe distribution by review
     st.subheader("Distribution of the number of reviews by recipe")
-    st.markdown('This graphs how many reviews each recipe has received. We can see that most recipes have only a few reviews, while a few have many reviews. And there are a few reviews that were reviewed more than 500000 times!')
+    st.markdown(
+        "This graphs how many reviews each recipe has received. We can see that most recipes have only a few reviews, while a few have many reviews. And there are a few reviews that were reviewed more than 500000 times!"
+    )
     with st.spinner("Generating rating distribution by review..."):
         reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(
             pl.len().alias("review_count"),

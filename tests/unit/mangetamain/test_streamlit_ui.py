@@ -92,7 +92,7 @@ class TestStreamlitUI(unittest.TestCase):
         mock_st: MagicMock,
     ) -> None:
         """Test that main function loads data and sets up navigation."""
-        # Mock the return value of load_data_from_parquet_and_pickle (tuple of 11 elements)
+        # Mock the return value of load_data_from_parquet_and_pickle (tuple of 12 elements)
         mock_load_data.return_value = (
             MagicMock(),  # df_interactions
             MagicMock(),  # df_interactions_nna
@@ -101,6 +101,7 @@ class TestStreamlitUI(unittest.TestCase):
             MagicMock(),  # df_total_nt
             MagicMock(),  # df_total
             MagicMock(),  # df_total_court
+            MagicMock(),  # df_user
             MagicMock(),  # proportion_m
             MagicMock(),  # proportion_s
             MagicMock(),  # recipe_analyzer
@@ -150,6 +151,7 @@ class TestStreamlitUI(unittest.TestCase):
         mock_df_total_nt = MagicMock()
         mock_df_total = MagicMock()
         mock_df_total_court = MagicMock()
+        mock_df_user = MagicMock()
         mock_proportion_m = MagicMock()
         mock_proportion_s = MagicMock()
         mock_recipe_analyzer = MagicMock()
@@ -163,6 +165,7 @@ class TestStreamlitUI(unittest.TestCase):
             mock_df_total_nt,
             mock_df_total,
             mock_df_total_court,
+            mock_df_user,
             mock_proportion_m,
             mock_proportion_s,
             mock_recipe_analyzer,
@@ -195,6 +198,7 @@ class TestStreamlitUI(unittest.TestCase):
         assert mock_session_state["df_total_nt"] == mock_df_total_nt
         assert mock_session_state["df_total"] == mock_df_total
         assert mock_session_state["df_total_court"] == mock_df_total_court
+        assert mock_session_state["df_user"] == mock_df_user
         assert mock_session_state["proportion_m"] == mock_proportion_m
         assert mock_session_state["proportion_s"] == mock_proportion_s
         assert mock_session_state["recipe_analyzer"] == mock_recipe_analyzer
@@ -219,7 +223,7 @@ class TestStreamlitUI(unittest.TestCase):
         mock_st: MagicMock,
     ) -> None:
         """Test that main function skips session_state storage when data_loaded is present."""
-        # Mock the return value
+        # Mock the return value (12 elements)
         mock_load_data.return_value = (
             MagicMock(),
             MagicMock(),
@@ -228,6 +232,7 @@ class TestStreamlitUI(unittest.TestCase):
             MagicMock(),
             MagicMock(),
             MagicMock(),
+            MagicMock(),  # df_user
             MagicMock(),
             MagicMock(),
             MagicMock(),

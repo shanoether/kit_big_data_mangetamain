@@ -272,6 +272,20 @@ class DataProcessor:
             self.total,
         )
 
+    def user_df(self) -> None:
+        """Compute user-level aggregates and store as df_user."""
+        self.df_user = self.total.group_by("user_id").agg(
+            nb_reviews=pl.len(),
+            mean_rating=pl.col("rating").mean(),
+            std_rating=pl.col("rating").std(),
+            review_length=pl.col("review").flatten().str.split(" ").list.len().mean(),
+            mean_time=pl.col("minutes").mean(),
+        )
+
+        self.df_user = self.df_user.with_columns(
+            pl.col("std_rating").fill_nan(0).fill_null(0).alias("std_rating")
+        )
+
     def save_data(self) -> None:
         """Persist processed tables to parquet files under ``data/processed/``.
 
@@ -313,6 +327,10 @@ class DataProcessor:
 
         self.recipe_analyzer.save("data/processed/recipe_analyzer.pkl")
 
+        logger.info("Done \n Saving user data")
+
+        self.df_user.write_parquet("data/processed/user.parquet")
+
         logger.info("All processed data saved to parquet files.")
 
 
@@ -323,5 +341,6 @@ if __name__ == "__main__":
     processor.merge_data()
     processor.compute_proportions()
     processor.process_recipes()
+    processor.user_df()
     processor.save_data()
     logger.info("Data processing completed.")

@@ -29,10 +29,10 @@ class TestDataProcessor:
         # Recipes CSV
         self.recipes_csv = tmp_path / "RAW_recipes.csv"
         self.recipes_csv.write_text(
-            "id,name,minutes,n_steps,submitted\n"
-            "101,Recipe A,30,5,2023-01-01\n"
-            "102,Recipe B,120,0,2023-01-02\n"  # zero steps
-            "103,Recipe C,150,3,2023-01-03\n",
+            "id,name,minutes,n_steps,submitted,ingredients\n"
+            "101,Recipe A,30,5,2023-01-01,water\n"
+            "102,Recipe B,120,0,2023-01-02,onion\n"  # zero steps
+            "103,Recipe C,150,3,2023-01-03,milk\n",
         )
 
         # Initialiser DataProcessor
@@ -139,6 +139,7 @@ class TestDataProcessor:
         self.processor.split_minutes()
         self.processor.merge_data()
         self.processor.compute_proportions()
+        self.processor.user_df()
         self.processor.process_recipes()
 
         # Redirect files to tmp_path for the test
@@ -170,6 +171,7 @@ class TestDataProcessor:
             "short.parquet",
             "proportion_m.parquet",
             "proportion_s.parquet",
+            "user.parquet",
         ]
         for f in expected_files:
             assert (processed_dir / f).exists()
@@ -341,3 +343,14 @@ class TestDataProcessor:
             "df_recipes should have 2 rows (after drop_na)"
         )
         assert call_args[2].shape[0] > 0, "total should have merged data"
+
+    def test_user_df(self) -> None:
+        """Test that user_df creates a DataFrame and saves parquet."""
+        self.processor.drop_na()
+        self.processor.split_minutes()
+        self.processor.merge_data()
+        self.processor.compute_proportions()
+        self.processor.process_recipes()
+        self.processor.user_df()
+        assert hasattr(self.processor, "df_user")
+        assert isinstance(self.processor.df_user, pl.DataFrame)

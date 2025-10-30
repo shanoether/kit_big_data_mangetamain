@@ -40,6 +40,7 @@ def main() -> None:
         df_total_nt,
         df_total,
         df_total_court,
+        df_user,
         proportion_m,
         proportion_s,
         recipe_analyzer,
@@ -60,6 +61,7 @@ def main() -> None:
             st.session_state.df_total_nt = df_total_nt
             st.session_state.df_total = df_total
             st.session_state.df_total_court = df_total_court
+            st.session_state.df_user = df_user
             st.session_state.proportion_m = proportion_m
             st.session_state.proportion_s = proportion_s
             st.session_state.recipe_analyzer = recipe_analyzer

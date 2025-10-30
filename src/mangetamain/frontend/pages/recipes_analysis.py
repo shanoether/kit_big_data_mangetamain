@@ -356,7 +356,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         ("Best rated recipes", "best"),
         ("Worst rated recipes", "worst"),
     ]
-        
+
     # Slider for number of recipes to analyze for word clouds
     if show_wordclouds or show_comparisons:
         col1, space, col2 = st.columns([1, 0.05, 1])
@@ -375,7 +375,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 max_value=200,
                 value=100,
             )
-        
 
     if show_wordclouds:
         st.header(f"{icon} Ingredient Analysis")
@@ -405,7 +404,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         )
         # SECTION 6: WORD CLOUDS VISUALIZATION
         # =========================================================================
-
 
         # Generate word clouds from recipe reviews
         # recipe_analyzer.display_wordclouds(wordcloud_max_words)

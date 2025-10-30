@@ -51,7 +51,7 @@ class TestHelper(unittest.TestCase):
         mock_df = pl.DataFrame({"col1": [1, 2, 3]})
         mock_series = pl.Series("test", [0.1, 0.2, 0.3])
 
-        # Mock all parquet loads
+        # Mock all parquet loads (now includes user.parquet)
         mock_load_parquet.side_effect = [
             mock_df,  # initial_interactions
             mock_df,  # processed_interactions
@@ -60,6 +60,7 @@ class TestHelper(unittest.TestCase):
             mock_df,  # total_nt
             mock_df,  # total
             mock_df,  # short
+            mock_df,  # user.parquet
             pl.DataFrame({"proportion_m": mock_series}),  # proportion_m
             pl.DataFrame({"proportion_s": mock_series}),  # proportion_s
         ]
@@ -79,7 +80,7 @@ class TestHelper(unittest.TestCase):
 
         # Assert
         assert isinstance(result, tuple)
-        assert len(result) == 11
+        assert len(result) == 12
         (
             df_interactions,
             _df_interactions_nna,
@@ -88,6 +89,7 @@ class TestHelper(unittest.TestCase):
             _df_total_nt,
             _df_total,
             _df_total_court,
+            df_user,
             _proportion_m,
             _proportion_s,
             recipe_analyzer,
@@ -96,8 +98,9 @@ class TestHelper(unittest.TestCase):
 
         assert data_loaded is True
         assert df_interactions.equals(mock_df)
+        assert df_user.equals(mock_df)
         assert recipe_analyzer == mock_analyzer
-        assert mock_load_parquet.call_count == 9
+        assert mock_load_parquet.call_count == 10
         mock_recipe_analyzer_load.assert_called_once_with(
             "data/processed/recipe_analyzer.pkl",
         )
@@ -126,8 +129,8 @@ class TestHelper(unittest.TestCase):
 
         # Assert
         assert isinstance(result, tuple)
-        assert len(result) == 11
-        data_loaded = result[10]  # Last element is data_loaded flag
+        assert len(result) == 12
+        data_loaded = result[11]  # Last element is data_loaded flag
         assert data_loaded is False
         mock_logger.error.assert_called_once()
         assert "Error loading data" in str(mock_logger.error.call_args)
@@ -156,6 +159,7 @@ class TestHelper(unittest.TestCase):
             mock_df,  # total_nt
             mock_df,  # total
             mock_df,  # short
+            mock_df,  # user.parquet (fallback)
             pl.DataFrame({"proportion_m": mock_series}),
             pl.DataFrame({"proportion_s": mock_series}),
         ]
@@ -174,9 +178,9 @@ class TestHelper(unittest.TestCase):
 
         # Assert
         assert isinstance(result, tuple)
-        assert len(result) == 11
-        recipe_analyzer = result[9]
-        data_loaded = result[10]
+        assert len(result) == 12
+        recipe_analyzer = result[10]
+        data_loaded = result[11]
 
         # Pickle error triggers fallback - data still loads with analyzer=None
         assert data_loaded is True
@@ -208,8 +212,8 @@ class TestHelper(unittest.TestCase):
 
         # Assert
         assert isinstance(result, tuple)
-        assert len(result) == 11
-        data_loaded = result[10]
+        assert len(result) == 12
+        data_loaded = result[11]
         assert data_loaded is False
         mock_logger.error.assert_called_once()
         error_msg = str(mock_logger.error.call_args)

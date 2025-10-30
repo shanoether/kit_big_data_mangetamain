@@ -1,10 +1,12 @@
 """Users Analysis for the Streamlit app."""
 
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
+import plotly.express as px
 import polars as pl
 import seaborn as sns
 import streamlit as st
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 st.set_page_config(
     page_title="Users Analysis",
@@ -24,7 +26,6 @@ st.markdown(
 st.title("👥 Users Analysis")
 
 icon = "👉"
-
 
 @st.cache_data(show_spinner="Computing user statistics...")  # type: ignore[misc]
 def compute_reviews_per_user(_df_interactions: pl.DataFrame) -> pl.DataFrame:
@@ -58,6 +59,44 @@ def compute_user_stats(_df_interactions: pl.DataFrame) -> pl.DataFrame:
         ],
     )
 
+
+@st.cache_data(show_spinner="Computing clusters...")  # type: ignore[misc]
+def compute_cluster(
+    _df_user: pl.DataFrame, _df_interactions: pl.DataFrame, n_clusters: int
+) -> pl.DataFrame:
+    """Cluster users based on their activity (number of reviews and mean rating).
+
+    Args:
+        _df_user: DataFrame with user statistics
+        _df_interactions: DataFrame with interactions data
+        n_clusters: Number of clusters to form
+
+    Returns:
+        DataFrame with user_id and cluster labels
+    """
+    features = ["nb_reviews", "mean_rating", "std_rating", "review_length", "mean_time"]
+    _df_user = _df_user.drop_nulls()
+    pd_user = _df_user[features].to_pandas()
+    scaler = StandardScaler()
+    
+    pd_user_scaled = scaler.fit_transform(pd_user)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    cluster = kmeans.fit_predict(pd_user_scaled)
+    
+    pd_user["cluster"] = cluster.astype(str)
+    _df_user = _df_user.with_columns(pl.Series("cluster", cluster))
+    df_interactions_cluster = _df_interactions.join(_df_user, on="user_id", how="inner")
+    
+    df_time = (
+        df_interactions_cluster.with_columns(
+            pl.col("date").dt.truncate("1mo").alias("month")
+        )
+        .group_by(["month", "cluster"])
+        .agg(pl.len().alias("n_interactions"))
+        .sort("month")
+    )
+
+    return pd_user, df_interactions_cluster, df_time.to_pandas()
 
 st.markdown(
     """
@@ -224,134 +263,110 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         """
         <div style="text-align: justify;">
         <p>
-        Here we will apply clustering methods to group the users based on their reviewing activity. First we will work to find the optimal number of clusters (k) using both the elbow method and the silhouette score method. and then see how these cluster evolves in function time.
+        Here we will apply clustering methods to group the users based on their reviewing activity. We will consider the following parameters for the clustering:
+        - Average rating
+        - Standard deviation of the ratings
+        - Number of reviews
+        - Average length of the reviews
+        - Average time of the recipe that has been reviewed
         </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        """
-            <div style="text-align: justify;">
-            <p>
-            The analysis combines the elbow method and the silhouette method to determine the optimal number of clusters (k) in a MiniBatchKMeans clustering.
-            The elbow method involves plotting the inertia (sum of squared distances of points to their cluster centers) as a function of k. The goal is to identify a point where the decrease in inertia slows significantly, forming an "elbow." This indicates that adding more clusters does not substantially improve the quality. However, this method can sometimes be ambiguous.
-            The silhouette score method complements this analysis by measuring how well-separated and compact the clusters are, with values ranging from -1 to 1. A score close to 1 indicates well-defined clusters, a score near 0 indicates overlapping clusters, and a negative score indicates poor clustering.
-            By combining these two criteria, a more robust choice of k is achieved. In practice, we prefer a k where the inertia begins to stabilize and the silhouette score is maximized. This ensures that the clusters are both compact and well-separated, making them easier to interpret and use later.
-            For the silhouette method, the calculations were performed using *verb|sklearn.metrics.silhouette.score|*
-            </p>
-            </div>
-            """,
-        unsafe_allow_html=True,
+    st.markdown("You can select below the number of clusters")
+    n_clusters = st.slider("number of clusters", 2, 10, 7)
+
+    pd_user, df_interactions_cluster, pd_date = compute_cluster(
+        st.session_state.df_user,
+        st.session_state.df_interactions,
+        n_clusters=n_clusters,
     )
 
-    # --- 1. Créer le DataFrame Polars ---
-    # Thosev values were computed before hand because they require long processing time
-    df_scores = pl.DataFrame(
-        {
-            "k": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-            "inertie": [
-                724608.3,
-                565130.2,
-                498131.1,
-                481338.3,
-                483306.3,
-                446134.1,
-                451036.6,
-                452287.7,
-                413176.4,
-                430706.9,
-            ],
-            "silhouette": [
-                0.6394,
-                0.7443,
-                0.6585,
-                0.7304,
-                0.6974,
-                0.7785,
-                0.7810,
-                0.7258,
-                0.7865,
-                0.7492,
-            ],
-        }
-    )
+    # Double scatter plot
 
-    # --- 2. Trouver automatiquement le meilleur k selon silhouette ---
-    best_row = df_scores.sort("silhouette", descending=True).row(0)
-    best_k, best_sil = best_row[0], best_row[2]
+    st.subheader(f"{icon} Clusters Characteristics")
+    col1, space, col2 = st.columns([1, 0.05, 1])
+    with col1, st.spinner("Generating Plots"):
+            fig = px.histogram(
+                pd_user,  # convert from Polars
+                x="cluster",
+                nbins=n_clusters,  # one bin per cluster
+                title="Number of user per cluster",
+                labels={"cluster": "Cluster", "count": "Number of users"},
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
-    # --- 3. Visualisation combinée avec Plotly ---
-    fig = go.Figure()
+            fig = px.scatter(
+                pd_user,
+                x="nb_reviews",
+                y="mean_rating",
+                color="cluster",
+                opacity=0.7,
+                color_discrete_sequence=px.colors.qualitative.Bold,
+                title="Number of review vs mean rating per uer",
+                labels={
+                    "nb_reviews": "Number of review",
+                    "mean_rating": "Mean rating",
+                    "cluster": "Cluster",
+                },
+            )
+            fig.update_traces(marker={"size": 4})
+            st.plotly_chart(fig, use_container_width=True)
 
-    # Trace 1: Inertie (axe gauche)
-    fig.add_trace(
-        go.Scatter(
-            x=df_scores["k"],
-            y=df_scores["inertie"],
-            mode="lines+markers",
-            name="Inertie",
-            line=dict(color="blue"),
-            marker=dict(symbol="circle", size=8),
-            yaxis="y",
+    with col2, st.spinner("Generating Scatterplots"):
+        # review lenght vs mean rating
+        fig = px.scatter(
+            pd_user,
+            x="review_length",
+            y="mean_rating",
+            color="cluster",
+            opacity=0.7,
+            color_discrete_sequence=px.colors.qualitative.Bold,
+            title="Length of the review vs mean rating per user",
+            labels={
+                "nb_reviews": "Number of review",
+                "review_length": "Mean number of words per review",
+                "cluster": "Cluster",
+            },
         )
-    )
+        fig.update_traces(marker={"size": 4})
+        st.plotly_chart(fig, use_container_width=True)
 
-    # Trace 2: Silhouette Score (axe droit)
-    fig.add_trace(
-        go.Scatter(
-            x=df_scores["k"],
-            y=df_scores["silhouette"],
-            mode="lines+markers",
-            name="Silhouette Score",
-            line=dict(color="orange"),
-            marker=dict(symbol="square", size=8),
-            yaxis="y2",
+    
+        # nb review vs review length
+        fig = px.scatter(
+            pd_user,
+            x="nb_reviews",
+            y="review_length",
+            color="cluster",
+            opacity=0.7,
+            color_discrete_sequence=px.colors.qualitative.Vivid,
+            title="Number of review vs review length per user",
+            labels={
+                "nb_reviews": "Number of review",
+                "review_length": "Mean number of words per review",
+                "cluster": "Cluster",
+            },
         )
-    )
+        fig.update_traces(marker={"size": 4})
+        st.plotly_chart(fig, use_container_width=True)
 
-    # Ligne verticale pour le meilleur k
-    fig.add_vline(
-        x=best_k,
-        line_dash="dash",
-        line_color="green",
-        opacity=0.7,
-        annotation_text=f"k={best_k}<br>score={best_sil:.3f}",
-        annotation_position="top right",
-        annotation=dict(font_color="green"),
-    )
+    st.subheader(f"{icon} Clusters Evolution Over Time")
 
-    # Configuration du layout avec deux axes y
-    fig.update_layout(
-        title="Méthodes du Coude et du Silhouette Score pour MiniBatchKMeans",
-        xaxis=dict(
-            title="Nombre de clusters (k)",
-            showgrid=True,
-            gridcolor="lightgray",
-            griddash="dash",
-        ),
-        yaxis=dict(
-            title="Inertie",
-            tickfont=dict(color="blue"),
-            showgrid=True,
-            gridcolor="lightgray",
-            griddash="dash",
-        ),
-        yaxis2=dict(
-            title="Silhouette Score",
-            tickfont=dict(color="orange"),
-            overlaying="y",
-            side="right",
-        ),
-        legend=dict(
-            x=0.02,
-            y=0.98,
-            xanchor="left",
-            yanchor="top",
-            bgcolor="rgba(255, 255, 255, 0.8)",
-        ),
-        hovermode="x unified",
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+    with st.spinner("Generating Time Evolution Plot"):
+        fig = px.line(
+            pd_date,
+            x="month",
+            y="n_interactions",
+            color="cluster",
+            title="Interactions per cluster over time",
+            labels={
+                "month": "date (per month)",
+                "n_interactions": "Number of review per cluster",
+                "cluster": "Cluster",
+            },
+        )
+        fig.update_xaxes(type="date")
+        st.plotly_chart(fig, use_container_width=True)
