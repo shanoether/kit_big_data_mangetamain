@@ -21,9 +21,17 @@ st.markdown(
 )
 
 st.title("📈 Trends")
-st.markdown("""
-            Temporal trends and popular recipe categories
-            """)
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    <p>
+    This page analyzes trends in user ratings and review activity over time on the Mangetamain platform.
+    We will examine how average ratings have evolved year by year,
+    as well as the monthly distribution of reviews to identify any seasonal patterns or shifts in user engagement.
+    </p>
+    </div>""",
+    unsafe_allow_html=True,
+)
 st.markdown("""---""")
 
 
@@ -74,13 +82,6 @@ def compute_monthly_trends(
     )
 
 
-st.markdown(
-    """
-    This page analyzes trends in user ratings and review activity over time on the Mangetamain platform.
-    We will examine how average ratings have evolved year by year,
-    as well as the monthly distribution of reviews to identify any seasonal patterns or shifts in user engagement."""
-)
-
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
 
@@ -110,6 +111,20 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
         st.pyplot(fig)
         plt.close(fig)  # Free memory
+        st.markdown(
+            """
+            <div style="text-align: justify;">
+            <p>
+
+        **Change in Average Score per Year:**
+
+        The average recipe rating rose steadily between 2000 and 2006, from around 3.9 to 4.6, reflecting a very
+        positive initial phase in which users generously rated the most popular recipes. From 2007 onwards, the trend
+        reversed: ratings gradually declined to around 3.4 in 2017, which may reflect a diversification of content,
+        a broader audience, or a more critical assessment of recipes over time.
+        """,
+            unsafe_allow_html=True,
+        )
 
     # Number of reviews per month and year
     with col2:
@@ -135,18 +150,17 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         plt.close(fig)  # Free memory
         st.markdown(
             """
-        **Change in Average Score per Year:**
-
-        The average recipe rating rose steadily between 2000 and 2006, from around 3.9 to 4.6, reflecting a very
-        positive initial phase in which users generously rated the most popular recipes. From 2007 onwards, the trend
-        reversed: ratings gradually declined to around 3.4 in 2017, which may reflect a diversification of content,
-        a broader audience, or a more critical assessment of recipes over time.
+            <div style="text-align: justify;">
+            <p>
 
         **Number of Reviews per Month and per Year:**
 
         The number of reviews does not show any marked seasonal peaks, suggesting relatively stable activity throughout
         the year. However, there was a gradual decline in the volume of reviews between 2002 and 2017, indicating a
-        decline in community engagement over time—possibly linked to a loss of interest in the platform or competition
-        from other recipe-sharing sites.
-        """
+        decline in community engagement over time - possibly linked to a loss of interest in the platform or competition
+        from other recipe - sharing sites.
+        </p>
+        </div>
+        """,
+            unsafe_allow_html=True,
         )

@@ -21,12 +21,19 @@ st.markdown(
 )
 
 st.title("⭐ Rating")
-st.markdown("""
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    <p>
     This page presents an analysis of user ratings for recipes on the Mangetamain platform.
     We will explore the distribution of ratings,
     their evolution over time, and how they relate to recipe characteristics
-    such as preparation time and number of steps.",
-    """)
+    such as preparation time and number of steps
+    </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 icon = "👉"
 
