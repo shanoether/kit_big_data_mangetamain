@@ -632,7 +632,6 @@ class RecipeAnalyzer:
             plt.tight_layout(rect=[0, 0, 1, 0.95])
             fig.set_size_inches(10, 6)
             logger.info(fig.get_tightbbox())
-            logger.info(fig.axes[0].get_position() if fig.axes else "No axes")
             self._cache[cache_key] = fig
         return self._cache[cache_key]
 

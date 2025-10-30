@@ -274,6 +274,7 @@ class DataProcessor:
 
     def user_df(self) -> None:
         """Compute user-level aggregates and store as df_user."""
+        logger.info("Computing user-level aggregates")
         self.df_user = self.total.group_by("user_id").agg(
             nb_reviews=pl.len(),
             mean_rating=pl.col("rating").mean(),
