@@ -1911,7 +1911,60 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="normal">855</span>
 <span class="normal">856</span>
 <span class="normal">857</span>
-<span class="normal">858</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RecipeAnalyzer</span><span class="p">:</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span>
+<span class="normal">883</span>
+<span class="normal">884</span>
+<span class="normal">885</span>
+<span class="normal">886</span>
+<span class="normal">887</span>
+<span class="normal">888</span>
+<span class="normal">889</span>
+<span class="normal">890</span>
+<span class="normal">891</span>
+<span class="normal">892</span>
+<span class="normal">893</span>
+<span class="normal">894</span>
+<span class="normal">895</span>
+<span class="normal">896</span>
+<span class="normal">897</span>
+<span class="normal">898</span>
+<span class="normal">899</span>
+<span class="normal">900</span>
+<span class="normal">901</span>
+<span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RecipeAnalyzer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyzer for recipe data with NLP and visualization capabilities.</span>
 
 <span class="sd">    This class provides methods to analyze recipe reviews, extract ingredients,</span>
@@ -2452,9 +2505,11 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
             <span class="n">cleaned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_filter</span><span class="p">(</span><span class="n">rating_filter</span><span class="p">)]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned</span><span class="p">:</span>
-                <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+                <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;No text available&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
                 <span class="k">return</span> <span class="n">fig</span>
 
@@ -2470,7 +2525,7 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
             <span class="n">tfidf_top</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()[:</span><span class="n">VENN_NBR</span><span class="p">])</span>
 
-            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
             <span class="n">venn2</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">freq_top</span><span class="p">,</span> <span class="n">tfidf_top</span><span class="p">],</span>
                 <span class="n">set_labels</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Raw Frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;TF-IDF&quot;</span><span class="p">),</span>
@@ -2492,7 +2547,10 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">legend_text</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
 
-            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">get_tightbbox</span><span class="p">())</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span> <span class="k">if</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span> <span class="k">else</span> <span class="s2">&quot;No axes&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
 
@@ -2571,7 +2629,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="sd">        Args:</span>
 <span class="sd">            wordcloud_nbr_word: Maximum number of words to display in each cloud.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🗣️ WordClouds (6 charts)&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;☁️ WordClouds (6 charts)&quot;</span><span class="p">)</span>
 
         <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;Most reviewed recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;most&quot;</span><span class="p">),</span>
@@ -2580,6 +2638,31 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="p">]</span>
 
         <span class="c1"># 2x3 grid for the 6 wordclouds</span>
+        <span class="c1"># for title, filter_type in categories:</span>
+        <span class="c1">#     st.markdown(</span>
+        <span class="c1">#         f&#39;&lt;h4 style=&quot;text-align:center;&quot;&gt;⭐⭐⭐ {title} ⭐⭐⭐&lt;/h4&gt;&#39;,</span>
+        <span class="c1">#         unsafe_allow_html=True,</span>
+        <span class="c1">#     )</span>
+        <span class="c1">#     col1, _, col2 = st.columns([1, 0.05, 1])</span>
+
+        <span class="c1">#     with (</span>
+        <span class="c1">#         col1,</span>
+        <span class="c1">#         st.spinner(f&quot;Generating WordCloud (Frequency) for {title}...&quot;),</span>
+        <span class="c1">#     ):</span>
+        <span class="c1">#         fig = self.plot_word_cloud(</span>
+        <span class="c1">#             wordcloud_nbr_word,</span>
+        <span class="c1">#             filter_type,</span>
+        <span class="c1">#             f&quot;Frequency - {title}&quot;,</span>
+        <span class="c1">#         )</span>
+        <span class="c1">#         st.pyplot(fig)</span>
+
+        <span class="c1">#     with col2, st.spinner(f&quot;Generating WordCloud (TF-IDF) for {title}...&quot;):</span>
+        <span class="c1">#         fig = self.plot_tfidf(</span>
+        <span class="c1">#             wordcloud_nbr_word,</span>
+        <span class="c1">#             filter_type,</span>
+        <span class="c1">#             f&quot;TF-IDF - {title}&quot;,</span>
+        <span class="c1">#         )</span>
+        <span class="c1">#         st.pyplot(fig)</span>
         <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
             <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
             <span class="n">cols</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -2622,7 +2705,7 @@ analysis techniques (frequency vs TF-IDF).</p>
             <span class="p">(</span><span class="s2">&quot;Best rated recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;best&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;Worst rated recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;worst&quot;</span><span class="p">),</span>
         <span class="p">]</span>
-        <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compare_frequency_and_tfidf</span><span class="p">(</span>
                 <span class="n">recipe_count</span><span class="p">,</span>
                 <span class="n">wordcloud_nbr_word</span><span class="p">,</span>
@@ -2650,7 +2733,7 @@ analysis techniques (frequency vs TF-IDF).</p>
 <span class="sd">            recipe_count: Number of recipes to analyze (passed to comparison method).</span>
 <span class="sd">            wordcloud_nbr_word: Maximum features for TF-IDF vectorization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🔄 Frequency/TF-IDF Comparisons (3 charts)&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🔵🟣 Frequency/TF-IDF Comparisons (3 charts)&quot;</span><span class="p">)</span>
 
         <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;Most reviewed recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;most&quot;</span><span class="p">),</span>
@@ -2659,6 +2742,29 @@ analysis techniques (frequency vs TF-IDF).</p>
         <span class="p">]</span>
 
         <span class="c1"># 1x3 grid for the 3 comparisons</span>
+        <span class="c1"># col1, _, col2, _, col3 = st.columns([1, 0.05, 1, 0.05, 1])</span>
+
+        <span class="c1"># columns = [col1, col2, col3]</span>
+
+        <span class="c1"># for i, (title, filter_type) in enumerate(categories):</span>
+        <span class="c1">#     with columns[i], st.spinner(f&quot;Comparison for {title}...&quot;):</span>
+        <span class="c1">#         st.markdown(</span>
+        <span class="c1">#             f&#39;&lt;h4 style=&quot;text-align:center;&quot;&gt;{title}&lt;/h4&gt;&#39;,</span>
+        <span class="c1">#             unsafe_allow_html=True,</span>
+        <span class="c1">#         )</span>
+        <span class="c1">#         fig = self.compare_frequency_and_tfidf(</span>
+        <span class="c1">#             recipe_count,</span>
+        <span class="c1">#             wordcloud_nbr_word,</span>
+        <span class="c1">#             filter_type,</span>
+        <span class="c1">#             f&quot;Comparison - {title}&quot;,</span>
+        <span class="c1">#         )</span>
+        <span class="c1">#         # with st.expander(f&quot;Debug Info - {title}&quot;):</span>
+        <span class="c1">#         #     st.write(f&quot;Figure size: {fig.get_size_inches()}&quot;)</span>
+        <span class="c1">#         #     st.write(f&quot;Bounding box: {fig.get_tightbbox()}&quot;)</span>
+        <span class="c1">#         #     st.write(</span>
+        <span class="c1">#         #         f&quot;Axes position: {fig.axes[0].get_position() if fig.axes else &#39;No axes&#39;}&quot;</span>
+        <span class="c1">#         #     )</span>
+        <span class="c1">#         st.pyplot(fig)</span>
         <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Comparison for </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">):</span>
                 <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_frequency_and_tfidf</span><span class="p">(</span>
@@ -2780,18 +2886,18 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">807</span>
-<span class="normal">808</span>
-<span class="normal">809</span>
-<span class="normal">810</span>
-<span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
-<span class="normal">816</span>
-<span class="normal">817</span>
-<span class="normal">818</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare object for pickling - exclude spaCy model.</span>
 
 <span class="sd">    The spaCy NLP model cannot be pickled directly, so we exclude it</span>
@@ -3028,16 +3134,16 @@ from the serialized state. It will be reloaded in <strong>setstate</strong>.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">820</span>
-<span class="normal">821</span>
-<span class="normal">822</span>
-<span class="normal">823</span>
-<span class="normal">824</span>
-<span class="normal">825</span>
-<span class="normal">826</span>
-<span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore object after unpickling - reload spaCy model.</span>
 
 <span class="sd">    Args:</span>
@@ -3250,7 +3356,12 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
-<span class="normal">632</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compare_frequency_and_tfidf</span><span class="p">(</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compare_frequency_and_tfidf</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">recipe_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -3279,9 +3390,11 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
     <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_filter</span><span class="p">(</span><span class="n">rating_filter</span><span class="p">)]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned</span><span class="p">:</span>
-            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;No text available&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
             <span class="k">return</span> <span class="n">fig</span>
 
@@ -3297,7 +3410,7 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
         <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
         <span class="n">tfidf_top</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()[:</span><span class="n">VENN_NBR</span><span class="p">])</span>
 
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="n">venn2</span><span class="p">(</span>
             <span class="p">[</span><span class="n">freq_top</span><span class="p">,</span> <span class="n">tfidf_top</span><span class="p">],</span>
             <span class="n">set_labels</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Raw Frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;TF-IDF&quot;</span><span class="p">),</span>
@@ -3319,7 +3432,10 @@ distinctive (TF-IDF) vs merely common (frequency).</p>
         <span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">legend_text</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">get_tightbbox</span><span class="p">())</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span> <span class="k">if</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span> <span class="k">else</span> <span class="s2">&quot;No axes&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
@@ -3399,43 +3515,66 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
-<span class="normal">777</span>
-<span class="normal">778</span>
-<span class="normal">779</span>
-<span class="normal">780</span>
-<span class="normal">781</span>
-<span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span>
-<span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span>
-<span class="normal">796</span>
-<span class="normal">797</span>
-<span class="normal">798</span>
-<span class="normal">799</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">799</span>
 <span class="normal">800</span>
 <span class="normal">801</span>
 <span class="normal">802</span>
 <span class="normal">803</span>
 <span class="normal">804</span>
-<span class="normal">805</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_comparisons</span><span class="p">(</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span>
+<span class="normal">833</span>
+<span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_comparisons</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">recipe_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -3454,7 +3593,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="sd">        recipe_count: Number of recipes to analyze (passed to comparison method).</span>
 <span class="sd">        wordcloud_nbr_word: Maximum features for TF-IDF vectorization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🔄 Frequency/TF-IDF Comparisons (3 charts)&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🔵🟣 Frequency/TF-IDF Comparisons (3 charts)&quot;</span><span class="p">)</span>
 
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s2">&quot;Most reviewed recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;most&quot;</span><span class="p">),</span>
@@ -3463,6 +3602,29 @@ or only TF-IDF. All plots are cached for instant display.</p>
     <span class="p">]</span>
 
     <span class="c1"># 1x3 grid for the 3 comparisons</span>
+    <span class="c1"># col1, _, col2, _, col3 = st.columns([1, 0.05, 1, 0.05, 1])</span>
+
+    <span class="c1"># columns = [col1, col2, col3]</span>
+
+    <span class="c1"># for i, (title, filter_type) in enumerate(categories):</span>
+    <span class="c1">#     with columns[i], st.spinner(f&quot;Comparison for {title}...&quot;):</span>
+    <span class="c1">#         st.markdown(</span>
+    <span class="c1">#             f&#39;&lt;h4 style=&quot;text-align:center;&quot;&gt;{title}&lt;/h4&gt;&#39;,</span>
+    <span class="c1">#             unsafe_allow_html=True,</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#         fig = self.compare_frequency_and_tfidf(</span>
+    <span class="c1">#             recipe_count,</span>
+    <span class="c1">#             wordcloud_nbr_word,</span>
+    <span class="c1">#             filter_type,</span>
+    <span class="c1">#             f&quot;Comparison - {title}&quot;,</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#         # with st.expander(f&quot;Debug Info - {title}&quot;):</span>
+    <span class="c1">#         #     st.write(f&quot;Figure size: {fig.get_size_inches()}&quot;)</span>
+    <span class="c1">#         #     st.write(f&quot;Bounding box: {fig.get_tightbbox()}&quot;)</span>
+    <span class="c1">#         #     st.write(</span>
+    <span class="c1">#         #         f&quot;Axes position: {fig.axes[0].get_position() if fig.axes else &#39;No axes&#39;}&quot;</span>
+    <span class="c1">#         #     )</span>
+    <span class="c1">#         st.pyplot(fig)</span>
     <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">spinner</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Comparison for </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">):</span>
             <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_frequency_and_tfidf</span><span class="p">(</span>
@@ -3532,12 +3694,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
-<span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
-<span class="normal">700</span>
-<span class="normal">701</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">701</span>
 <span class="normal">702</span>
 <span class="normal">703</span>
 <span class="normal">704</span>
@@ -3575,7 +3732,37 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="normal">736</span>
 <span class="normal">737</span>
 <span class="normal">738</span>
-<span class="normal">739</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_wordclouds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_wordclouds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wordcloud_nbr_word</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a Streamlit UI with 6 word cloud visualizations.</span>
 
 <span class="sd">    Creates a 2x3 grid showing frequency-based and TF-IDF word clouds for:</span>
@@ -3588,7 +3775,7 @@ or only TF-IDF. All plots are cached for instant display.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        wordcloud_nbr_word: Maximum number of words to display in each cloud.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;🗣️ WordClouds (6 charts)&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;☁️ WordClouds (6 charts)&quot;</span><span class="p">)</span>
 
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s2">&quot;Most reviewed recipes&quot;</span><span class="p">,</span> <span class="s2">&quot;most&quot;</span><span class="p">),</span>
@@ -3597,6 +3784,31 @@ or only TF-IDF. All plots are cached for instant display.</p>
     <span class="p">]</span>
 
     <span class="c1"># 2x3 grid for the 6 wordclouds</span>
+    <span class="c1"># for title, filter_type in categories:</span>
+    <span class="c1">#     st.markdown(</span>
+    <span class="c1">#         f&#39;&lt;h4 style=&quot;text-align:center;&quot;&gt;⭐⭐⭐ {title} ⭐⭐⭐&lt;/h4&gt;&#39;,</span>
+    <span class="c1">#         unsafe_allow_html=True,</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     col1, _, col2 = st.columns([1, 0.05, 1])</span>
+
+    <span class="c1">#     with (</span>
+    <span class="c1">#         col1,</span>
+    <span class="c1">#         st.spinner(f&quot;Generating WordCloud (Frequency) for {title}...&quot;),</span>
+    <span class="c1">#     ):</span>
+    <span class="c1">#         fig = self.plot_word_cloud(</span>
+    <span class="c1">#             wordcloud_nbr_word,</span>
+    <span class="c1">#             filter_type,</span>
+    <span class="c1">#             f&quot;Frequency - {title}&quot;,</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#         st.pyplot(fig)</span>
+
+    <span class="c1">#     with col2, st.spinner(f&quot;Generating WordCloud (TF-IDF) for {title}...&quot;):</span>
+    <span class="c1">#         fig = self.plot_tfidf(</span>
+    <span class="c1">#             wordcloud_nbr_word,</span>
+    <span class="c1">#             filter_type,</span>
+    <span class="c1">#             f&quot;TF-IDF - {title}&quot;,</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#         st.pyplot(fig)</span>
     <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
         <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -3831,21 +4043,21 @@ or only TF-IDF. All plots are cached for instant display.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">844</span>
-<span class="normal">845</span>
-<span class="normal">846</span>
-<span class="normal">847</span>
-<span class="normal">848</span>
-<span class="normal">849</span>
-<span class="normal">850</span>
-<span class="normal">851</span>
-<span class="normal">852</span>
-<span class="normal">853</span>
-<span class="normal">854</span>
-<span class="normal">855</span>
-<span class="normal">856</span>
-<span class="normal">857</span>
-<span class="normal">858</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">897</span>
+<span class="normal">898</span>
+<span class="normal">899</span>
+<span class="normal">900</span>
+<span class="normal">901</span>
+<span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RecipeAnalyzer&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a RecipeAnalyzer instance from disk.</span>
 
@@ -4199,12 +4411,7 @@ The radial distance represents the count of recipes using each ingredient.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
 <span class="normal">642</span>
@@ -4241,7 +4448,12 @@ The radial distance represents the count of recipes using each ingredient.</p>
 <span class="normal">673</span>
 <span class="normal">674</span>
 <span class="normal">675</span>
-<span class="normal">676</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_top_ingredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a polar plot showing the most common ingredients.</span>
 
 <span class="sd">    Creates a radar/polar chart visualizing ingredient frequency across recipes.</span>
@@ -4556,18 +4768,18 @@ Uses frequency-based word extraction (not TF-IDF).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/recipe_analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
-<span class="normal">834</span>
-<span class="normal">835</span>
-<span class="normal">836</span>
-<span class="normal">837</span>
-<span class="normal">838</span>
-<span class="normal">839</span>
-<span class="normal">840</span>
-<span class="normal">841</span>
-<span class="normal">842</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">884</span>
+<span class="normal">885</span>
+<span class="normal">886</span>
+<span class="normal">887</span>
+<span class="normal">888</span>
+<span class="normal">889</span>
+<span class="normal">890</span>
+<span class="normal">891</span>
+<span class="normal">892</span>
+<span class="normal">893</span>
+<span class="normal">894</span>
+<span class="normal">895</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the RecipeAnalyzer instance to disk using pickle.</span>
 
 <span class="sd">    Args:</span>

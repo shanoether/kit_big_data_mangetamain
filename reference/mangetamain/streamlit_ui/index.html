@@ -801,9 +801,7 @@ starting the page navigation.</p>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for the Streamlit front-end application.</span>
 
 <span class="sd">    This function prepares the navigation pages and ensures the</span>
@@ -850,23 +848,21 @@ starting the page navigation.</p>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">data_loaded</span> <span class="o">=</span> <span class="n">data_loaded</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;✅ Data available in session_state for this user.&quot;</span><span class="p">)</span>
 
-    <span class="n">home_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/dashboard.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">rating_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/rating.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Rating&quot;</span><span class="p">)</span>
-    <span class="c1"># recipe_time_page = st.Page(&quot;frontend/pages/recipes_analysis.py&quot;, title=&quot;Recipe Time&quot;)</span>
-    <span class="c1"># overview_page = st.Page(&quot;frontend/pages/overview.py&quot;, title=&quot;Overview&quot;)</span>
+    <span class="n">home_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/dashboard.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;🏠 Home&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># overview_page = st.Page(&quot;frontend/pages/overview.py&quot;, title=&quot;📊 Overview&quot;)</span>
     <span class="n">recipes_analysis_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span>
         <span class="s2">&quot;frontend/pages/recipes_analysis.py&quot;</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Recipes Analysis&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;🍳 Recipes&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">users_analysis_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span>
-        <span class="s2">&quot;frontend/pages/users_analysis.py&quot;</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Users Analysis&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">trends_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/trends.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Trends&quot;</span><span class="p">)</span>
+    <span class="n">users_analysis_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/users_analysis.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;👥 Users&quot;</span><span class="p">)</span>
+    <span class="n">trends_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/trends.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;📈 Trends&quot;</span><span class="p">)</span>
+    <span class="n">rating_page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="s2">&quot;frontend/pages/rating.py&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;⭐ Rating&quot;</span><span class="p">)</span>
+    <span class="c1"># recipe_time_page = st.Page(&quot;frontend/pages/recipes_analysis.py&quot;, title=&quot;Recipe Time&quot;)</span>
 
     <span class="n">pg</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">navigation</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="n">home_page</span><span class="p">,</span>
+            <span class="c1"># overview_page,</span>
             <span class="n">rating_page</span><span class="p">,</span>
             <span class="n">trends_page</span><span class="p">,</span>
             <span class="n">users_analysis_page</span><span class="p">,</span>
