@@ -351,28 +351,34 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
 
+    categories = [
+        ("Most reviewed recipes", "most"),
+        ("Best rated recipes", "best"),
+        ("Worst rated recipes", "worst"),
+    ]
+        
+    # Slider for number of recipes to analyze for word clouds
+    if show_wordclouds or show_comparisons:
+        col1, space, col2 = st.columns([1, 0.05, 1])
+        with col1:
+            recipe_count = st.slider(
+                "Number of recipes",
+                min_value=20,
+                max_value=500,
+                value=100,
+            )
+        # Slider for maximum words in word clouds
+        with col2:
+            wordcloud_max_words = st.slider(
+                "Max words in WordClouds",
+                min_value=30,
+                max_value=200,
+                value=100,
+            )
+        
+
     if show_wordclouds:
         st.header(f"{icon} Ingredient Analysis")
-        # st.markdown(
-        #     """
-        #     In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
-
-        #     **Method 1: Raw Frequency**
-        #     The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
-        #     removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
-        #     such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
-        #     However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
-        #     meaningful words for the analysis.
-
-        #     **Method 2: TF-IDF**
-        #     The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
-        #     importance of a word according to its frequency within a document and its rarity across the entire corpus.
-        #     This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
-        #     the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
-        #     matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
-        #     TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
-        #     """,
-        # )
 
         st.markdown(
             """
@@ -399,28 +405,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         )
         # SECTION 6: WORD CLOUDS VISUALIZATION
         # =========================================================================
-        categories = [
-            ("Most reviewed recipes", "most"),
-            ("Best rated recipes", "best"),
-            ("Worst rated recipes", "worst"),
-        ]
-        # Slider for number of recipes to analyze for word clouds
-        col1, space, col2 = st.columns([1, 0.05, 1])
-        with col1:
-            recipe_count = st.slider(
-                "Number of recipes",
-                min_value=20,
-                max_value=500,
-                value=100,
-            )
-        # Slider for maximum words in word clouds
-        with col2:
-            wordcloud_max_words = st.slider(
-                "Max words in WordClouds",
-                min_value=30,
-                max_value=200,
-                value=100,
-            )
+
 
         # Generate word clouds from recipe reviews
         # recipe_analyzer.display_wordclouds(wordcloud_max_words)
@@ -460,58 +445,58 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
         # =========================================================================
         # SECTION 7: VENN DIAGRAM COMPARISONS
         # =========================================================================
-        if show_comparisons:
-            st.header(f"{icon} Venn Diagram Comparisons")
-            st.markdown(
-                """
-                <div style="text-align: justify;">
-                <p>To compare both approaches, Venn diagrams were used.
-                These charts provide a clear visualization of the intersections
-                and differences between the selected word sets.
+    if show_comparisons:
+        st.header(f"{icon} Venn Diagram Comparisons")
+        st.markdown(
+            """
+            <div style="text-align: justify;">
+            <p>To compare both approaches, Venn diagrams were used.
+            These charts provide a clear visualization of the intersections
+            and differences between the selected word sets.
 
-                The overlapping areas represent the words identified by both methods,
-                often associated with basic vocabulary used to describe
-                or comment on recipes.
-                The words exclusive to the TF-IDF method reveal rarer or
-                more specific terms, such as distinctive ingredients or
-                particular cooking techniques.
-                A strong overlap between the circles indicates convergence
-                between the two methods, while a smaller intersection highlights
-                divergences in word selection.
-                </p>
-                </div>
-                """,
+            The overlapping areas represent the words identified by both methods,
+            often associated with basic vocabulary used to describe
+            or comment on recipes.
+            The words exclusive to the TF-IDF method reveal rarer or
+            more specific terms, such as distinctive ingredients or
+            particular cooking techniques.
+            A strong overlap between the circles indicates convergence
+            between the two methods, while a smaller intersection highlights
+            divergences in word selection.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        # Compare frequency-based vs TF-IDF word extraction
+        # recipe_analyzer.display_comparisons(
+        #     recipe_count,
+        #     wordcloud_max_words,
+        # )
+        st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
+
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
+        for _i, (title, filter_type) in enumerate(categories):
+            st.markdown(
+                f'<h4 style="text-align:center;">{title}</h4>',
                 unsafe_allow_html=True,
             )
-            # Compare frequency-based vs TF-IDF word extraction
-            # recipe_analyzer.display_comparisons(
-            #     recipe_count,
-            #     wordcloud_max_words,
-            # )
-            st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
+            fig = get_comparison_figures(
+                recipe_analyzer,
+                recipe_count,
+                wordcloud_max_words,
+                filter_type,
+                f"Comparison - {title}",
+            )
+            col1, col2, col3 = st.columns([1, 2, 1])
 
-            categories = [
-                ("Most reviewed recipes", "most"),
-                ("Best rated recipes", "best"),
-                ("Worst rated recipes", "worst"),
-            ]
-            for _i, (title, filter_type) in enumerate(categories):
-                st.markdown(
-                    f'<h4 style="text-align:center;">{title}</h4>',
-                    unsafe_allow_html=True,
-                )
-                fig = get_comparison_figures(
-                    recipe_analyzer,
-                    recipe_count,
-                    wordcloud_max_words,
-                    filter_type,
-                    f"Comparison - {title}",
-                )
-                col1, col2, col3 = st.columns([1, 2, 1])
-
-                with col2:
-                    st.pyplot(fig)
-                plt.close(fig)  # Free memory
+            with col2:
+                st.pyplot(fig)
+            plt.close(fig)  # Free memory
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
