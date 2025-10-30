@@ -286,7 +286,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 """,
                 unsafe_allow_html=True,
             )
-    st.markdown("""---""")
 
     # =========================================================================
     # SECTION 4: USER CONTROLS - SLIDERS
@@ -297,10 +296,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # =========================================================================
 
     # Checkboxes to show/hide different sections
-    st.sidebar.header("Display Options")
+    st.sidebar.header("💻 Display Options")
     show_ingredients = st.sidebar.checkbox("Top Ingredients", value=True)
     show_wordclouds = st.sidebar.checkbox("WordClouds (6)", value=True)
     show_comparisons = st.sidebar.checkbox("Venn Comparisons (3)", value=True)
+    recipe_count = None
+    wordcloud_max_words = None
+    ingredient_count = None
 
     # =========================================================================
     # SECTION 5: TOP INGREDIENTS VISUALIZATION
@@ -308,6 +310,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     if show_ingredients:
         # Slider for number of top ingredients to display
+        st.markdown("""---""")
         st.header(f"{icon} Top Ingredients Used")
 
         with st.spinner("Computing top ingredients..."):
@@ -345,13 +348,12 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
                 st.pyplot(fig)
 
-        st.markdown("""---""")
-
     # =========================================================================
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
 
     if show_wordclouds:
+        st.markdown("""---""")
         st.header(f"{icon} Ingredient Analysis")
         # st.markdown(
         #     """
@@ -455,73 +457,76 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
+    # =========================================================================
+    # SECTION 7: VENN DIAGRAM COMPARISONS
+    # =========================================================================
+    if show_comparisons:
         st.markdown("""---""")
+        st.header(f"{icon} Venn Diagram Comparisons")
+        st.markdown(
+            """
+            <div style="text-align: justify;">
+            <p>To compare both approaches, Venn diagrams were used.
+            These charts provide a clear visualization of the intersections
+            and differences between the selected word sets.
 
-        # =========================================================================
-        # SECTION 7: VENN DIAGRAM COMPARISONS
-        # =========================================================================
-        if show_comparisons:
-            st.header(f"{icon} Venn Diagram Comparisons")
+            The overlapping areas represent the words identified by both methods,
+            often associated with basic vocabulary used to describe
+            or comment on recipes.
+            The words exclusive to the TF-IDF method reveal rarer or
+            more specific terms, such as distinctive ingredients or
+            particular cooking techniques.
+            A strong overlap between the circles indicates convergence
+            between the two methods, while a smaller intersection highlights
+            divergences in word selection.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        # Compare frequency-based vs TF-IDF word extraction
+        # recipe_analyzer.display_comparisons(
+        #     recipe_count,
+        #     wordcloud_max_words,
+        # )
+        st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
+
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
+        for _i, (title, filter_type) in enumerate(categories):
             st.markdown(
-                """
-                <div style="text-align: justify;">
-                <p>To compare both approaches, Venn diagrams were used.
-                These charts provide a clear visualization of the intersections
-                and differences between the selected word sets.
-
-                The overlapping areas represent the words identified by both methods,
-                often associated with basic vocabulary used to describe
-                or comment on recipes.
-                The words exclusive to the TF-IDF method reveal rarer or
-                more specific terms, such as distinctive ingredients or
-                particular cooking techniques.
-                A strong overlap between the circles indicates convergence
-                between the two methods, while a smaller intersection highlights
-                divergences in word selection.
-                </p>
-                </div>
-                """,
+                f'<h4 style="text-align:center;">{title}</h4>',
                 unsafe_allow_html=True,
             )
-            # Compare frequency-based vs TF-IDF word extraction
-            # recipe_analyzer.display_comparisons(
-            #     recipe_count,
-            #     wordcloud_max_words,
-            # )
-            st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
+            fig = get_comparison_figures(
+                recipe_analyzer,
+                recipe_count,
+                wordcloud_max_words,
+                filter_type,
+                f"Comparison - {title}",
+            )
+            col1, col2, col3 = st.columns([1, 2, 1])
 
-            categories = [
-                ("Most reviewed recipes", "most"),
-                ("Best rated recipes", "best"),
-                ("Worst rated recipes", "worst"),
-            ]
-            for _i, (title, filter_type) in enumerate(categories):
-                st.markdown(
-                    f'<h4 style="text-align:center;">{title}</h4>',
-                    unsafe_allow_html=True,
-                )
-                fig = get_comparison_figures(
-                    recipe_analyzer,
-                    recipe_count,
-                    wordcloud_max_words,
-                    filter_type,
-                    f"Comparison - {title}",
-                )
-                col1, col2, col3 = st.columns([1, 2, 1])
-
-                with col2:
-                    st.pyplot(fig)
-                plt.close(fig)  # Free memory
+            with col2:
+                st.pyplot(fig)
+            plt.close(fig)  # Free memory
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
     # =========================================================================
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Current Parameters:**")
-    st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
-    st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
-    st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
+    if recipe_count or wordcloud_max_words or ingredient_count:
+        st.sidebar.markdown("""---""")
+        st.sidebar.markdown("### ⚙️ Current Parameters")
+    if recipe_count:
+        st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
+    if wordcloud_max_words:
+        st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
+    if ingredient_count:
+        st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
 
     # =========================================================================
     # FOOTER
