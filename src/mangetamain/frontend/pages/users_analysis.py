@@ -7,10 +7,22 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Users Analysis",
-    page_icon="👤",
-    layout="centered",
+    page_icon="🍽️",
+    layout="wide",
     initial_sidebar_state="expanded",
 )
+st.markdown(
+    """
+    <style>
+    p { font-size: 1.2rem !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.title("👥 Users Analysis")
+
+icon = "👉"
 
 
 @st.cache_data(show_spinner="Computing user statistics...")  # type: ignore[misc]
@@ -46,127 +58,162 @@ def compute_user_stats(_df_interactions: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-st.title("Users Analysis")
 st.markdown(
-    "This page provides an analysis of user behavior on the Mangetamain platform. We will explore the distribution of reviews per user, categorize users based on their activity levels, and examine the relationship between user activity and average ratings.",
+    """
+    <div style="text-align: justify;">
+    <p>
+    This page provides an analysis of user behavior on the Mangetamain platform.
+    We will explore the distribution of reviews per user,
+    categorize users based on their activity levels,
+    and examine the relationship between user activity and average ratings.
+    </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
+st.markdown("""---""")
+
+
+@st.cache_data  # type: ignore[misc]
+def categorize_users(_reviews_per_user: pl.DataFrame) -> pl.Series:
+    """Categorize users by number of reviews (cached).
+
+    Args:
+        _reviews_per_user: DataFrame with nb_reviews column
+
+    Returns:
+        Series with categorized user counts
+    """
+    reviews_per_user_pd = _reviews_per_user.to_pandas()
+
+    def categorize_user(n: int) -> str:
+        """Simple categorization of users based on number of reviews.
+
+        Args:
+            n: number of review per user.
+
+        """
+        OCC = 1
+        REGULAR = 5
+        ACTIVE = 20
+        if n == OCC:
+            return "Occasionnel (1 review)"
+        elif n <= REGULAR:
+            return "Régulier (2-5 reviews)"
+        elif n <= ACTIVE:
+            return "Actif (6-20 reviews)"
+        else:
+            return "Super-actif (>20 reviews)"
+
+    return reviews_per_user_pd["nb_reviews"].apply(categorize_user).value_counts()
+
 
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_interactions = st.session_state.df_interactions_nna
 
     # Distribution of number of reviews per user
-    st.subheader("Distribution of number of reviews per user")
-    reviews_per_user = compute_reviews_per_user(df_interactions)
-
-    fig, ax = plt.subplots()
-    sns.histplot(
-        reviews_per_user["nb_reviews"].to_pandas(),
-        bins=30,
-        log_scale=(False, True),
-        ax=ax,
-    )
-    sns.despine()
-
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory fig
-    st.markdown(
-        """
-        This graph shows a highly unbalanced distribution: the majority of recipes have only a small number of reviews,
-        while a minority attract a huge number of comments. This illustrates a "long tail" phenomenon where a handful
-        of very popular recipes generate a large part of the activity, while most remain largely unrated.
-        On a logarithmic scale, this inequality becomes more visible.
-
-        The majority of users leave only one review, indicating many are occasional users. In contrast, a minority of
-        very active users produce a large volume of comments. This reflects a two-tiered community: many passive
-        consumers and a few loyal contributors. We observe that someone has made approximately 7,500 reviews—likely
-        either a bot or an enthusiast.
-        """,
-    )
-
-    # User categorization
-    st.subheader("User categorization")
-
-    @st.cache_data  # type: ignore[misc]
-    def categorize_users(_reviews_per_user: pl.DataFrame) -> pl.Series:
-        """Categorize users by number of reviews (cached).
-
-        Args:
-            _reviews_per_user: DataFrame with nb_reviews column
-
-        Returns:
-            Series with categorized user counts
-        """
-        reviews_per_user_pd = _reviews_per_user.to_pandas()
-
-        def categorize_user(n: int) -> str:
-            """Simple categorization of users based on number of reviews.
-
-            Args:
-                n: number of review per user.
-
+    st.header(f"{icon} Distribution of reviews per user")
+    col1, space, col2 = st.columns([2, 0.05, 1.5])
+    with col1:
+        st.markdown(
             """
-            OCC = 1
-            REGULAR = 5
-            ACTIVE = 20
-            if n == OCC:
-                return "Occasionnel (1 review)"
-            elif n <= REGULAR:
-                return "Régulier (2-5 reviews)"
-            elif n <= ACTIVE:
-                return "Actif (6-20 reviews)"
-            else:
-                return "Super-actif (>20 reviews)"
+            <div style="text-align: justify;">
+            <p>
+            This graph shows a highly unbalanced distribution: the majority of recipes have only a small number of reviews,
+            while a minority attract a huge number of comments. This illustrates a "long tail" phenomenon where a handful
+            of very popular recipes generate a large part of the activity, while most remain largely unrated.
+            On a logarithmic scale, this inequality becomes more visible.
 
-        return reviews_per_user_pd["nb_reviews"].apply(categorize_user).value_counts()
+            The majority of users leave only one review, indicating many are occasional users. In contrast, a minority of
+            very active users produce a large volume of comments. This reflects a two-tiered community: many passive
+            consumers and a few loyal contributors. We observe that someone has made approximately 7,500 reviews—likely
+            either a bot or an enthusiast.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    user_categories = categorize_users(reviews_per_user)
+    with col2:
+        reviews_per_user = compute_reviews_per_user(df_interactions)
 
-    fig, ax = plt.subplots()
-    sns.barplot(
-        x=user_categories.index,
-        y=user_categories.values,
-        ax=ax,
-        palette="Blues_r",
-        hue=user_categories.index,
-    )
-    ax.set_xlabel("User Category")
-    ax.set_ylabel("Number of Users")
-    plt.xticks(rotation=25)
-    sns.despine()
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory
-    st.markdown(
-        """
-        **User Categorization by Activity:**
+        fig, ax = plt.subplots()
+        sns.histplot(
+            reviews_per_user["nb_reviews"].to_pandas(),
+            bins=30,
+            log_scale=(False, True),
+            ax=ax,
+        )
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory fig
 
-        We observe that "occasional" users dominate, followed by a smaller core of regular and active users.
-        "Super-active" users (>20 reviews) are rare but essential: they drive the platform and generate quality content.
-        This typology allows us to adapt our community engagement strategy accordingly.
-        """,
-    )
+    col1, space, col2 = st.columns([1, 0.05, 1])
 
-    # Average rating per user
-    st.subheader("Average rating per user")
-    df_user_stats = compute_user_stats(df_interactions)
-    fig, ax = plt.subplots()
-    sns.scatterplot(
-        data=df_user_stats.to_pandas(),
-        x="nb_reviews",
-        y="mean_rating",
-        ax=ax,
-    )
-    ax.set_xlabel("Number of Reviews")
-    ax.set_ylabel("Average Rating")
-    sns.despine()
-    st.pyplot(fig)
-    plt.close(fig)  # Free memory
-    st.markdown(
-        """
-        This scatter plot illustrates the relationship between user activity (number of reviews) and their average rating.
-        We observe that less active users tend to give lower ratings, while more active users show more variability in
-        their ratings. This could suggest that occasional users are less generous or more critical, or only comment when
-        they don't like a recipe. In contrast, frequent reviewers tend to give five-star ratings.
+    with col1:
+        st.header(f"{icon} User categorization")
 
-        We can also see some outliers with a very high number of ratings almost set to five stars—we suspect these to be bots.
-        """,
-    )
+        user_categories = categorize_users(reviews_per_user)
+
+        fig, ax = plt.subplots()
+        sns.barplot(
+            x=user_categories.index,
+            y=user_categories.values,
+            ax=ax,
+            palette="Blues_r",
+            hue=user_categories.index,
+        )
+        ax.set_xlabel("User Category")
+        ax.set_ylabel("Number of Users")
+        plt.xticks(rotation=25)
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory
+        # **User Categorization by Activity:**
+        st.markdown(
+            """
+            <div style="text-align: justify;">
+            <p>
+            We observe that "occasional" users dominate, followed by a smaller core of regular and active users.
+            "Super-active" users (>20 reviews) are rare but essential: they drive the platform and generate quality content.
+            This typology allows us to adapt our community engagement strategy accordingly.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        # Average rating per user
+        st.header(f"{icon} Average rating per user")
+        df_user_stats = compute_user_stats(df_interactions)
+        fig, ax = plt.subplots()
+        sns.scatterplot(
+            data=df_user_stats.to_pandas(),
+            x="nb_reviews",
+            y="mean_rating",
+            ax=ax,
+        )
+        ax.set_xlabel("Number of Reviews")
+        ax.set_ylabel("Average Rating")
+        sns.despine()
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        st.pyplot(fig)
+        plt.close(fig)  # Free memory
+        st.markdown(
+            """
+            <div style="text-align: justify;">
+            <p>
+            This scatter plot illustrates the relationship between user activity (number of reviews) and their average rating.
+            We observe that less active users tend to give lower ratings, while more active users show more variability in
+            their ratings. This could suggest that occasional users are less generous or more critical, or only comment when
+            they don't like a recipe. In contrast, frequent reviewers tend to give five-star ratings.
+
+            We can also see some outliers with a very high number of ratings almost set to five stars—we suspect these to be bots.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

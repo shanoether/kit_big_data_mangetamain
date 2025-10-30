@@ -17,10 +17,28 @@ logger = get_logger()
 
 st.set_page_config(
     page_title="Recipes Analysis",
-    page_icon="🍲",
-    layout="centered",
+    page_icon="🍽️",
+    layout="wide",
     initial_sidebar_state="expanded",
 )
+st.markdown(
+    """
+    <style>
+    p { font-size: 1.2rem !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.title("🍳 Recipes Analysis")
+st.markdown(
+    """This page provides an in-depth analysis of recipes on the Mangetamain platform.
+    We will explore the most reviewed and lowest rated recipes, analyze ingredient usage,
+    and visualize key terms through word clouds and comparisons.
+    """
+)
+
+st.markdown("""---""")
 
 
 @st.cache_data(show_spinner="Computing top recipes...")  # type: ignore[misc]
@@ -159,14 +177,11 @@ def get_comparison_figures(
     )
 
 
-st.title("Recipes Analysis")
-st.markdown(
-    "This page provides an in-depth analysis of recipes on the Mangetamain platform. We will explore the most reviewed and lowest rated recipes, analyze ingredient usage, and visualize key terms through word clouds and comparisons.",
-)
-
 # =============================================================================
 # DATA LOADING AND VALIDATION
 # =============================================================================
+
+icon = "👉"
 
 # Check if data has been loaded in the session state
 if "data_loaded" in st.session_state and st.session_state.data_loaded:
@@ -175,95 +190,107 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     df_recipes = st.session_state.df_recipes
     recipe_analyzer = st.session_state.recipe_analyzer
 
-    st.subheader("Top Most Reviewed Recipes")
+    st.header(f"{icon} Recipes Popularity")
 
-    # User input: number of recipes to display
-    nb_recipes = st.slider("Number of recipes to display", 5, 30, 30)
+    col1, spacer, col2 = st.columns([1, 0.1, 1])
+    with col1:
+        st.subheader("Top Most Reviewed Recipes")
 
-    # Use cached computation
-    top_recipes = compute_top_recipes(df_total_nt, nb_recipes)
+        # User input: number of recipes to display
+        nb_recipes = st.slider("Number of recipes to display", 5, 30, 30)
 
-    # Display horizontal bar chart of most reviewed recipes
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(
-        data=top_recipes,
-        x="nb_reviews",
-        y="name",
-        palette="viridis",
-        ax=ax,
-        hue="name",
-        legend=False,
-    )
-    ax.set_xlabel("Number of Reviews")
-    ax.set_ylabel("")
-    sns.despine()
-    st.pyplot(fig)
-    st.markdown(
-        """
-        This graph highlights the platform's most engaging recipes. These recipes, often simple, universal, or viral
-        (such as the "best banana bread"), generate significant interest and interaction. Identifying these recipes
-        helps us understand what types of dishes appeal most to the community.
-        """,
-    )
+        # Use cached computation
 
+        with st.spinner("Generating chart..."):
+            # Aggregate reviews by recipe_id, count them, and join with recipe names
+            top_recipes = compute_top_recipes(df_total_nt, nb_recipes)
+
+            # Display horizontal bar chart of most reviewed recipes
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.barplot(
+                data=top_recipes,
+                x="nb_reviews",
+                y="name",
+                palette="viridis",
+                ax=ax,
+                hue="name",
+                legend=False,
+            )
+            ax.set_xlabel("Number of Reviews")
+            ax.set_ylabel("")
+            sns.despine()
+            plt.tight_layout(rect=[0, 0, 1, 0.95])
+            st.pyplot(fig)
+            st.markdown(
+                """
+                <div style="text-align: justify;">
+                <p>
+                This graph highlights the platform's most engaging recipes. These recipes, often simple, universal, or viral
+                (such as the "best banana bread"), generate significant interest and interaction. Identifying these recipes
+                helps us understand what types of dishes appeal most to the community.
+                </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
     # =========================================================================
     # SECTION 3: LOWEST RATED RECIPES
     # =========================================================================
 
-    st.subheader("Lowest Rated Recipes")
+    with col2:
+        st.subheader("Lowest Rated Recipes")
 
-    # Minimum number of reviews required to be included in the analysis
-    MIN_REVIEWS = 5
+        # Minimum number of reviews required to be included in the analysis
+        MIN_REVIEWS = 5
 
-    # Average ratings
-    nb_worst = st.slider(
-        "Number of recipes to display",
-        5,
-        30,
-        20,
-        key="nb_worst_recipes",
-    )
-    NB_REVIEW_MIN = 5
+        # Average ratings
+        nb_worst = st.slider(
+            "Number of recipes to display",
+            5,
+            30,
+            20,
+            key="nb_worst_recipes",
+        )
+        with st.spinner("Generating chart..."):
+            # Use cached computation
+            worst_recipes = compute_worst_recipes(df_total_nt, nb_worst, MIN_REVIEWS)
 
-    # Use cached computation
-    worst_recipes = compute_worst_recipes(df_total_nt, nb_worst, NB_REVIEW_MIN)
+            # Display horizontal bar chart of lowest rated recipes
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.barplot(
+                data=worst_recipes,
+                x="mean_rating",
+                y="name",
+                ax=ax,
+                palette="viridis",
+                hue="name",
+                legend=False,
+            )
+            ax.set_xlabel("Average Rating")
+            ax.set_ylabel("")
+            sns.despine()
+            plt.tight_layout(rect=[0, 0, 1, 0.95])
+            st.pyplot(fig)
 
-    # Display horizontal bar chart of lowest rated recipes
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.barplot(
-        data=worst_recipes,
-        x="mean_rating",
-        y="name",
-        ax=ax,
-        palette="viridis",
-        hue="name",
-        legend=False,
-    )
-    ax.set_xlabel("Average Rating")
-    ax.set_ylabel("")
-    sns.despine()
-    st.pyplot(fig)
-    st.markdown(
-        """
-        **Least Popular Recipes:**
+            # **Least Popular Recipes:**
 
-        These recipes have received poor ratings despite several reviews. This may indicate problems with the recipe
-        (incorrect measurements, cooking time, or unclear instructions) or unmet expectations. These extreme cases
-        are useful for analyzing areas for improvement or identifying common mistakes.
-        """,
-    )
+            st.markdown(
+                """
+                <div style="text-align: justify;">
+                <p>
+                These recipes have received poor ratings despite several reviews. This may indicate problems with the recipe
+                (incorrect measurements, cooking time, or unclear instructions) or unmet expectations. These extreme cases
+                are useful for analyzing areas for improvement or identifying common mistakes.
+                </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+    st.markdown("""---""")
 
     # =========================================================================
     # SECTION 4: USER CONTROLS - SLIDERS
     # =========================================================================
-
-    # Slider for number of top ingredients to display
-    ingredient_count = st.slider(
-        "Number of ingredients",
-        min_value=10,
-        max_value=35,
-        value=20,
-    )
 
     # =========================================================================
     # SIDEBAR: SECTION VISIBILITY CONTROLS
@@ -280,83 +307,122 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # =========================================================================
 
     if show_ingredients:
-        st.header("🍳 Top Ingredients Used")
-        st.markdown(
-            """
-            A radar chart was created to visualize the most common ingredients in the recipes. It shows a strong
-            presence of fundamental elements such as onion, eggs, milk, and garlic, emphasizing their central role
-            in most dishes.
+        # Slider for number of top ingredients to display
+        st.header(f"{icon} Top Ingredients Used")
 
-            Ingredients such as Parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes,
-            ranging from savory dishes to sweet preparations. The prior filtering of generic terms (salt, water, oil,
-            sugar) allows us to focus on ingredients with true descriptive value.
+        with st.spinner("Computing top ingredients..."):
+            col_text, space, col_chart = st.columns([2, 0.05, 1.5])
 
-            This chart complements the textual analysis by offering a synthetic and visual overview of dominant
-            culinary trends.
-            """,
-        )
-        # Use cached plot generation
-        fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
-        st.pyplot(fig)
+            with col_text:
+                ingredient_count = st.slider(
+                    "Number of ingredients",
+                    min_value=10,
+                    max_value=35,
+                    value=20,
+                )
+                st.markdown(
+                    """
+                    <div style="text-align: justify;">
+                    <p>
+
+                    - In addition, a radar chart was created to visualize the most common ingredients in the recipes.
+                    It shows a strong presence of fundamental elements such as onion, eggs, milk, and garlic,
+                    emphasizing their central role in most dishes.
+
+                    - Ingredients such as parmesan cheese, lemon juice, honey, and vanilla reflect the diversity of recipes,
+                    ranging from savory dishes to sweet preparations. The prior filtering of generic terms
+                    (salt, water, oil, sugar) focuses on ingredients with true descriptive value.
+                    This chart complements the textual analysis by offering a synthetic and visual overview
+                    of dominant culinary trends.
+                    </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            with col_chart:
+                # Use cached computation
+                fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
+                st.pyplot(fig)
+
+        st.markdown("""---""")
 
     # =========================================================================
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
-    st.header("🍳 Ingredient Analysis")
-
-    # Slider for number of recipes to analyze for word clouds
-    recipe_count = st.slider(
-        "Number of recipes",
-        min_value=20,
-        max_value=500,
-        value=100,
-    )
-
-    # Slider for maximum words in word clouds
-    wordcloud_max_words = st.slider(
-        "Max words in WordClouds",
-        min_value=30,
-        max_value=200,
-        value=100,
-    )
 
     categories = [
         ("Most reviewed recipes", "most"),
         ("Best rated recipes", "best"),
         ("Worst rated recipes", "worst"),
     ]
+        
+    # Slider for number of recipes to analyze for word clouds
+    if show_wordclouds or show_comparisons:
+        col1, space, col2 = st.columns([1, 0.05, 1])
+        with col1:
+            recipe_count = st.slider(
+                "Number of recipes",
+                min_value=20,
+                max_value=500,
+                value=100,
+            )
+        # Slider for maximum words in word clouds
+        with col2:
+            wordcloud_max_words = st.slider(
+                "Max words in WordClouds",
+                min_value=30,
+                max_value=200,
+                value=100,
+            )
+        
 
     if show_wordclouds:
-        # Display word clouds using cached wrappers
-        st.subheader("🗣️ WordClouds (6 charts)")
+        st.header(f"{icon} Ingredient Analysis")
 
         st.markdown(
             """
+            <div style="text-align: justify;">
+            <p>
             In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
 
-            **Method 1: Raw Frequency**
-            The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
+            - **Method 1 - Raw Frequency**: The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
             removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
             such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
             However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
             meaningful words for the analysis.
 
-            **Method 2: TF-IDF**
-            The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
+            - **Method 2 - TF-IDF**: The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
             importance of a word according to its frequency within a document and its rarity across the entire corpus.
-            This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
+            This weighting helps emphasize discriminative words - those that best characterize specific recipes. In practice,
             the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
             matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
             TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
+            </p>
+            </div>
             """,
+            unsafe_allow_html=True,
         )
+        # SECTION 6: WORD CLOUDS VISUALIZATION
+        # =========================================================================
 
+
+        # Generate word clouds from recipe reviews
+        # recipe_analyzer.display_wordclouds(wordcloud_max_words)
         # 2x3 grid for the 6 wordclouds
-        for _i, (title, filter_type) in enumerate(categories):
-            st.markdown(title)
-            cols = st.columns(2)
+        st.subheader("☁️ WordClouds (6 charts)")
 
-            with cols[0]:
+        for title, filter_type in categories:
+            st.markdown(
+                f'<h4 style="text-align:center;">⭐⭐⭐ {title} ⭐⭐⭐</h4>',
+                unsafe_allow_html=True,
+            )
+            col1, _, col2 = st.columns([1, 0.05, 1])
+
+            with (
+                col1,
+                st.spinner(f"Generating WordCloud (Frequency) for {title}..."),
+            ):
                 fig = get_wordcloud_figures(
                     recipe_analyzer,
                     wordcloud_max_words,
@@ -365,7 +431,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
-            with cols[1]:
+            with col2, st.spinner(f"Generating WordCloud (TF-IDF) for {title}..."):
                 fig = get_tfidf_figures(
                     recipe_analyzer,
                     wordcloud_max_words,
@@ -374,31 +440,51 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
-    # =========================================================================
-    # SECTION 7: VENN DIAGRAM COMPARISONS
-    # =========================================================================
+        st.markdown("""---""")
 
+        # =========================================================================
+        # SECTION 7: VENN DIAGRAM COMPARISONS
+        # =========================================================================
     if show_comparisons:
-        st.subheader("🍳 Venn Diagram Comparisons")
+        st.header(f"{icon} Venn Diagram Comparisons")
         st.markdown(
             """
-            To compare both approaches, Venn diagrams were used. These charts provide a clear visualization of the
-            intersections and differences between the selected word sets.
+            <div style="text-align: justify;">
+            <p>To compare both approaches, Venn diagrams were used.
+            These charts provide a clear visualization of the intersections
+            and differences between the selected word sets.
 
-            The overlapping areas represent the words identified by both methods, often associated with basic vocabulary
-            used to describe or comment on recipes. The words exclusive to the TF-IDF method reveal rarer or more specific
-            terms, such as distinctive ingredients or particular cooking techniques.
-
-            A strong overlap between the circles indicates convergence between the two methods, while a smaller intersection
-            highlights divergences in word selection.
+            The overlapping areas represent the words identified by both methods,
+            often associated with basic vocabulary used to describe
+            or comment on recipes.
+            The words exclusive to the TF-IDF method reveal rarer or
+            more specific terms, such as distinctive ingredients or
+            particular cooking techniques.
+            A strong overlap between the circles indicates convergence
+            between the two methods, while a smaller intersection highlights
+            divergences in word selection.
+            </p>
+            </div>
             """,
+            unsafe_allow_html=True,
         )
+        # Compare frequency-based vs TF-IDF word extraction
+        # recipe_analyzer.display_comparisons(
+        #     recipe_count,
+        #     wordcloud_max_words,
+        # )
+        st.subheader("🔵🟣 Frequency/TF-IDF Comparisons (3 charts)")
 
-        # Display Venn diagrams using cached wrapper
-        st.subheader("🔄 Frequency/TF-IDF Comparisons (3 charts)")
-
+        categories = [
+            ("Most reviewed recipes", "most"),
+            ("Best rated recipes", "best"),
+            ("Worst rated recipes", "worst"),
+        ]
         for _i, (title, filter_type) in enumerate(categories):
-            st.markdown(title)
+            st.markdown(
+                f'<h4 style="text-align:center;">{title}</h4>',
+                unsafe_allow_html=True,
+            )
             fig = get_comparison_figures(
                 recipe_analyzer,
                 recipe_count,
@@ -406,7 +492,11 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 filter_type,
                 f"Comparison - {title}",
             )
-            st.pyplot(fig)
+            col1, col2, col3 = st.columns([1, 2, 1])
+
+            with col2:
+                st.pyplot(fig)
+            plt.close(fig)  # Free memory
 
     # =========================================================================
     # SIDEBAR: CURRENT PARAMETERS SUMMARY

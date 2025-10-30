@@ -62,6 +62,8 @@ dev = [
     "mkdocs-section-index>=0.3.0",
     "pre-commit>=4.0.1",
     "pyment>=0.3.3",
+    "py-spy>=0.4.1",
+    "interrogate>=1.7.0",
 ]
 
 jupyter = [
@@ -167,18 +169,6 @@ target-version = "py312"
 src = ["src", "tests", "main.py"]
 line-length = 88
 
-exclude = [
-  ".git",
-  ".venv",
-  "build",
-  "dist",
-  "notebook",
-  "lib",
-  "src/mypkg",
-  "src/utils",
-  "src/archive",
-]
-
 [tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
@@ -204,6 +194,7 @@ select = [
 ]
 
 ignore = [
+    "COM812",
     "E501", # line too long, handled by black
     "B008", # do not perform function calls in argument defaults
     "C901", # too complex
@@ -212,6 +203,20 @@ ignore = [
     # "D104",
     # "D105",
     # "D107",
+]
+
+exclude = [
+  ".git",
+  ".venv",
+  "build",
+  "dist",
+  "notebook",
+  "notebook/*",
+  "notebook/**/*",
+  "lib",
+  "src/mypkg",
+  "src/utils",
+  "src/archive",
 ]
 
 [tool.ruff.lint.per-file-ignores]

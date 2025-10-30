@@ -66,23 +66,21 @@ def main() -> None:
             st.session_state.data_loaded = data_loaded
             logger.info("✅ Data available in session_state for this user.")
 
-    home_page = st.Page("frontend/pages/dashboard.py", title="Home", default=True)
-    rating_page = st.Page("frontend/pages/rating.py", title="Rating")
-    # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
-    # overview_page = st.Page("frontend/pages/overview.py", title="Overview")
+    home_page = st.Page("frontend/pages/dashboard.py", title="🏠 Home", default=True)
+    # overview_page = st.Page("frontend/pages/overview.py", title="📊 Overview")
     recipes_analysis_page = st.Page(
         "frontend/pages/recipes_analysis.py",
-        title="Recipes Analysis",
+        title="🍳 Recipes",
     )
-    users_analysis_page = st.Page(
-        "frontend/pages/users_analysis.py",
-        title="Users Analysis",
-    )
-    trends_page = st.Page("frontend/pages/trends.py", title="Trends")
+    users_analysis_page = st.Page("frontend/pages/users_analysis.py", title="👥 Users")
+    trends_page = st.Page("frontend/pages/trends.py", title="📈 Trends")
+    rating_page = st.Page("frontend/pages/rating.py", title="⭐ Rating")
+    # recipe_time_page = st.Page("frontend/pages/recipes_analysis.py", title="Recipe Time")
 
     pg = st.navigation(
         [
             home_page,
+            # overview_page,
             rating_page,
             trends_page,
             users_analysis_page,
