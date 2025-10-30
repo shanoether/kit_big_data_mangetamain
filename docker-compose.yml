@@ -9,7 +9,7 @@ services:
     # environment:
       # - PYTHONPATH=/app/src
     mem_limit: 10g              # Hard limit (container killed if exceeded)
-    mem_reservation: 2g        # Soft limit (guaranteed minimum)
+    mem_reservation: 3g        # Soft limit (guaranteed minimum)
     memswap_limit: 10g          # Total memory and swap limit
 
 
