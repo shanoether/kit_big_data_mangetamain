@@ -18,6 +18,26 @@ logger = get_logger()
 
 set_global_exception_handler(custom_exception_handler)
 
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebarNav"] li a {
+        font-size: 1.1rem !important;  /* mặc định ~0.9rem */
+        padding: 10px 16px !important;
+    }
+
+    [data-testid="stSidebarNav"] li a span {
+        font-size: 1.3rem !important;
+    }
+
+    [data-testid="stSidebarNav"] li a {
+        font-weight: 600 !important;
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
 
 def main() -> None:
     """Entry point for the Streamlit front-end application.

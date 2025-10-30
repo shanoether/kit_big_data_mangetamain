@@ -286,7 +286,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 """,
                 unsafe_allow_html=True,
             )
-    st.markdown("""---""")
 
     # =========================================================================
     # SECTION 4: USER CONTROLS - SLIDERS
@@ -297,10 +296,13 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # =========================================================================
 
     # Checkboxes to show/hide different sections
-    st.sidebar.header("Display Options")
+    st.sidebar.header("💻 Display Options")
     show_ingredients = st.sidebar.checkbox("Top Ingredients", value=True)
     show_wordclouds = st.sidebar.checkbox("WordClouds (6)", value=True)
     show_comparisons = st.sidebar.checkbox("Venn Comparisons (3)", value=True)
+    recipe_count = None
+    wordcloud_max_words = None
+    ingredient_count = None
 
     # =========================================================================
     # SECTION 5: TOP INGREDIENTS VISUALIZATION
@@ -308,6 +310,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     if show_ingredients:
         # Slider for number of top ingredients to display
+        st.markdown("""---""")
         st.header(f"{icon} Top Ingredients Used")
 
         with st.spinner("Computing top ingredients..."):
@@ -345,8 +348,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 fig = get_top_ingredients_plot(recipe_analyzer, ingredient_count)
                 st.pyplot(fig)
 
-        st.markdown("""---""")
-
     # =========================================================================
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
@@ -377,6 +378,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             )
 
     if show_wordclouds:
+        st.markdown("""---""")
         st.header(f"{icon} Ingredient Analysis")
 
         st.markdown(
@@ -402,6 +404,23 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """,
             unsafe_allow_html=True,
         )
+        col1, space, col2 = st.columns([1, 0.05, 1])
+        with col1:
+            recipe_count = st.slider(
+                "Number of recipes",
+                min_value=20,
+                max_value=500,
+                value=100,
+            )
+        # Slider for maximum words in word clouds
+        with col2:
+            wordcloud_max_words = st.slider(
+                "Max words in WordClouds",
+                min_value=30,
+                max_value=200,
+                value=100,
+            )
+
         # SECTION 6: WORD CLOUDS VISUALIZATION
         # =========================================================================
 
@@ -438,12 +457,11 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 )
                 st.pyplot(fig)
 
-        st.markdown("""---""")
-
-        # =========================================================================
-        # SECTION 7: VENN DIAGRAM COMPARISONS
-        # =========================================================================
+    # =========================================================================
+    # SECTION 7: VENN DIAGRAM COMPARISONS
+    # =========================================================================
     if show_comparisons:
+        st.markdown("""---""")
         st.header(f"{icon} Venn Diagram Comparisons")
         st.markdown(
             """
@@ -500,12 +518,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SIDEBAR: CURRENT PARAMETERS SUMMARY
     # =========================================================================
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Current Parameters:**")
-    if show_wordclouds or show_comparisons:
+    if recipe_count or wordcloud_max_words or ingredient_count:
+        st.sidebar.markdown("""---""")
+        st.sidebar.markdown("### ⚙️ Current Parameters")
+    if recipe_count:
         st.sidebar.markdown(f"- Recipes analyzed: {recipe_count}")
+    if wordcloud_max_words:
         st.sidebar.markdown(f"- Words per cloud: {wordcloud_max_words}")
-    st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
+    if ingredient_count:
+        st.sidebar.markdown(f"- Ingredients: {ingredient_count}")
 
     # =========================================================================
     # FOOTER
