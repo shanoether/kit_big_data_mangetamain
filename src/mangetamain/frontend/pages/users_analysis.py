@@ -1,6 +1,7 @@
 """Users Analysis for the Streamlit app."""
 
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import polars as pl
 import seaborn as sns
 import streamlit as st
@@ -217,3 +218,140 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """,
             unsafe_allow_html=True,
         )
+
+    st.header(f"{icon} Clustering of users based on their activity")
+    st.markdown(
+        """
+        <div style="text-align: justify;">
+        <p>
+        Here we will apply clustering methods to group the users based on their reviewing activity. First we will work to find the optimal number of clusters (k) using both the elbow method and the silhouette score method. and then see how these cluster evolves in function time.
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+            <div style="text-align: justify;">
+            <p>
+            The analysis combines the elbow method and the silhouette method to determine the optimal number of clusters (k) in a MiniBatchKMeans clustering.
+            The elbow method involves plotting the inertia (sum of squared distances of points to their cluster centers) as a function of k. The goal is to identify a point where the decrease in inertia slows significantly, forming an "elbow." This indicates that adding more clusters does not substantially improve the quality. However, this method can sometimes be ambiguous.
+            The silhouette score method complements this analysis by measuring how well-separated and compact the clusters are, with values ranging from -1 to 1. A score close to 1 indicates well-defined clusters, a score near 0 indicates overlapping clusters, and a negative score indicates poor clustering.
+            By combining these two criteria, a more robust choice of k is achieved. In practice, we prefer a k where the inertia begins to stabilize and the silhouette score is maximized. This ensures that the clusters are both compact and well-separated, making them easier to interpret and use later.
+            For the silhouette method, the calculations were performed using *verb|sklearn.metrics.silhouette.score|*
+            </p>
+            </div>
+            """,
+        unsafe_allow_html=True,
+    )
+
+    # --- 1. Créer le DataFrame Polars ---
+    # Thosev values were computed before hand because they require long processing time
+    df_scores = pl.DataFrame(
+        {
+            "k": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            "inertie": [
+                724608.3,
+                565130.2,
+                498131.1,
+                481338.3,
+                483306.3,
+                446134.1,
+                451036.6,
+                452287.7,
+                413176.4,
+                430706.9,
+            ],
+            "silhouette": [
+                0.6394,
+                0.7443,
+                0.6585,
+                0.7304,
+                0.6974,
+                0.7785,
+                0.7810,
+                0.7258,
+                0.7865,
+                0.7492,
+            ],
+        }
+    )
+
+    # --- 2. Trouver automatiquement le meilleur k selon silhouette ---
+    best_row = df_scores.sort("silhouette", descending=True).row(0)
+    best_k, best_sil = best_row[0], best_row[2]
+
+    # --- 3. Visualisation combinée avec Plotly ---
+    fig = go.Figure()
+
+    # Trace 1: Inertie (axe gauche)
+    fig.add_trace(
+        go.Scatter(
+            x=df_scores["k"],
+            y=df_scores["inertie"],
+            mode="lines+markers",
+            name="Inertie",
+            line=dict(color="blue"),
+            marker=dict(symbol="circle", size=8),
+            yaxis="y",
+        )
+    )
+
+    # Trace 2: Silhouette Score (axe droit)
+    fig.add_trace(
+        go.Scatter(
+            x=df_scores["k"],
+            y=df_scores["silhouette"],
+            mode="lines+markers",
+            name="Silhouette Score",
+            line=dict(color="orange"),
+            marker=dict(symbol="square", size=8),
+            yaxis="y2",
+        )
+    )
+
+    # Ligne verticale pour le meilleur k
+    fig.add_vline(
+        x=best_k,
+        line_dash="dash",
+        line_color="green",
+        opacity=0.7,
+        annotation_text=f"k={best_k}<br>score={best_sil:.3f}",
+        annotation_position="top right",
+        annotation=dict(font_color="green"),
+    )
+
+    # Configuration du layout avec deux axes y
+    fig.update_layout(
+        title="Méthodes du Coude et du Silhouette Score pour MiniBatchKMeans",
+        xaxis=dict(
+            title="Nombre de clusters (k)",
+            showgrid=True,
+            gridcolor="lightgray",
+            griddash="dash",
+        ),
+        yaxis=dict(
+            title="Inertie",
+            tickfont=dict(color="blue"),
+            showgrid=True,
+            gridcolor="lightgray",
+            griddash="dash",
+        ),
+        yaxis2=dict(
+            title="Silhouette Score",
+            tickfont=dict(color="orange"),
+            overlaying="y",
+            side="right",
+        ),
+        legend=dict(
+            x=0.02,
+            y=0.98,
+            xanchor="left",
+            yanchor="top",
+            bgcolor="rgba(255, 255, 255, 0.8)",
+        ),
+        hovermode="x unified",
+    )
+
+    st.plotly_chart(fig, use_container_width=True)

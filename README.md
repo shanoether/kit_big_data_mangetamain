@@ -452,7 +452,7 @@ uv run pytest tests/unit/mangetamain/backend/test_recipe_analyzer.py
 
 ## 🔒 Security
 
-- **Dependency Scanning**: Automated Safety CLI checks on every commit
+- **Dependency Scanning**: Automated Safety CLI checks on every commit. Here we are still using vulnerable libraries but the risk is small as we don't require user input, there is no account linked to this application and it runs in an isolated environment. A summary of the last security review can be found in `docs/security_review.png`.
 - **Firewall**: Only port 443 exposed
 - **SSH**: Key-based authentication only, no passwords
 - **Docker**: Non-root user, minimal base image
@@ -493,19 +493,19 @@ We're continuously working to improve *Mangetamain*. Here are planned enhancemen
 
 - 🔍 **Recipe Clustering**: ML-based similarity analysis to discover recipe patterns and group similar recipes
 - 📊 **Advanced Visualizations**:
-  - Network graphs for recipe ingredient relationships
+  - Network graphs for review relationships
   - Heatmaps for user behavior patterns
 - ⚙️ **Enhanced CI/CD Pipeline**:
   - Add automated testing stage
   - Manual approval gate before production deployment
 - 🧮 **Advanced Analytics**:
-  - Time-series forecasting for recipe trends
   - Sentiment analysis on user reviews
-  - Anomaly detection for unusual rating patterns
-- 🗄️ **Database Migration**:
+  - Anomaly detection for unusual rating patterns (bots)
+- 🗄️ **Code improvment**:
   - Move from Parquet to PostgreSQL for better scalability with an API endpoint for the frontend to connect to
   - Implement data versioning
-  - Add data backup and recovery procedures
+  - Move from pyplot to plotly
+  - Migrate towards libraries without vulnerabilities
 
 ---
 
