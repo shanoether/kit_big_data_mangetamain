@@ -352,29 +352,15 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
     # SECTION 6: WORD CLOUDS VISUALIZATION
     # =========================================================================
 
+    categories = [
+        ("Most reviewed recipes", "most"),
+        ("Best rated recipes", "best"),
+        ("Worst rated recipes", "worst"),
+    ]
+
     if show_wordclouds:
         st.markdown("""---""")
         st.header(f"{icon} Ingredient Analysis")
-        # st.markdown(
-        #     """
-        #     In this analysis, two distinct methods were used to generate word clouds from culinary recipes.
-
-        #     **Method 1: Raw Frequency**
-        #     The first method is based on the raw frequency of words, after a rigorous filtering process aimed at
-        #     removing English stop words (the, and, of), verbs, as well as certain terms considered uninformative
-        #     such as "recipe," "thing," or "definitely." This approach highlights the most frequent words in the corpus.
-        #     However, it has the disadvantage of overrepresenting generic terms, often at the expense of rarer but more
-        #     meaningful words for the analysis.
-
-        #     **Method 2: TF-IDF**
-        #     The second method uses TF-IDF (Term Frequency-Inverse Document Frequency), a technique that weights the
-        #     importance of a word according to its frequency within a document and its rarity across the entire corpus.
-        #     This weighting helps emphasize discriminative words—those that best characterize specific recipes. In practice,
-        #     the texts are cleaned to remove punctuation, verbs, and stop words before being transformed into a TF-IDF
-        #     matrix using the TfidfVectorizer function from scikit-learn. Only the words with the highest cumulative
-        #     TF-IDF scores are retained for word cloud generation, ensuring a visual representation of the most relevant terms.
-        #     """,
-        # )
 
         st.markdown(
             """
@@ -399,14 +385,6 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
             """,
             unsafe_allow_html=True,
         )
-        # SECTION 6: WORD CLOUDS VISUALIZATION
-        # =========================================================================
-        categories = [
-            ("Most reviewed recipes", "most"),
-            ("Best rated recipes", "best"),
-            ("Worst rated recipes", "worst"),
-        ]
-        # Slider for number of recipes to analyze for word clouds
         col1, space, col2 = st.columns([1, 0.05, 1])
         with col1:
             recipe_count = st.slider(
@@ -423,6 +401,9 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 max_value=200,
                 value=100,
             )
+
+        # SECTION 6: WORD CLOUDS VISUALIZATION
+        # =========================================================================
 
         # Generate word clouds from recipe reviews
         # recipe_analyzer.display_wordclouds(wordcloud_max_words)

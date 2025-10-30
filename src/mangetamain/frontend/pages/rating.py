@@ -101,7 +101,7 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
                 <div style="text-align: justify;">
                 <p>
                     The boxplot shows that the distribution is really skewed to the right,
-                    since all votes below three are considered as outliers.
+                    since all votes below three are considered as outliers.w
                 </p>
                 </div>
                 """,
@@ -110,6 +110,19 @@ if "data_loaded" in st.session_state and st.session_state.data_loaded:
 
     # Visualization of recipe distribution by review
     st.subheader("Distribution of the number of reviews by recipe")
+    st.markdown(
+        """
+                <div style="text-align: justify;">
+                <p>
+                This graphs how many reviews each recipe has received.
+                We can see that most recipes have only a few reviews,
+                while a few have many reviews.
+                And there are a few reviews that were reviewed more than 500000 times!
+                </p>
+                </div>
+                """,
+        unsafe_allow_html=True,
+    )
     with st.spinner("Generating rating distribution by review..."):
         reviews_per_recipe = df_interactions_nna.group_by("recipe_id").agg(
             pl.len().alias("review_count"),
