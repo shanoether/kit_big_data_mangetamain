@@ -1,4 +1,4 @@
-"""Trends analysis page of the Streamlit app."""
+"""Trends analysis page of the Streamlit webapp."""
 
 import matplotlib.pyplot as plt
 import polars as pl
