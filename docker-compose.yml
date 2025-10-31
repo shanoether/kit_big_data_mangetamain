@@ -36,6 +36,6 @@ services:
     environment:
       - PORT=8501
       #- PYTHONPATH=/app/src
-    mem_limit: 7g              # Hard limit (container killed if exceeded)
+    mem_limit: 10g              # Hard limit (container killed if exceeded)
     mem_reservation: 2g        # Soft limit (guaranteed minimum)
-    memswap_limit: 7g          # Total memory + swap limit
+    memswap_limit: 10g          # Total memory + swap limit
