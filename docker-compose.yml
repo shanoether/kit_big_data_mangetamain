@@ -8,9 +8,9 @@ services:
       - /opt/app/logs:/app/logs     # map logs folder
     # environment:
       # - PYTHONPATH=/app/src
-    mem_limit: 11g              # Hard limit (container killed if exceeded)
+    mem_limit: 12g              # Hard limit (container killed if exceeded)
     mem_reservation: 3g        # Soft limit (guaranteed minimum)
-    memswap_limit: 11g          # Total memory and swap limit
+    memswap_limit: 12g          # Total memory and swap limit
 
 
   streamlit:
