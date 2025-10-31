@@ -2097,7 +2097,7 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <hr />
 <h2 id="security">🔒 Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Dependency Scanning</strong>: Automated Safety CLI checks on every commit</li>
+<li><strong>Dependency Scanning</strong>: Automated Safety CLI checks on every commit. Here we are still using vulnerable libraries but the risk is small as we don't require user input, there is no account linked to this application and it runs in an isolated environment. A summary of the last security review can be found in <code>docs/security_review.png</code>.</li>
 <li><strong>Firewall</strong>: Only port 443 exposed</li>
 <li><strong>SSH</strong>: Key-based authentication only, no passwords</li>
 <li><strong>Docker</strong>: Non-root user, minimal base image</li>
@@ -2129,19 +2129,19 @@ uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </sp
 <ul>
 <li>🔍 <strong>Recipe Clustering</strong>: ML-based similarity analysis to discover recipe patterns and group similar recipes</li>
 <li>📊 <strong>Advanced Visualizations</strong>:</li>
-<li>Network graphs for recipe ingredient relationships</li>
+<li>Network graphs for review relationships</li>
 <li>Heatmaps for user behavior patterns</li>
 <li>⚙️ <strong>Enhanced CI/CD Pipeline</strong>:</li>
 <li>Add automated testing stage</li>
 <li>Manual approval gate before production deployment</li>
 <li>🧮 <strong>Advanced Analytics</strong>:</li>
-<li>Time-series forecasting for recipe trends</li>
 <li>Sentiment analysis on user reviews</li>
-<li>Anomaly detection for unusual rating patterns</li>
-<li>🗄️ <strong>Database Migration</strong>:</li>
+<li>Anomaly detection for unusual rating patterns (bots)</li>
+<li>🗄️ <strong>Code improvment</strong>:</li>
 <li>Move from Parquet to PostgreSQL for better scalability with an API endpoint for the frontend to connect to</li>
 <li>Implement data versioning</li>
-<li>Add data backup and recovery procedures</li>
+<li>Move from pyplot to plotly</li>
+<li>Migrate towards libraries without vulnerabilities</li>
 </ul>
 <hr />
 <h2 id="project-metrics">📊 Project Metrics<a class="headerlink" href="#project-metrics" title="Permanent link">&para;</a></h2>

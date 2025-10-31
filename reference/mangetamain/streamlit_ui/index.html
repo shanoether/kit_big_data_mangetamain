@@ -801,7 +801,9 @@ starting the page navigation.</p>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for the Streamlit front-end application.</span>
 
 <span class="sd">    This function prepares the navigation pages and ensures the</span>
@@ -822,6 +824,7 @@ starting the page navigation.</p>
         <span class="n">df_total_nt</span><span class="p">,</span>
         <span class="n">df_total</span><span class="p">,</span>
         <span class="n">df_total_court</span><span class="p">,</span>
+        <span class="n">df_user</span><span class="p">,</span>
         <span class="n">proportion_m</span><span class="p">,</span>
         <span class="n">proportion_s</span><span class="p">,</span>
         <span class="n">recipe_analyzer</span><span class="p">,</span>
@@ -842,6 +845,7 @@ starting the page navigation.</p>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total_nt</span> <span class="o">=</span> <span class="n">df_total_nt</span>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total</span> <span class="o">=</span> <span class="n">df_total</span>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_total_court</span> <span class="o">=</span> <span class="n">df_total_court</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_user</span> <span class="o">=</span> <span class="n">df_user</span>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">proportion_m</span> <span class="o">=</span> <span class="n">proportion_m</span>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">proportion_s</span> <span class="o">=</span> <span class="n">proportion_s</span>
             <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">recipe_analyzer</span> <span class="o">=</span> <span class="n">recipe_analyzer</span>

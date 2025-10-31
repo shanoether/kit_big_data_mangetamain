@@ -514,6 +514,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mangetamain.backend.data_processor.DataProcessor.user_df" class="md-nav__link">
+    <span class="md-ellipsis">
+      user_df
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -806,6 +815,15 @@
   <a href="#mangetamain.backend.data_processor.DataProcessor.split_minutes" class="md-nav__link">
     <span class="md-ellipsis">
       split_minutes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mangetamain.backend.data_processor.DataProcessor.user_df" class="md-nav__link">
+    <span class="md-ellipsis">
+      user_df
     </span>
   </a>
   
@@ -1194,7 +1212,26 @@ a small sequence of methods that can be called by a runner or CI job:</p>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataProcessor</span><span class="p">:</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataProcessor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Processes and transforms recipe and interaction data.</span>
 
 <span class="sd">    The :class:`DataProcessor` is a lightweight ETL helper used to build</span>
@@ -1439,6 +1476,21 @@ a small sequence of methods that can be called by a runner or CI job:</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute user-level aggregates and store as df_user.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing user-level aggregates&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+            <span class="n">nb_reviews</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">len</span><span class="p">(),</span>
+            <span class="n">mean_rating</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="n">std_rating</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+            <span class="n">review_length</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="n">mean_time</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;minutes&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span>
+            <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;std_rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fill_nan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fill_null</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;std_rating&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Persist processed tables to parquet files under ``data/processed/``.</span>
 
@@ -1479,6 +1531,10 @@ a small sequence of methods that can be called by a runner or CI job:</p>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done </span><span class="se">\n</span><span class="s2"> Saving recipe analyzer object&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">recipe_analyzer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;data/processed/recipe_analyzer.pkl&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done </span><span class="se">\n</span><span class="s2"> Saving user data&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span><span class="o">.</span><span class="n">write_parquet</span><span class="p">(</span><span class="s2">&quot;data/processed/user.parquet&quot;</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All processed data saved to parquet files.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2164,22 +2220,7 @@ TF-IDF analysis, and other recipe text analysis features.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/mangetamain/backend/data_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
@@ -2205,7 +2246,26 @@ TF-IDF analysis, and other recipe text analysis features.</p>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Persist processed tables to parquet files under ``data/processed/``.</span>
 
 <span class="sd">    The output files are:</span>
@@ -2245,6 +2305,10 @@ TF-IDF analysis, and other recipe text analysis features.</p>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done </span><span class="se">\n</span><span class="s2"> Saving recipe analyzer object&quot;</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">recipe_analyzer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;data/processed/recipe_analyzer.pkl&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done </span><span class="se">\n</span><span class="s2"> Saving user data&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span><span class="o">.</span><span class="n">write_parquet</span><span class="p">(</span><span class="s2">&quot;data/processed/user.parquet&quot;</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All processed data saved to parquet files.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2319,6 +2383,57 @@ recipes from long projects. Results are stored on the instance as
         <span class="sa">f</span><span class="s2">&quot;Recipes split into short (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df_recipes_nna_short</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">), &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;medium (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df_recipes_nna_medium</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">), &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;and long (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df_recipes_nna_long</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="mangetamain.backend.data_processor.DataProcessor.user_df" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">user_df</span>
+
+
+<a href="#mangetamain.backend.data_processor.DataProcessor.user_df" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">user_df</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute user-level aggregates and store as df_user.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/mangetamain/backend/data_processor.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">user_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute user-level aggregates and store as df_user.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing user-level aggregates&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+        <span class="n">nb_reviews</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">len</span><span class="p">(),</span>
+        <span class="n">mean_rating</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="n">std_rating</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+        <span class="n">review_length</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;review&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">len</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="n">mean_time</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;minutes&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_user</span><span class="o">.</span><span class="n">with_columns</span><span class="p">(</span>
+        <span class="n">pl</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;std_rating&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fill_nan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fill_null</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;std_rating&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
