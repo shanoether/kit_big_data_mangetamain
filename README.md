@@ -3,7 +3,7 @@
 > *"Eat this one, save the other for tomorrow!"*
 
 **Mangetamain** is a leader in B2C recipe recommendations powered by massive data analytics. We're sharing our best insights with the world through an interactive web platform where everyone can discover what makes recipes delicious... or not!
-🌐 **[Visit Our Live Application](http://34.1.14.43:8501/)**
+🌐 **[Visit Our Live Application]([http://34.1.14.43:8501/](https://mangetamain.duckdns.org/))**
 
 This **Streamlit web application** provides comprehensive **data analysis and visualization of cooking recipes and user interactions** based on the [Food.com Kaggle dataset](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions/data). Explore how recipes are rated, discover food trends, and understand user behavior through interactive dashboards powered by big data tools and advanced visualization techniques.
 
